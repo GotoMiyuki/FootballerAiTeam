@@ -1,0 +1,197 @@
+[
+  {
+    "week": "2026-W15",
+    "date_range": "2026-04-07 ~ 2026-04-13",
+    "focus": "基础体能恢复",
+    "training_sessions": [
+      {"day": "周一", "type": "耐力跑", "duration_min": 45, "intensity": "Medium"},
+      {"day": "周二", "type": "技术训练（传球/控球）", "duration_min": 60, "intensity": "Medium"},
+      {"day": "周三", "type": "力量训练（下肢）", "duration_min": 45, "intensity": "High"},
+      {"day": "周四", "type": "恢复训练", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "敏捷训练+射门练习", "duration_min": 60, "intensity": "High"}
+    ],
+    "weekly_load": 240,
+    "avg_rpe": 6.5,
+    "notes": "赛季前基础准备阶段"
+  },
+  {
+    "week": "2026-W16",
+    "date_range": "2026-04-14 ~ 2026-04-20",
+    "focus": "速度提升",
+    "training_sessions": [
+      {"day": "周一", "type": "30m冲刺×6组", "duration_min": 50, "intensity": "High"},
+      {"day": "周二", "type": "技术训练（盘带+第一脚触球）", "duration_min": 60, "intensity": "Medium"},
+      {"day": "周三", "type": "臀肌激活+核心力量", "duration_min": 45, "intensity": "High"},
+      {"day": "周四", "type": "恢复+拉伸", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "敏捷绳梯+短距离变向冲刺", "duration_min": 55, "intensity": "High"}
+    ],
+    "weekly_load": 240,
+    "avg_rpe": 7.0,
+    "notes": "开始加入速度专项训练"
+  },
+  {
+    "week": "2026-W17",
+    "date_range": "2026-04-21 ~ 2026-04-27",
+    "focus": "速度+敏捷性",
+    "training_sessions": [
+      {"day": "周一", "type": "40m冲刺×8组", "duration_min": 55, "intensity": "Very High"},
+      {"day": "周二", "type": "技术训练（传中+射门）", "duration_min": 60, "intensity": "Medium"},
+      {"day": "周三", "type": "下肢爆发力训练", "duration_min": 50, "intensity": "High"},
+      {"day": "周四", "type": "恢复+瑜伽", "duration_min": 35, "intensity": "Low"},
+      {"day": "周五", "type": "T型测试+折返跑+射门", "duration_min": 60, "intensity": "Very High"}
+    ],
+    "weekly_load": 260,
+    "avg_rpe": 7.5,
+    "notes": "速度训练强度加大，注意监控疲劳"
+  },
+  {
+    "week": "2026-W18",
+    "date_range": "2026-04-28 ~ 2026-05-04",
+    "focus": "速度耐力组合",
+    "training_sessions": [
+      {"day": "周一", "type": "50m冲刺×6组+间歇耐力跑", "duration_min": 65, "intensity": "Very High"},
+      {"day": "周二", "type": "技术训练（一脚出球+转身摆脱）", "duration_min": 60, "intensity": "Medium"},
+      {"day": "周三", "type": "全身力量训练", "duration_min": 50, "intensity": "High"},
+      {"day": "周四", "type": "恢复+泡沫轴放松", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "HIIT变向跑+盘带射门组合", "duration_min": 60, "intensity": "Very High"}
+    ],
+    "weekly_load": 265,
+    "avg_rpe": 7.8,
+    "notes": "耐力加入训练计划，为比赛体能打基础"
+  },
+  {
+    "week": "2026-W19",
+    "date_range": "2026-05-05 ~ 2026-05-11",
+    "focus": "速度+射门精度",
+    "training_sessions": [
+      {"day": "周一", "type": "30m冲刺×8组", "duration_min": 50, "intensity": "Very High"},
+      {"day": "周二", "type": "射门专项（远近角/凌空）", "duration_min": 65, "intensity": "High"},
+      {"day": "周三", "type": "上肢+核心力量", "duration_min": 45, "intensity": "Medium"},
+      {"day": "周四", "type": "恢复+游泳", "duration_min": 40, "intensity": "Low"},
+      {"day": "周五", "type": "比赛模拟（7v7对抗）", "duration_min": 70, "intensity": "Very High"}
+    ],
+    "weekly_load": 270,
+    "avg_rpe": 8.0,
+    "notes": "开始加入对抗训练，模拟比赛场景"
+  },
+  {
+    "week": "2026-W20",
+    "date_range": "2026-05-12 ~ 2026-05-18",
+    "focus": "赛前冲刺训练",
+    "training_sessions": [
+      {"day": "周一", "type": "30m冲刺×10组", "duration_min": 55, "intensity": "Very High"},
+      {"day": "周二", "type": "战术跑位+传切配合", "duration_min": 60, "intensity": "High"},
+      {"day": "周三", "type": "爆发力+核心稳定性", "duration_min": 50, "intensity": "High"},
+      {"day": "周四", "type": "主动恢复", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "11v11全场对抗", "duration_min": 80, "intensity": "Very High"}
+    ],
+    "weekly_load": 275,
+    "avg_rpe": 8.2,
+    "notes": "冲刺阶段，训练负荷达到峰值"
+  },
+  {
+    "week": "2026-W21",
+    "date_range": "2026-05-19 ~ 2026-05-25",
+    "focus": "速度维持+技战术",
+    "training_sessions": [
+      {"day": "周一", "type": "30m冲刺×6组（维持）", "duration_min": 45, "intensity": "High"},
+      {"day": "周二", "type": "定位球+角球战术", "duration_min": 60, "intensity": "Medium"},
+      {"day": "周三", "type": "力量维持训练", "duration_min": 45, "intensity": "Medium"},
+      {"day": "周四", "type": "恢复拉伸", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "热身赛（vs邻校）", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 270,
+    "avg_rpe": 7.5,
+    "notes": "首次热身赛出场60分钟，1助攻"
+  },
+  {
+    "week": "2026-W22",
+    "date_range": "2026-05-26 ~ 2026-06-01",
+    "focus": "赛前减量+状态调整",
+    "training_sessions": [
+      {"day": "周一", "type": "轻度速度保持", "duration_min": 40, "intensity": "Medium"},
+      {"day": "周二", "type": "战术复习+视频分析", "duration_min": 45, "intensity": "Low"},
+      {"day": "周三", "type": "轻度力量", "duration_min": 35, "intensity": "Medium"},
+      {"day": "周四", "type": "恢复+心理准备", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "赛前轻训", "duration_min": 40, "intensity": "Low"}
+    ],
+    "weekly_load": 190,
+    "avg_rpe": 5.0,
+    "notes": "联赛前减量周"
+  },
+  {
+    "week": "2026-W23",
+    "date_range": "2026-06-02 ~ 2026-06-08",
+    "focus": "联赛期第1周",
+    "training_sessions": [
+      {"day": "周一", "type": "恢复训练", "duration_min": 35, "intensity": "Low"},
+      {"day": "周二", "type": "战术训练+定位球", "duration_min": 55, "intensity": "Medium"},
+      {"day": "周三", "type": "速度维持+射门", "duration_min": 50, "intensity": "Medium"},
+      {"day": "周四", "type": "赛前准备", "duration_min": 40, "intensity": "Low"},
+      {"day": "周五", "type": "联赛比赛日", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 270,
+    "avg_rpe": 6.5,
+    "notes": "联赛首轮：首发75分钟，1进球，评分7.2"
+  },
+  {
+    "week": "2026-W24",
+    "date_range": "2026-06-09 ~ 2026-06-15",
+    "focus": "联赛期第2周",
+    "training_sessions": [
+      {"day": "周一", "type": "恢复+冰浴", "duration_min": 35, "intensity": "Low"},
+      {"day": "周二", "type": "传控训练+边路突破", "duration_min": 60, "intensity": "High"},
+      {"day": "周三", "type": "敏捷+射门组合", "duration_min": 55, "intensity": "High"},
+      {"day": "周四", "type": "赛前战术", "duration_min": 40, "intensity": "Low"},
+      {"day": "周五", "type": "联赛比赛日", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 280,
+    "avg_rpe": 7.0,
+    "notes": "联赛次轮：首发80分钟，无进球，评分6.8"
+  },
+  {
+    "week": "2026-W25",
+    "date_range": "2026-06-16 ~ 2026-06-22",
+    "focus": "联赛期第3周",
+    "training_sessions": [
+      {"day": "周一", "type": "恢复+按摩", "duration_min": 35, "intensity": "Low"},
+      {"day": "周二", "type": "高强度间歇训练+盘带", "duration_min": 60, "intensity": "High"},
+      {"day": "周三", "type": "力量+核心", "duration_min": 50, "intensity": "High"},
+      {"day": "周四", "type": "赛前轻训", "duration_min": 40, "intensity": "Low"},
+      {"day": "周五", "type": "联赛比赛日", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 275,
+    "avg_rpe": 7.2,
+    "notes": "联赛第三轮：替补25分钟，评分6.5，右小腿轻微不适"
+  },
+  {
+    "week": "2026-W26",
+    "date_range": "2026-06-23 ~ 2026-06-29",
+    "focus": "恢复调整+技术打磨",
+    "training_sessions": [
+      {"day": "周一", "type": "康复性训练", "duration_min": 30, "intensity": "Low"},
+      {"day": "周二", "type": "控球+短传配合", "duration_min": 50, "intensity": "Medium"},
+      {"day": "周三", "type": "低强度速度维持", "duration_min": 40, "intensity": "Medium"},
+      {"day": "周四", "type": "恢复", "duration_min": 30, "intensity": "Low"},
+      {"day": "周五", "type": "联赛比赛日", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 240,
+    "avg_rpe": 5.8,
+    "notes": "小腿不适缓解，出战65分钟，评分7.0"
+  },
+  {
+    "week": "2026-W27",
+    "date_range": "2026-06-30 ~ 2026-07-06",
+    "focus": "联赛期第5周",
+    "training_sessions": [
+      {"day": "周一", "type": "恢复", "duration_min": 35, "intensity": "Low"},
+      {"day": "周二", "type": "边路1v1突破训练", "duration_min": 55, "intensity": "High"},
+      {"day": "周三", "type": "速度+射门", "duration_min": 50, "intensity": "High"},
+      {"day": "周四", "type": "战术+定位球", "duration_min": 45, "intensity": "Medium"},
+      {"day": "周五", "type": "联赛比赛日", "duration_min": 90, "intensity": "Very High"}
+    ],
+    "weekly_load": 275,
+    "avg_rpe": 7.3,
+    "notes": "联赛第五轮：全场最佳，1进球1助攻，评分8.5"
+  }
+]

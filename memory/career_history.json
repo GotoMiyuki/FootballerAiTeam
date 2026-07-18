@@ -1,0 +1,60 @@
+{
+  "player_name": "GotoMiyuki",
+  "career_start": "2024-09",
+  "milestones": [
+    {
+      "date": "2024-09",
+      "event": "进入XX大学，加入校队",
+      "overall_at_time": 58,
+      "details": "高中校队核心球员，以新生身份进入大学校队"
+    },
+    {
+      "date": "2025-03",
+      "event": "首次代表校队首发出场",
+      "overall_at_time": 64,
+      "details": "大一春季学期成为校队常规首发右边锋"
+    },
+    {
+      "date": "2025-06",
+      "event": "大学联赛最佳新人提名",
+      "overall_at_time": 67,
+      "details": "首个赛季贡献5球7助攻，获得联赛最佳新人提名"
+    },
+    {
+      "date": "2025-09",
+      "event": "大二赛季开始，被任命为副队长",
+      "overall_at_time": 69,
+      "details": "队内评分第二高，被教练组提拔为副队长"
+    },
+    {
+      "date": "2026-03",
+      "event": "首次收到中冠球队试训邀请",
+      "overall_at_time": 71,
+      "details": "XX中冠俱乐部球探观看比赛后发出试训邀请"
+    },
+    {
+      "date": "2026-06",
+      "event": "大学联赛进行中，成为球队进攻核心",
+      "overall_at_time": 72,
+      "details": "当前正在进行的联赛赛季，被视为球队关键球员"
+    }
+  ],
+  "career_aspirations": {
+    "short_term": "在大学联赛中成为最佳射手/助攻王",
+    "mid_term": "毕业后加盟中乙或以上级别职业俱乐部",
+    "long_term": "成为中国顶级联赛（中超）主力球员，争取入选国家队"
+  },
+  "contract_status": {
+    "current_club": "XX大学校队",
+    "contract_type": "学生运动员",
+    "expiry": "2027-06-30",
+    "release_clause": null
+  },
+  "market_value_history": [
+    {"date": "2024-09", "estimated_value_eur": 0},
+    {"date": "2025-06", "estimated_value_eur": 5000},
+    {"date": "2025-12", "estimated_value_eur": 20000},
+    {"date": "2026-06", "estimated_value_eur": 50000}
+  ],
+  "last_updated": "2026-07-15"
+}

@@ -1,0 +1,218 @@
+{
+  "name": "GotoMiyuki",
+  "age": 20,
+  "height": 173,
+  "weight": 58,
+  "position": "LW",
+  "nationality": "中国",
+  "club": "XX大学校队",
+  "overall": 72,
+  "attributes": {
+    "offense": {
+      "attacking_awareness": 68,
+      "ball_control": 78,
+      "passing": 75,
+      "shooting": 76,
+      "offense_awareness": 76,
+      "进攻意识": 68,
+      "射门": 79,
+      "控球": 78,
+      "传球": 75
+    },
+    "defense": {
+      "defensive_awareness": 58,
+      "defense_awareness": 74,
+      "防守意识": 62
+    },
+    "physical": {
+      "speed": 82,
+      "strength": 73,
+      "stamina": 78,
+      "jumping": 70,
+      "弹跳": 71,
+      "速度": 83,
+      "耐力": 80,
+      "力量": 75
+    },
+    "goalkeeping": {
+      "gk_awareness": 40,
+      "gk_reflexes": 40
+    }
+  },
+  "injury": "None",
+  "injury_history": [],
+  "preferred_foot": "右脚",
+  "contract_until": "2027-06-30",
+  "training_intensity": "High",
+  "last_updated": "2026-07-18",
+  "other_features": {
+    "weak_foot_frequency": 1,
+    "weak_foot_accuracy": 3,
+    "form_consistency": 4,
+    "injury_resistance": 3,
+    "非惯用脚频率": 1,
+    "状态稳定性": 4,
+    "非惯用脚精度": 3,
+    "抗伤能力": 3
+  },
+  "预期变化_4周后": {
+    "进攻意识": "提升至72（通过无球跑位训练）",
+    "弹跳": "提升至74（通过跳箱和单腿跳训练）",
+    "防守意识": "提升至64（通过1v1防守练习）",
+    "速度": "维持83（爆发力训练保持）",
+    "耐力": "维持80（有氧间歇维持）"
+  },
+  "预期变化_12周后": {
+    "进攻意识": "提升至76",
+    "弹跳": "提升至78",
+    "防守意识": "提升至68",
+    "速度": "维持83",
+    "耐力": "维持80",
+    "射门": "提升至80（爆发力增强）"
+  },
+  "after_4_weeks": {
+    "速度": 83,
+    "弹跳": 73,
+    "进攻意识": 70,
+    "射门": 77,
+    "体重": "56-57kg"
+  },
+  "after_12_weeks": {
+    "速度": 85,
+    "弹跳": 78,
+    "进攻意识": 75,
+    "射门": 79,
+    "体重": "52-54kg"
+  },
+  "expected_improvements_after_4_weeks": {
+    "速度": "维持82-83，爆发力提升10%",
+    "弹跳": "从70提升至73-74",
+    "进攻意识": "从68提升至71-72",
+    "射门": "维持76，但射门效率提升"
+  },
+  "expected_improvements_after_12_weeks": {
+    "速度": "维持83，爆发力提升20%",
+    "弹跳": "从70提升至76-78",
+    "进攻意识": "从68提升至74-75",
+    "射门": "维持76，但结合跑位后实际威胁提升",
+    "体重": "减重3-5kg（体脂率降低2-3%）"
+  },
+  "4_weeks": {
+    "offense": {
+      "进攻意识": 72,
+      "offense_awareness": 78
+    },
+    "defense": {
+      "防守意识": 64
+    },
+    "physical": {
+      "弹跳": 74,
+      "力量": 75
+    },
+    "other_features": {
+      "非惯用脚频率": 2,
+      "非惯用脚精度": 3
+    }
+  },
+  "8_weeks": {
+    "speed": 84,
+    "jumping": 76,
+    "offense_awareness": 73,
+    "shooting": 79
+  },
+  "12_weeks": {
+    "offense": {
+      "进攻意识": 76,
+      "offense_awareness": 82
+    },
+    "defense": {
+      "防守意识": 68
+    },
+    "physical": {
+      "弹跳": 77,
+      "力量": 77
+    },
+    "other_features": {
+      "非惯用脚频率": 3,
+      "非惯用脚精度": 4
+    }
+  },
+  "expected_changes_after_4_weeks": {
+    "进攻意识": "+4",
+    "射门": "+2",
+    "速度": "+1",
+    "控球": "维持",
+    "传球": "维持"
+  },
+  "expected_changes_after_12_weeks": {
+    "速度": "83→85（冲刺缩短0.5秒）",
+    "弹跳": "70→78（垂直跳增加8cm）",
+    "进攻意识": "68→75（跑位意识显著提升）",
+    "射门": "76→79（终结效率提高）",
+    "体重": "58kg→53kg（减重5kg）"
+  },
+  "after_8_weeks": {
+    "速度": 84,
+    "弹跳": 76,
+    "进攻意识": 73,
+    "射门": 78,
+    "体重": "54-56kg"
+  },
+  "expected_changes_4_weeks": {
+    "speed": 83,
+    "jumping": 73,
+    "offense_awareness": 70,
+    "shooting": 77
+  },
+  "expected_changes_12_weeks": {
+    "speed": 84,
+    "jumping": 78,
+    "offense_awareness": 75,
+    "shooting": 80,
+    "weight": "减重4-6kg"
+  },
+  "4周后": {
+    "速度": 83,
+    "弹跳": 73,
+    "进攻意识": 70,
+    "射门": 77
+  },
+  "8周后": {
+    "速度": 83,
+    "弹跳": 76,
+    "进攻意识": 73,
+    "射门": 79
+  },
+  "12周后": {
+    "速度": 83,
+    "弹跳": 78,
+    "进攻意识": 75,
+    "射门": 80
+  },
+  "note": "通过针对性跑位和射门训练，进攻意识有望提升至71，射门稳定在77，速度爆发力增强。",
+  "recommendation": "持续进行无球跑动和射门决策训练，同时保持速度和爆发力训练，以巩固提升效果。",
+  "notes": "赛前一周以维持和微调为主，大幅提升需在赛后周期进行。",
+  "training_cycle_weeks": 4,
+  "expected_improvements": {
+    "进攻意识": "+3至71",
+    "射门": "+1至77",
+    "防守意识": "+1至59",
+    "耐力": "维持80"
+  },
+  "训练4周后预期变化": {
+    "offense": {
+      "进攻意识": 74,
+      "射门": 78,
+      "offense_awareness": 78
+    },
+    "physical": {
+      "速度": 83,
+      "耐力": 80,
+      "弹跳": 72
+    },
+    "other_features": {
+      "非惯用脚频率": 2,
+      "非惯用脚精度": 3
+    }
+  }
+}

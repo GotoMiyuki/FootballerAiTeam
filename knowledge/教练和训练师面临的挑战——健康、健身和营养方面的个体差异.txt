@@ -1,0 +1,109 @@
+There are many factors, both personal and environmental, that play a role in the success of a training and diet program for an individual client. This article looks at the factors to be aware of and some solutions to finding the best fit program for an individual client.
+Most individuals who come to a trainer or coach for help are seeking to improve their physical attributes and overall fitness, and it is the responsibility of the trainer/coach to provide the best programming suitable for the individual client or athlete. Looking into genetics, biomechanics, and other exercise science and nutrition-related topics indicates there are wide variations in individual health, fitness, and exercise needs. These variations can produce stunning differences in response to the same workout, timing of workout, diet, and workout recovery.
+
+A Fictional Case Study
+For example, take the classic 40-year-old male client who wants to lose 50 lb and hires a trainer with a strength and conditioning background, a preference for free weight resistance training, and high-intensity interval training (HIIT) for cardiovascular work. The trainer also has had personal results on a high-fat-low-carbohydrate (HFLC) diet and enthusiastically recommends it to all weight loss clients.
+
+The client meets with the trainer for three strength training sessions per week and religiously performs HIIT sessions 2 – 3 times per week. Additionally, he follows HFLC protocols designed to produce a caloric deficit. Six weeks later, the client has failed to lose significant weight and has seen only moderate improvement in strength and cardiovascular capacity.
+
+What Went Wrong?
+Despite the trainer’s likely previous successes with this protocol and the client’s careful adherence, the lack of results would suggest the training regimen could be completely the opposite of the client’s genetic makeup. Resistance training research studies have found wide ranges of individual response to resistance training protocols and indicate genetics account for 80 – 90% of strength response (16). In one study, muscle size variability ranged from an 11% decrease in muscle size to a 30% increase, as well as an 8% decrease to a 60% increase in muscle strength (2).
+
+In addition to the inadequate strength training response from the fictional case study, the HIIT prescription may have also been less than ideal for the client. Research data on low-responders from five HIIT studies indicates no improvements from HIIT in some participants (7). Data indicated no improvement from 22% of the subjects in VO2peak, 44% had no improvement in time to failure on a sustained upper level aerobic effort, and 50% of the subjects had no improvement in lactate threshold when HIIT protocols were applied for 3 – 6 weeks (7).
+
+The HFLC nutritional recommendations may also have contributed to the client’s lack of response to the HIIT workouts in the fictional case study. A research study found two distinct genotypes—one for glucose and one for fat oxidation—preferentially contribute to energy expenditure for high-intensity exercise (9). If the example client had genetics favoring carbohydrates as their fuel for HIIT, performances would have likely been limited on the HFLC diet (9).
+
+There are also higher risks at stake than HIIT performance when following a diet that severely manipulates one macronutrient over another. Some genotypes react negatively to high-fat foods with increased cholesterol and other cardiovascular issues. There are also individuals more predisposed to metabolic syndrome on high carbohydrate diets (1,17).
+
+To further complicate the goal of fat loss, there may be genetic, cultural, and environmental influences on weight gain beyond the control of most trainers. Infection and immune impairment, excessive mental and emotional stress, age of mother when giving birth, as well as bodyweight, sleep debt, endocrine disruptors, common prescriptions, and almost 200 genes are associated with weight gain and obesity (3).
+
+ 
+
+Genes can determine the amount of fat stored, the sensation of being full, hunger response, taste preferences, food intolerances, and how much someone likes sweet or fatty foods (5). The client’s adherence to the workout protocol in the fictional case study may have been too much exercise with not enough time to recover the overall load, known as overtraining. Research studies examining the time to full recovery from single exercise bouts found anywhere from 24 – 96 hr of needed recovery (6). In the extreme, some individuals show full recovery only after several weeks (6).
+
+As emphasized, these recovery durations are how long it took to return to pre-exercise bout strength after the test protocol of one exercise bout. Consider the example client’s six straight weeks of high-intensity protocols in resistance and cardiovascular sessions. Even if he fell into the median range of recovery of approximately 48 hr, it is possible that the negative traits of classic overreaching and overtraining would occur. By the end of six weeks of six days per week, the client may see a decrease in strength and cardiovascular conditioning along with plateaued weight loss (23).
+
+ 
+
+“Resistance training research studies have found wide ranges of individual response to resistance training protocols and indicate genetics account for 80 – 90% of strength response.”
+
+ Tweet this quote
+Timing Considerations for Workouts, Sleep, and Fueling
+The time of the client’s workout may also be a mitigating factor. Let us now assume, for these considerations, that the example 40-year-old male client has an evening job and family responsibilities which force him to utilize early mornings as his workout times. The negative variable with this choice might be his individual “gene-clock” or chronotype regulating sleep and wake times. Research indicates early morning workouts for late rising chronotypes or late ones for early risers may create internal clock dysfunctions leading to more negative than positive outcomes (8,21).
+
+Supporting this notion of optimal performance time was a study comparing endurance performance for individuals with a genetic preference for three different wake-up times: early morning, intermediate morning, and late morning. The test was conducted at three different times of day based on the time between waking and working out and found a difference of 7 – 26% between optimal and suboptimal performance with late AM performing poorly the in early trials (8).
+
+Circadian variations also extend to the timing of meals with research indicating a significant genetic overlap between food timing, bedtime, and chronotype putting the “breakfast is the most important meal” maxim in question (12). Given all of these potential contributors to the disappointing results of the client’s program, what might be the appropriate course of action to improve matters? Expensive genetic testing? Bloodwork for stress hormones and inflammatory cytokines? Muscle biopsy? High-tech biometric tracking devices? In a perfect world where the trainer and client have easy access and time to conduct all these tests, maybe. A quick and more economical approach would be to survey the potential factors listed above with a broader inquiry into the client’s background.
+
+Perhaps the client had a successful athletic background in endurance sports. This knowledge would suggest switching the strength and cardiovascular program to two days per week of resistance training and a mix of cardiovascular training intensities on the other days.
+
+Basic Program Monitoring and Adherence
+Additionally, some simple monitoring of resting heart rates, sleep quality, and overall energy levels would help minimize the potential for a negative overtraining response (21,23). Along with these training adjustments, information about personal sleep habits and family health history could provide helpful clues for more optimal fitness and nutrition structure.  If the client has a history of being a “night owl” and more productive later in the day, lowering the frequency of the early morning workouts would most likely be beneficial. Sleep studies indicate “catch-up” sleep is an effective recovery strategy from periods of restricted sleep (13). Two early morning strength sessions with the trainer and one cardiovascular session might limit the negative aspects of sleep restriction in this example.
+
+Finding optimal dietary needs would be harder to determine, but the first order of business would be to establish a more balanced proportion of macronutrients since the HFLC percentages were not the panacea. If a weekly caloric deficit continued, there is no scientifically established evidence that adding more carbohydrates and lessening the fat intake will be any less or more successful than the HFLC diet. Clues to the success of this new dietary strategy would appear soon enough and most telling would be increased energy levels and future weight loss progress. Despite the numerous factors considered in this client’s programming, there are many other individual variables to consider in program planning for clients and athletes.
+
+The example client was somewhat atypical in his adherence, motivation, and enjoyment of exercise but what of the opposite end of the spectrum? Research has indicated almost 50 – 75% of the motivation to exercise is genetically influenced (15). Some people are innately inactive and require herculean efforts to overcome this dominant trait while others have DNA making it hard for them to sit still (15,19). These findings indicate trainers and coaches may need to broaden their motivation tactics and exercise choices to help sedentary individuals get moving.
+
+“Genes can determine the amount of fat stored, the sensation of being full, hunger response, taste preferences, food intolerance's, and how much someone likes sweet or fatty foods.”
+
+ Tweet this quote
+Biomechanical and Body Type Differences
+Individual biomechanics and ranges of motion also need to be examined, and specific exercise standards need to be adjusted accordingly. Squatting between the parallel lines of the femur and floor has long been the gold standard for one of strength and conditioning’s most utilized exercises (squat), but the variances in anatomical configuration greatly dictate this range of motion.
+
+An examination of just the hip structure finds that hip flexion mobility can range between 80 – 140 degrees of movement due to individual bone and joint structure (11,14,20,22). An individual with a shallow hip socket and thin femoral neck has greater a range of motion and can most likely squat deep below parallel. Hips with a deep socket and a thick neck have a lesser capacity for this movement (11,14,20,22).
+
+Shoulder mobility and range of motion can also be limited by bony structures which affect the interpretation of a client’s or athlete’s ability to perform a correct overhead shoulder movement. Three different shapes of the shoulder joint have been identified with one being more ideally suited for overhead activity and less susceptible to injury, and two with more restrictive configurations that are more vulnerable to damage (4).
+
+Other metrics that can affect an individual’s success with specific exercises include, but are not limited to, limb and torso length, muscle-to-tendon ratio, and where the tendon’s insertion point is on a bone relative to the joint. Individuals with long arms have an advantage in deadlifts, which fades in the bench press or pull-ups relative to someone with shorter arms (10).
+
+Conclusion
+ Coaches and trainers subscribing to dogmatic and rigid programming in any phase of their health, fitness, nutrition, strength training, cardiovascular training, or exercise planning will eventually encounter situations where their athletes and clients do not achieve the desired results. While there are times an athlete or client will miss goals because of a lack of commitment, there will also be those who just need to have their protocols changed. Becoming more informed and flexible through an understanding of everyone’s needs may make training and coaching more challenging, but it will also potentially increase successes and become more rewarding
+
+This article originally appeared in Personal Training Quarterly (PTQ)—a quarterly publication for NSCA Members designed specifically for the personal trainer. Discover easy-to-read, research-based articles that take your training knowledge further with Nutrition, Programming, and Personal Business Development columns in each quarterly, electronic issue. Read more articles from PTQ »
+
+Share:
+   
+References
+1. Abdullah, M, Eck, P, and Jones, P. Nutrigenetics of cholesterol metabolism: Observational and dietary intervention studies in the postgenomic era. Nutrition Reviews 73(8): 523–543, 2015.
+
+2. Ahtiainen, J, Häkkinen, K, Holviala, J, Hulmi, J, Karavirta, L, Mero, A, et al. Heterogeneity in resistance training-induced muscle strength and mass responses in men and women of different ages. Age 38(1): 1-13, 2016.
+
+3. Allison, D, Aronne, C, Barger, J, Baskin, M, Benca, R, Biggio, J, et al. Ten putative contributors to the obesity epidemic. Critical Reviews in Food Science and Nutrition 49(10): 868-913, 2009.
+
+4. Balke, M, Banerjee, M, Bouillon, B, Dedy, N, Dennis, D, and Schmid, C. Correlation of acromial morphology with impingement syndrome and rotator cuff tears. Acta Orthopaedica 84(2): 178–183, 2013.
+
+5. Berardi, J, Hardie, A, Kollias H, and Scott-Dixon, K. Genetics: The Universe Within. Can Knowing More About Your Genes Help You Eat, Move, and Live Better? New York, NY: Precision Nutrition; E-book, 159-249, 2017.
+
+6. Bishop, P, Jones, E, and Woods, A. Recovery from training: A brief review. Journal of Strength and Conditioning Research 22(3): 1015–1024, 2008.
+
+7. Bonafiglia, J, Boyd, J, Giles, M, Gurd, B, Ma, J, Scribbans, T, and Zelt, T. Incidence of nonresponse and individual patterns of response following sprint interval training. Applied Physiology, Nutrition, and Metabolism 41(3): 229-234, 2015. 
+
+8. Brandstaetter, R, and Facer-Childs, E. The Impact of circadian phenotype and time since awakening on diurnal performance in athletes. Current Biology 25(4): 518–522, 2015.
+
+9. Britob, J, Cláudio Córdovac, C, Ferreiraa, A, Ferreiraa, C, Françac, N, Nóbregad, O, and Souzac, V. The effect of aerobic exercise intensity on attenuation of postprandial lipemia is dependent on apolipoprotein E genotype. Atherosclerosis 229(1): 139–144, 2013.
+
+10. Bryzycki, M. A Practical Approach to Strength Training. Indianapolis, IN: Cardinal Publishing; 19-27, 2012.
+
+11. Contreras, B, and Krieger, J. Individual differences: The most important consideration for your fitness results science doesn’t tell you. 2017. Retrieved February 2017 from https://bretcontreras. com/individual-differences-important-consideration-fitnessresults-science-doesnt-tell/.
+
+12. Dashti, H , Garaulet, M, Lopez-Minguez, J, Madrid, J, Madrid-Valero, J, Ordoñana, S, and Scheer, F. Heritability of the timing of food intake. Published ahead of print. Clinical Nutrition, March 2018.
+
+13. Dungan, G, Hoyos, C, Killick, R, Liu, P, Melehan, K, and Poh, J. Metabolic and hormonal effects of catch-up sleep in men with chronic repetitive, lifestyle-driven sleep restriction. Clinical Endocrinology 83(4): 498-507, 2015.
+
+14. Elson, R, and Aspinall, G. Measurement of hip range of flexionextension and straight-leg raising. Clinical Orthopaedics and Related Research 466(2): 281-286. 2008.
+
+15. Epstein, D. The Sports Gene: Inside the Science of Extraordinary Athletic Performance. New York, NY: Current Publishing; 234-231, 2014.
+
+16. Ferrucci, L, Metter, E, Roth, S, and Walsh, S. Activin-type II receptor B (ACVR2B) and follistatin haplotype associations with muscle mass and strength in humans. Journal of Applied Physiology 102(6): 2142-2148, 2007.
+
+17. Guo, H, Kun, X, Ma, Y, Wentao, N, Xue, K, and Zhang, S. Diets high in carbohydrate may not be appropriate for rs328 G carriers with the metabolic syndrome. Asia Pacific Journal of Clinical Nutrition 24(3): 2015.
+
+18. Henselmans, M. Nine reasons why women should not train like men. Baysean Body Building. 2015. Retrieved August 2017 from https://bayesianbodybuilding.com/why-women-should-not-train-like-men.
+
+19. Katzmarsk, P, Maia, A, Santos, D, and Seabra, A. Genetics of physical activity and physical inactivity in humans. Behavior Genetics 42(4): 559–578, 2012.
+
+20. McGill, S. Hip anatomy from assessing movement DVD, featuring Gray Cook, Stuart McGill, and Craig Liebenson. You Tube. 2014. Retrieved on September 2018 from https://www.youtube. com/watch?v=IxAVJkbTf0M. 21. Partonen, T. Chronotype and health outcomes. Current Sleep Medicine Reports 1: 204-211, 2015.
+
+22. Somerset, D. No two hips are the same. How anatomical variance can affect your range of motion. Brettcontreras.com. 2015. Retrieved September 2017 from http://bretcontreras.com/ no-two-hips-are-the-same-how-anatomical-variance-can-affectyour-range-of-motion.
+
+23. Tiidus, P. Skeletal Muscle Damage, and Repair. Champagne, IL: Human Kinetics; 105-112, 2008.

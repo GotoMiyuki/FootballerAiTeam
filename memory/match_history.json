@@ -1,0 +1,134 @@
+[
+  {
+    "date": "2026-05-23",
+    "opponent": "邻校A大学",
+    "competition": "热身赛",
+    "result": "2-1 胜",
+    "minutes_played": 60,
+    "goals": 0,
+    "assists": 1,
+    "rating": 7.0,
+    "position": "RW",
+    "key_stats": {
+      "shots": 2,
+      "shots_on_target": 1,
+      "passes": 18,
+      "pass_accuracy": 78.5,
+      "dribbles_attempted": 6,
+      "dribbles_successful": 4,
+      "sprint_count": 12,
+      "distance_covered_km": 7.2
+    },
+    "notes": "首次热身赛，右路表现活跃，创造1次助攻"
+  },
+  {
+    "date": "2026-06-05",
+    "opponent": "B理工大学",
+    "competition": "大学联赛 - 第1轮",
+    "result": "3-0 胜",
+    "minutes_played": 75,
+    "goals": 1,
+    "assists": 0,
+    "rating": 7.2,
+    "position": "RW",
+    "key_stats": {
+      "shots": 3,
+      "shots_on_target": 2,
+      "passes": 22,
+      "pass_accuracy": 81.2,
+      "dribbles_attempted": 7,
+      "dribbles_successful": 5,
+      "sprint_count": 15,
+      "distance_covered_km": 8.5
+    },
+    "notes": "联赛首轮，第55分钟接传中头球破门"
+  },
+  {
+    "date": "2026-06-12",
+    "opponent": "C师范大学",
+    "competition": "大学联赛 - 第2轮",
+    "result": "1-1 平",
+    "minutes_played": 80,
+    "goals": 0,
+    "assists": 0,
+    "rating": 6.8,
+    "position": "RW",
+    "key_stats": {
+      "shots": 2,
+      "shots_on_target": 0,
+      "passes": 25,
+      "pass_accuracy": 76.0,
+      "dribbles_attempted": 8,
+      "dribbles_successful": 4,
+      "sprint_count": 18,
+      "distance_covered_km": 9.1
+    },
+    "notes": "对手防守密集，右路突破效率降低，下半场体力下降明显"
+  },
+  {
+    "date": "2026-06-19",
+    "opponent": "D科技大学",
+    "competition": "大学联赛 - 第3轮",
+    "result": "2-1 胜",
+    "minutes_played": 25,
+    "goals": 0,
+    "assists": 0,
+    "rating": 6.5,
+    "position": "RW",
+    "key_stats": {
+      "shots": 0,
+      "shots_on_target": 0,
+      "passes": 8,
+      "pass_accuracy": 87.5,
+      "dribbles_attempted": 2,
+      "dribbles_successful": 1,
+      "sprint_count": 4,
+      "distance_covered_km": 2.8
+    },
+    "notes": "因小腿不适仅替补出场，表现受限"
+  },
+  {
+    "date": "2026-06-26",
+    "opponent": "E农业大学",
+    "competition": "大学联赛 - 第4轮",
+    "result": "0-0 平",
+    "minutes_played": 65,
+    "goals": 0,
+    "assists": 0,
+    "rating": 7.0,
+    "position": "RW",
+    "key_stats": {
+      "shots": 3,
+      "shots_on_target": 1,
+      "passes": 20,
+      "pass_accuracy": 80.0,
+      "dribbles_attempted": 6,
+      "dribbles_successful": 5,
+      "sprint_count": 11,
+      "distance_covered_km": 7.0
+    },
+    "notes": "小腿恢复后回归，盘带成功率83%，但整体进攻缺乏终结"
+  },
+  {
+    "date": "2026-07-03",
+    "opponent": "F工业大学",
+    "competition": "大学联赛 - 第5轮",
+    "result": "4-1 胜",
+    "minutes_played": 90,
+    "goals": 1,
+    "assists": 1,
+    "rating": 8.5,
+    "position": "RW",
+    "key_stats": {
+      "shots": 4,
+      "shots_on_target": 3,
+      "passes": 28,
+      "pass_accuracy": 85.7,
+      "dribbles_attempted": 9,
+      "dribbles_successful": 7,
+      "sprint_count": 20,
+      "distance_covered_km": 10.5
+    },
+    "notes": "全场最佳球员，1球1助，右路突破造成对方2张黄牌"
+  }
+]
