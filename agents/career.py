@@ -19,12 +19,8 @@ from prompts.agent_prompts import (
     CAREER_MODE_PROMPTS,
     build_mission_context,
 )
-from tools.database import (
-    ReadCareerHistoryTool,
-    ReadPlayerProfileTool,
-    read_career_history,
-)
-from tools.search import SearchTool
+from tools import CAREER_TOOLS
+from tools.database import read_career_history
 from utils.helpers import describe_player_attributes
 
 
@@ -32,11 +28,7 @@ class CareerAgent(BaseAgent):
     """职业经纪人 Agent — ReAct-powered，聚焦长期战略层"""
 
     def __init__(self, llm: BaseChatModel):
-        super().__init__(llm=llm, tools=[
-            SearchTool,
-            ReadCareerHistoryTool,
-            ReadPlayerProfileTool,
-        ])
+        super().__init__(llm=llm, tools=CAREER_TOOLS)
         self._current_mode = "career_planning"
 
     @property

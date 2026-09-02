@@ -13,6 +13,14 @@ Mission-driven v2: 以 Mission 为中心的 Intent Flow。
 
 import sys
 import json
+
+# 修复 Windows GBK 控制台编码：避免打印含特殊字符（如 ™）的文件名时崩溃
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from dotenv import load_dotenv
 
 load_dotenv()

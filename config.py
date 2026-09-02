@@ -20,6 +20,19 @@ class Config:
     # --- Tavily 搜索配置 ---
     TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
 
+    # --- RAG 检索与 Rerank 配置 ---
+    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+    EMBEDDING_MODEL_DIR: str = os.getenv("EMBEDDING_MODEL_DIR", "models/bge-m3")
+    RERANK_ENABLED: bool = os.getenv("RERANK_ENABLED", "true").lower() == "true"
+    RERANK_MODEL: str = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
+    RERANK_MODEL_DIR: str = os.getenv("RERANK_MODEL_DIR", "models/bge-reranker-v2-m3")
+    RAG_RETRIEVAL_K: int = int(os.getenv("RAG_RETRIEVAL_K", "20"))
+    RAG_TOP_K: int = int(os.getenv("RAG_TOP_K", "5"))
+    RAG_CHUNK_SIZE: int = int(os.getenv("RAG_CHUNK_SIZE", "900"))
+    RAG_CHUNK_OVERLAP: int = int(os.getenv("RAG_CHUNK_OVERLAP", "200"))
+    # HuggingFace 模型下载镜像（国内访问 huggingface.co 不稳定时可设为 https://hf-mirror.com）
+    HF_ENDPOINT: str = os.getenv("HF_ENDPOINT", "")
+
     # --- 应用配置 ---
     MAX_CONVERSATION_TURNS: int = int(os.getenv("MAX_CONVERSATION_TURNS", "10"))
     SHORT_MEMORY_SIZE: int = int(os.getenv("SHORT_MEMORY_SIZE", "5"))

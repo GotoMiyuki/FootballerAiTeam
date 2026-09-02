@@ -6,25 +6,65 @@ FootballAI Career Agent - RAG 知识库检索工具
 """
 
 import os
-from typing import List, Optional
+from typing import List, Optional, Dict
 from langchain_core.tools import tool
 from langchain_core.documents import Document
+from langchain_core.embeddings import Embeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config import config
+from tools.reranker import rerank_documents
 
 
 # 全局向量存储实例（懒加载）
 _vectorstore = None
 
+# 全局本地 embedding 实例（懒加载）
+_embedding_model = None
+
 
 def _get_embedding_model():
-    """获取 Embedding 模型。"""
-    from langchain_openai import OpenAIEmbeddings
-    return OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        api_key=config.OPENAI_API_KEY,
-        base_url=config.OPENAI_BASE_URL,
-    )
+    """获取 Embedding 模型（本地懒加载单例）。"""
+    global _embedding_model
+    if _embedding_model is None:
+        _embedding_model = _LocalEmbeddings()
+    return _embedding_model
+
+
+def _resolve_embedding_model_id() -> str:
+    """优先使用本地已下载的 embedding 模型目录，否则使用 HF model id。"""
+    local_dir = config.EMBEDDING_MODEL_DIR
+    if local_dir and os.path.isdir(local_dir):
+        return os.path.abspath(local_dir)
+    return config.EMBEDDING_MODEL
+
+
+class _LocalEmbeddings(Embeddings):
+    """本地 BGE embedding（bge-m3，多语言）的懒加载包装。
+
+    原实现使用 OpenAI text-embedding-3-small，但 DeepSeek 不提供 embedding 接口（404），
+    故改为本地模型，匹配中英混合语料且无 API 依赖。
+    """
+
+    def __init__(self):
+        self._model = None
+
+    def _ensure_model(self):
+        if self._model is None:
+            from FlagEmbedding import FlagModel
+            model_id = _resolve_embedding_model_id()
+            print(f"[Embedding] 正在加载本地 Embedding 模型 {model_id} ...")
+            self._model = FlagModel(model_id, use_fp16=False)
+            print("[Embedding] 模型加载完成")
+        return self._model
+
+    def embed_documents(self, texts):
+        vectors = self._ensure_model().encode(list(texts), batch_size=32, max_length=512)
+        return [v.tolist() for v in vectors]
+
+    def embed_query(self, text):
+        vectors = self._ensure_model().encode([text], max_length=512)
+        return vectors[0].tolist()
 
 
 def _load_documents_from_directory(directory: str) -> List[Document]:
@@ -44,7 +84,7 @@ def _load_documents_from_directory(directory: str) -> List[Document]:
                 else:
                     continue
 
-                # 根据所在子目录添加来源标签
+                # 元数据溯源：根据所在子目录添加来源标签（保证引用准确性）
                 rel_dir = os.path.relpath(root, directory)
                 category = rel_dir.replace("\\", "/").split("/")[0] if rel_dir != "." else "general"
                 for doc in docs:
@@ -76,6 +116,46 @@ def _load_text(filepath: str) -> List[Document]:
         return loader.load()
 
 
+def _build_txt_splitter() -> RecursiveCharacterTextSplitter:
+    """中文/平文本分块器：优先按段落与中文标点切分。"""
+    return RecursiveCharacterTextSplitter(
+        chunk_size=config.RAG_CHUNK_SIZE,
+        chunk_overlap=config.RAG_CHUNK_OVERLAP,
+        separators=["\n\n", "\n", "。", "；", "！", "？", "：", ". ", " ", ""],
+    )
+
+
+def _build_pdf_splitter() -> RecursiveCharacterTextSplitter:
+    """PDF（多为英文论文/手册）分块器：优先按段落与英文句点切分。"""
+    return RecursiveCharacterTextSplitter(
+        chunk_size=config.RAG_CHUNK_SIZE,
+        chunk_overlap=config.RAG_CHUNK_OVERLAP,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    )
+
+
+def _split_documents_by_type(docs: List[Document]) -> List[Document]:
+    """按来源文件扩展名分派不同分块器，避免中文/英文语料混用同一套分隔符。"""
+    txt_docs, pdf_docs, other = [], [], []
+    for d in docs:
+        src = str(d.metadata.get("source", "")).lower()
+        if src.endswith(".txt"):
+            txt_docs.append(d)
+        elif src.endswith(".pdf"):
+            pdf_docs.append(d)
+        else:
+            other.append(d)
+
+    chunks: List[Document] = []
+    if txt_docs:
+        chunks.extend(_build_txt_splitter().split_documents(txt_docs))
+    if pdf_docs:
+        chunks.extend(_build_pdf_splitter().split_documents(pdf_docs))
+    if other:
+        chunks.extend(_build_txt_splitter().split_documents(other))
+    return chunks
+
+
 def _init_vectorstore(force_reload: bool = False):
     """初始化或获取 ChromaDB 向量存储（懒加载 + 缓存）。"""
     global _vectorstore
@@ -85,7 +165,7 @@ def _init_vectorstore(force_reload: bool = False):
 
     from langchain_chroma import Chroma
 
-    # ChromaDB 持久化目录
+    # 因为 ChromaDB 持久化目录，以及前面的全局单例模式，所以不用每次查询都重新加载资料和调用 Embedding 的 API
     persist_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "chroma_db")
     persist_dir = os.path.abspath(persist_dir)
 
@@ -105,13 +185,7 @@ def _init_vectorstore(force_reload: bool = False):
                 persist_directory=persist_dir,
             )
         else:
-            from langchain_text_splitters import RecursiveCharacterTextSplitter
-            splitter = RecursiveCharacterTextSplitter(
-                chunk_size=500,
-                chunk_overlap=100,
-                separators=["\n\n", "\n", "。", ".", " ", ""],
-            )
-            chunks = splitter.split_documents(docs)
+            chunks = _split_documents_by_type(docs)
             print(f"[RAG] 已分块为 {len(chunks)} 个文本块")
 
             _vectorstore = Chroma.from_documents(
@@ -128,6 +202,38 @@ def _init_vectorstore(force_reload: bool = False):
         )
 
     return _vectorstore
+
+
+def retrieve_docs(query: str, k: int = 5) -> List[Document]:
+    """检索并返回结构化 Document 列表（保留 source/category 元数据），供评估与 Rerank 复用。"""
+    vs = _init_vectorstore()
+    retriever = vs.as_retriever(search_kwargs={"k": k})
+    return retriever.invoke(query)
+
+
+# 最近一次 RAG 检索的来源引用（供 Agent 输出 references 与评估追踪）
+_last_citations: List[Dict[str, str]] = []
+
+
+def docs_to_citations(docs: List[Document]) -> List[Dict[str, str]]:
+    """将 Document 列表转为结构化来源引用。"""
+    return [
+        {
+            "source": os.path.basename(d.metadata.get("source", "unknown")),
+            "category": d.metadata.get("category", "general"),
+        }
+        for d in docs
+    ]
+
+
+def _set_last_citations(docs: List[Document]) -> None:
+    global _last_citations
+    _last_citations = docs_to_citations(docs)
+
+
+def get_last_citations() -> List[Dict[str, str]]:
+    """返回最近一次 RAG 检索的来源引用（供调用方写入 state.citations）。"""
+    return list(_last_citations)
 
 
 @tool
@@ -147,9 +253,9 @@ def FootballKnowledgeRAG(query: str) -> str:
         最相关的 5 条知识片段及其来源。
     """
     try:
-        vs = _init_vectorstore()
-        retriever = vs.as_retriever(search_kwargs={"k": 5})
-        docs = retriever.invoke(query)
+        docs = retrieve_docs(query, k=config.RAG_RETRIEVAL_K)
+        docs = rerank_documents(query, docs, config.RAG_TOP_K)
+        _set_last_citations(docs)
 
         if not docs:
             return f"未找到与 '{query}' 相关的足球知识。请尝试更换搜索词。"
