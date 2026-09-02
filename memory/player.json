@@ -44,7 +44,7 @@
   "preferred_foot": "右脚",
   "contract_until": "2027-06-30",
   "training_intensity": "High",
-  "last_updated": "2026-07-18",
+  "last_updated": "2026-07-20",
   "other_features": {
     "weak_foot_frequency": 1,
     "weak_foot_accuracy": 3,
@@ -213,6 +213,58 @@
     "other_features": {
       "非惯用脚频率": 2,
       "非惯用脚精度": 3
+    }
+  },
+  "phase_1_after_4_weeks": {
+    "offense": {
+      "进攻意识": 72,
+      "offense_awareness": 78
+    },
+    "physical": {
+      "耐力": 80,
+      "stamina": 81
+    },
+    "other_features": {
+      "非惯用脚频率": 2,
+      "非惯用脚精度": 3
+    }
+  },
+  "phase_2_after_8_weeks": {
+    "offense": {
+      "进攻意识": 74,
+      "射门": 78,
+      "offense_awareness": 80
+    },
+    "defense": {
+      "防守意识": 63
+    },
+    "physical": {
+      "耐力": 82,
+      "stamina": 82
+    },
+    "other_features": {
+      "非惯用脚频率": 2,
+      "非惯用脚精度": 4
+    }
+  },
+  "phase_3_after_12_weeks": {
+    "offense": {
+      "进攻意识": 76,
+      "射门": 79,
+      "offense_awareness": 82
+    },
+    "defense": {
+      "防守意识": 65
+    },
+    "physical": {
+      "速度": 83,
+      "耐力": 83,
+      "stamina": 83
+    },
+    "other_features": {
+      "非惯用脚频率": 3,
+      "非惯用脚精度": 4,
+      "状态稳定性": 5
     }
   }
 }

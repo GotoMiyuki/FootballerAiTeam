@@ -17,7 +17,7 @@ from prompts.agent_prompts import (
     NUTRITION_GUIDE,
     build_mission_context,
 )
-from tools.calculator import NutritionCalculatorTool
+from tools import NUTRITION_TOOLS
 from utils.helpers import describe_player_attributes
 
 
@@ -25,7 +25,7 @@ class NutritionAgent(BaseAgent):
     """运动营养师 Agent — ReAct-powered"""
 
     def __init__(self, llm: BaseChatModel):
-        super().__init__(llm=llm, tools=[NutritionCalculatorTool])
+        super().__init__(llm=llm, tools=NUTRITION_TOOLS)
 
     @property
     def name(self) -> str:

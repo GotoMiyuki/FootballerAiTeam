@@ -17,13 +17,11 @@ from prompts.agent_prompts import (
     ANALYST_GUIDE,
     build_mission_context,
 )
+from tools import ANALYST_TOOLS
 from tools.database import (
-    ReadTrainingHistoryTool,
-    ReadMatchHistoryTool,
     read_training_history,
     read_match_history,
 )
-from tools.search import SearchTool
 from utils.helpers import (
     get_weakest_attributes,
     get_strongest_attributes,
@@ -38,11 +36,7 @@ class AnalystAgent(BaseAgent):
     """表现分析师 Agent — ReAct-powered，聚焦数据诊断"""
 
     def __init__(self, llm: BaseChatModel):
-        super().__init__(llm=llm, tools=[
-            ReadTrainingHistoryTool,
-            ReadMatchHistoryTool,
-            SearchTool,
-        ])
+        super().__init__(llm=llm, tools=ANALYST_TOOLS)
 
     @property
     def name(self) -> str:

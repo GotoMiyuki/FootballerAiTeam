@@ -94,6 +94,7 @@ class AgentState(TypedDict):
     iteration: int
     current_agent: str
     tool_call_log: Annotated[List[Dict[str, Any]], merge_lists]
+    citations: Annotated[List[Dict[str, Any]], merge_lists]
     plan_version: int
     replan_reason: str
     reviewed_data: Dict[str, Any]
@@ -390,6 +391,7 @@ def create_initial_state(user_input: str) -> AgentState:
         "iteration": 0,
         "current_agent": "manager",
         "tool_call_log": [],
+        "citations": [],
         "plan_version": 1,
         "replan_reason": "",
         "reviewed_data": {},

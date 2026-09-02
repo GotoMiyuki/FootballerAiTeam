@@ -17,9 +17,9 @@ from prompts.agent_prompts import (
     COACH_GUIDE,
     build_mission_context,
 )
-from tools.rag import FootballKnowledgeRAG
+from tools import COACH_TOOLS
 from tools.database import UpdatePlayerAttributeTool
-from tools.search import SearchTool
+from tools.rag import get_last_citations
 from utils.helpers import (
     get_weakest_attributes,
     get_strongest_attributes,
@@ -34,11 +34,7 @@ class CoachAgent(BaseAgent):
     """技能教练 Agent — ReAct-powered，聚焦竞技能力发展"""
 
     def __init__(self, llm: BaseChatModel):
-        super().__init__(llm=llm, tools=[
-            FootballKnowledgeRAG,
-            SearchTool,
-            UpdatePlayerAttributeTool,
-        ])
+        super().__init__(llm=llm, tools=COACH_TOOLS)
 
     @property
     def name(self) -> str:
@@ -148,12 +144,16 @@ imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变�
             except Exception:
                 pass
 
+        citations = get_last_citations()
+        result["references"] = citations
+
         output = json.dumps(result, ensure_ascii=False, indent=2)
 
         return {
             "domain_outputs": {"Coach": output},
             "iteration": state.get("iteration", 0) + 1,
             "tool_call_log": tool_log,
+            "citations": citations,
         }
 
     def _detect_imbalances(self, attributes: Dict[str, Any]) -> list:
