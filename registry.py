@@ -14,6 +14,7 @@ AGENT_REGISTRY = {
             "制定减脂/增肌/营养方案"
         ),
         "trigger_keywords": ["体重", "减脂", "增肌", "饮食", "营养", "体脂", "热量"],
+        "capabilities": ["nutrition_plan"],
     },
     "Coach": {
         "node_name": "coach",
@@ -23,6 +24,7 @@ AGENT_REGISTRY = {
             "调用RAG知识库制定针对性训练计划"
         ),
         "trigger_keywords": ["训练", "技术", "体能", "战术", "速度", "力量", "射门", "传球"],
+        "capabilities": ["skill_training"],
     },
     "Analyst": {
         "node_name": "analyst",
@@ -32,6 +34,7 @@ AGENT_REGISTRY = {
             "结合训练/比赛历史评估伤病风险和发展趋势"
         ),
         "trigger_keywords": ["分析", "趋势", "伤病", "短板", "评估", "数据", "比赛表现"],
+        "capabilities": ["performance_analysis"],
     },
     "Career": {
         "node_name": "career",
@@ -43,6 +46,7 @@ AGENT_REGISTRY = {
         ),
         "trigger_keywords": ["职业", "转会", "身价", "发展路径", "市场价值", "经纪", "联赛"],
         "excludes": ["公关", "声明", "媒体", "代言", "传闻回应", "辟谣", "采访"],
+        "capabilities": ["career_planning", "transfer_analysis"],
     },
     "Document": {
         "node_name": "document",
@@ -55,6 +59,7 @@ AGENT_REGISTRY = {
         "trigger_keywords": ["报告", "文档", "新闻稿", "公关", "官宣", "声明", "代言", "媒体", "采访", "商业",
                             "传闻", "回应", "辟谣", "品牌", "赞助", "社媒"],
         "excludes": ["职业规划", "转会分析", "战术适配", "联赛选择"],
+        "capabilities": [],
     },
 }
 
@@ -71,7 +76,10 @@ NODE_TO_DISPLAY = {v["node_name"]: v["display"] for v in AGENT_REGISTRY.values()
 FINAL_AGENT = "Document"
 
 # Manager 专用节点名称
-MANAGER_NODES = ("manager", "manager_aggregate", "manager_confirm")
+MANAGER_NODES = (
+    "manager", "manager_aggregate", "manager_confirm", "manager_assess",
+    "manager_revision", "manager_replan", "human_input",
+)
 
 
 def get_sub_agent_node_names():
@@ -89,3 +97,33 @@ def get_agent_descriptions():
             desc += f" [明确排除: {', '.join(excludes)}]"
         lines.append(desc)
     return "\n".join(lines)
+
+
+def get_capability_executor(capability):
+    """Resolve a planned capability to the currently registered executor."""
+    for display, info in AGENT_REGISTRY.items():
+        if capability in info.get("capabilities", []):
+            return display
+    return None
+
+
+def get_available_capabilities():
+    """Return capabilities advertised by registered specialist agents."""
+    return [capability for info in AGENT_REGISTRY.values()
+            for capability in info.get("capabilities", [])]
+
+
+def get_active_subtask(state, allowed_capabilities=None):
+    """Return the Plan subtask selected by the orchestration runtime."""
+    current_id = state.get("current_subtask")
+    for task in state.get("plan", {}).get("subtasks", []):
+        if task.get("id") != current_id:
+            continue
+        if allowed_capabilities and task.get("capability") not in allowed_capabilities:
+            return None
+        active = dict(task)
+        revision_context = (state.get("revision_contexts") or {}).get(current_id)
+        if isinstance(revision_context, dict):
+            active["revision_context"] = dict(revision_context)
+        return active
+    return None

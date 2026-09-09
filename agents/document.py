@@ -20,6 +20,16 @@ from registry import SUB_AGENT_NAMES, FINAL_AGENT
 from graph import trim_messages_for_next_round
 
 
+OUTPUT_TYPE_MODE_MAP = {
+    "report": "comprehensive_report",
+    "statement": "pr_statement",
+    "advisory": "commercial_advisory",
+    "response": "media_response",
+    "plan": "comprehensive_report",
+    "analysis": "comprehensive_report",
+}
+
+
 class DocumentAgent(BaseAgent):
     """报告生成器（Reporter）— 专注最终产出，质量审查由 Reviewer 负责。"""
 
@@ -45,11 +55,21 @@ class DocumentAgent(BaseAgent):
         synthesis_guide = state.get("synthesis_guide", {})
         domain_outputs = state.get("domain_outputs", {})
         reviewed_data = state.get("reviewed_data", {})
+        observations = state.get("observations", [])
+        review = state.get("review", {})
+        termination_reason = state.get("termination_reason", "")
 
-        # 从 Mission 获取 Document 的任务参数
+        # Once a Plan exists, it is the authoritative scope for synthesis.
+        # Replan/Revision deliberately keep historical results in state, so the
+        # Reporter must project a clean, current view instead of consuming the
+        # accumulated Observation log directly.
+        plan_observations, has_current_plan = self._collect_current_plan_observations(state)
+
+        # New Missions describe the deliverable without embedding an executor.
+        # domain_contributions is retained only for old persisted states.
         doc_contrib = mission.get("domain_contributions", {}).get(FINAL_AGENT, {})
-        mode = doc_contrib.get("mode", "comprehensive_report")
-        focus = doc_contrib.get("focus", mission.get("primary_goal", "生成综合报告"))
+        mode = doc_contrib.get("mode") or OUTPUT_TYPE_MODE_MAP.get(mission.get("output_type"), "comprehensive_report")
+        focus = doc_contrib.get("focus") or mission.get("required_deliverable", mission.get("primary_goal", "生成综合报告"))
 
         # mode 校验
         valid_modes = {"comprehensive_report", "pr_statement", "commercial_advisory", "media_response"}
@@ -65,7 +85,20 @@ class DocumentAgent(BaseAgent):
         domain_order = reviewed_data.get("domain_order", []) if reviewed_data else []
         reviewer_summary = reviewed_data.get("summary", "") if reviewed_data else ""
 
-        if domain_order:
+        if has_current_plan:
+            # An empty projection is meaningful: the current Plan has no
+            # completed result that is safe to publish.  Do not fall through to
+            # stale domain_outputs or Reviewer ordering in that case.
+            primary_data = self._format_observations(plan_observations)
+            supporting_data = ""
+            supplementary_data = ""
+        elif observations:
+            # Observation is the source of truth because multiple subtasks may
+            # legitimately use the same specialist/capability.
+            primary_data = self._format_observations(observations)
+            supporting_data = ""
+            supplementary_data = ""
+        elif domain_order:
             # 使用 Reviewer 排好的顺序
             primary_data = self._format_by_order(
                 domain_order, domain_outputs, synthesis_guide, mode, detail="full"
@@ -85,12 +118,18 @@ class DocumentAgent(BaseAgent):
             )
 
         # 如果 synthesis_guide 为空（兜底），直接从 domain_outputs 构建
-        if not synthesis_guide and not domain_order:
+        if not has_current_plan and not synthesis_guide and not domain_order:
             primary_data = self._fallback_collect_outputs(domain_outputs, mission)
 
         # 如果有 Reviewer 摘要，前置注入
         if reviewer_summary:
             primary_data = f"## 审查摘要\n{reviewer_summary}\n\n{primary_data}"
+        if review.get("status") in {"failed", "needs_revision"}:
+            issues = "; ".join(item.get("description", "") for item in review.get("findings", []))
+            primary_data = f"## 审查限制\n当前结果尚未完全通过审查：{issues}\n最终内容必须明确标注未经验证的信息。\n\n{primary_data}"
+        elif termination_reason not in {"", "goal_satisfied", "evidence_sufficient", "no_meaningful_information_gap"}:
+            primary_data = (f"## 闭环终止说明\n终止原因：{termination_reason}。"
+                            "最终内容必须区分已验证结论与尚存不确定性。\n\n" + primary_data)
 
         # Mode 分派
         if mode == "pr_statement":
@@ -113,6 +152,8 @@ class DocumentAgent(BaseAgent):
         return {
             "domain_outputs": {"Document": result},
             "final_report": result,
+            "final_result": result,
+            "current_subtask": None,
             "iteration": state.get("iteration", 0) + 1,
             "messages": trimmed_messages,
         }
@@ -120,6 +161,129 @@ class DocumentAgent(BaseAgent):
     # ================================================================
     # 数据分层收集
     # ================================================================
+    @classmethod
+    def _collect_current_plan_observations(cls, state: Dict[str, Any]) -> tuple:
+        """Project current completed Plan tasks onto their newest result.
+
+        Historical ``observations`` and ``subtask_results`` remain untouched in
+        graph state.  This method only builds the ephemeral input used by the
+        Reporter.  ``subtask_results`` is preferred; a legacy Observation is
+        used when it is the only usable result (or carries a newer explicit
+        source version).  With no Plan at all, callers retain the legacy path.
+        """
+        legacy_plan = state.get("plan")
+        v2_plan = state.get("plan_v2")
+        if isinstance(legacy_plan, dict) and isinstance(legacy_plan.get("subtasks"), list):
+            current_plan = legacy_plan
+        elif isinstance(v2_plan, dict) and isinstance(v2_plan.get("subtasks"), list):
+            current_plan = v2_plan
+        else:
+            return [], False
+
+        result_by_id = {
+            str(subtask_id): result
+            for subtask_id, result in (state.get("subtask_results") or {}).items()
+            if isinstance(result, dict)
+        }
+        legacy_by_id: Dict[str, list] = {}
+        for position, item in enumerate(state.get("observations") or []):
+            if not isinstance(item, dict) or item.get("subtask_id") is None:
+                continue
+            legacy_by_id.setdefault(str(item["subtask_id"]), []).append((position, item))
+
+        projected = []
+        seen_ids = set()
+        for task in current_plan.get("subtasks", []):
+            if not isinstance(task, dict) or task.get("id") is None:
+                continue
+            task_id = str(task["id"])
+            if task_id in seen_ids:
+                continue
+            seen_ids.add(task_id)
+
+            # Only completed tasks remain in the publishable current scope.
+            # This explicitly excludes pending/running/blocked/skipped and both
+            # legacy and V2 revision-required spellings.
+            if str(task.get("status", "")).strip().lower() != "completed":
+                continue
+
+            v2_item = cls._observation_from_subtask_result(task_id, result_by_id.get(task_id))
+            legacy_item = cls._latest_legacy_observation(legacy_by_id.get(task_id, []))
+
+            if v2_item and legacy_item:
+                # Equal versions prefer the structured V2 contract.  A legacy
+                # item only wins when it explicitly represents a newer run.
+                selected = (legacy_item if cls._source_version(legacy_item) >
+                            cls._source_version(v2_item) else v2_item)
+            else:
+                selected = v2_item or legacy_item
+            if selected:
+                projected.append(selected)
+
+        return projected, True
+
+    @classmethod
+    def _observation_from_subtask_result(cls, subtask_id: str, result: Any) -> Dict[str, Any]:
+        """Adapt a usable SubtaskResult to the Reporter's Observation shape."""
+        if not isinstance(result, dict):
+            return {}
+
+        structured = result.get("observation")
+        if isinstance(structured, dict):
+            content = structured.get("result")
+            facts = structured.get("facts", [])
+            findings = structured.get("findings", [])
+            evidence = result.get("evidence", structured.get("data_used", []))
+        else:
+            content = structured
+            facts = []
+            findings = []
+            evidence = result.get("evidence", [])
+        if not cls._has_result_content(content):
+            content = result.get("recommendation", "")
+        if not cls._has_result_content(content):
+            return {}
+
+        return {
+            "subtask_id": subtask_id,
+            "result": content,
+            "facts": facts,
+            "findings": findings,
+            "evidence": evidence,
+            "uncertainty": result.get("uncertainties", []),
+            "source_version": cls._source_version(result),
+        }
+
+    @classmethod
+    def _latest_legacy_observation(cls, entries: list) -> Dict[str, Any]:
+        """Return one usable latest-version legacy Observation for a subtask."""
+        usable = [
+            (position, item) for position, item in entries
+            if cls._has_result_content(item.get("result"))
+        ]
+        if not usable:
+            return {}
+        _, selected = max(
+            usable,
+            key=lambda entry: (cls._source_version(entry[1]), entry[0]),
+        )
+        return dict(selected)
+
+    @staticmethod
+    def _source_version(item: Dict[str, Any]) -> int:
+        try:
+            return max(0, int(item.get("source_version", 0) or 0))
+        except (AttributeError, TypeError, ValueError):
+            return 0
+
+    @staticmethod
+    def _has_result_content(value: Any) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return bool(value.strip())
+        return bool(value)
+
     @staticmethod
     def _format_outputs_for_mode(outputs: list, mode: str, detail: str = "full") -> str:
         """按 mode 选择性格式化领域输出。
@@ -184,6 +348,30 @@ class DocumentAgent(BaseAgent):
             if not output:
                 continue
             blocks.append(f"### {agent_name}\n{output[:800]}")
+        return "\n\n".join(blocks)
+
+    @staticmethod
+    def _format_observations(observations: list) -> str:
+        """Format accepted execution results by problem-oriented subtask."""
+        blocks = []
+        for item in observations:
+            raw_result = item.get("result", "")
+            if isinstance(raw_result, (dict, list)):
+                result = json.dumps(raw_result, ensure_ascii=False, default=str).strip()
+            else:
+                result = str(raw_result).strip()
+            if not result:
+                continue
+            block = [f"### Subtask {item.get('subtask_id', 'unknown')}", result[:2500]]
+            if item.get("uncertainty"):
+                block.append(f"不确定性: {'; '.join(map(str, item['uncertainty']))}")
+            if item.get("findings"):
+                descriptions = [
+                    finding.get("description", "") if isinstance(finding, dict) else str(finding)
+                    for finding in item["findings"]
+                ]
+                block.append("审查发现: " + "; ".join(filter(None, descriptions)))
+            blocks.append("\n".join(block))
         return "\n\n".join(blocks)
 
     # ================================================================
@@ -440,7 +628,7 @@ Markdown 格式，开头标注 **【媒体应答手册】**。
         if criteria:
             parts.append(f"**成功标准**: {', '.join(criteria)}")
 
-        constraints = mission.get("global_constraints", [])
+        constraints = mission.get("constraints", mission.get("global_constraints", []))
         if constraints:
             parts.append(f"**全局约束**: {'; '.join(constraints)}")
 

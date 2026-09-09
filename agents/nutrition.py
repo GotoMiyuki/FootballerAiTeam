@@ -19,6 +19,7 @@ from prompts.agent_prompts import (
 )
 from tools import NUTRITION_TOOLS
 from utils.helpers import describe_player_attributes
+from registry import get_active_subtask
 
 
 class NutritionAgent(BaseAgent):
@@ -42,12 +43,13 @@ class NutritionAgent(BaseAgent):
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Nutrition", {})
+        subtask = get_active_subtask(state, {"nutrition_plan"})
 
-        if not domain_contrib.get("needed", False):
+        if not subtask and not domain_contrib.get("needed", False):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
-        focus = domain_contrib.get("focus", mission.get("primary_goal", "制定营养方案"))
+        focus = subtask.get("goal") if subtask else domain_contrib.get("focus", mission.get("primary_goal", "制定营养方案"))
 
         # ---- 代码层预处理 ----
         height = player.get("height", 175)
@@ -56,10 +58,10 @@ class NutritionAgent(BaseAgent):
         intensity = player.get("training_intensity", "High")
         intensity_map = {"Low": "light", "Medium": "moderate", "High": "high", "Very High": "very_high"}
         activity_level = intensity_map.get(intensity, "moderate")
-        nutrition_goal = self._infer_nutrition_goal(mission, player)
+        nutrition_goal = self._infer_nutrition_goal(mission, player, focus)
 
         # ---- Layer 2: Mission Context ----
-        mission_context = build_mission_context(mission, "Nutrition")
+        mission_context = build_mission_context(mission, "Nutrition", subtask)
 
         # ---- ReAct Task Prompt ----
         task_prompt = f"""{mission_context}
@@ -120,10 +122,10 @@ meal_plan（含 meal/time/food）, supplements, hydration_plan。
         }
 
     @staticmethod
-    def _infer_nutrition_goal(mission: Dict, player: Dict) -> str:
+    def _infer_nutrition_goal(mission: Dict, player: Dict, task_focus: str = "") -> str:
         """从 Mission 推断营养目标。"""
         primary_goal = mission.get("primary_goal", "")
-        focus = mission.get("domain_contributions", {}).get("Nutrition", {}).get("focus", "")
+        focus = task_focus or mission.get("domain_contributions", {}).get("Nutrition", {}).get("focus", "")
         combined = f"{primary_goal} {focus}".lower()
 
         if any(w in combined for w in ["减脂", "减重", "降体重", "瘦"]):

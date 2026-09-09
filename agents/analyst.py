@@ -30,6 +30,7 @@ from utils.helpers import (
     category_display_name,
     attr_display_name,
 )
+from registry import get_active_subtask
 
 
 class AnalystAgent(BaseAgent):
@@ -53,12 +54,13 @@ class AnalystAgent(BaseAgent):
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Analyst", {})
+        subtask = get_active_subtask(state, {"performance_analysis"})
 
-        if not domain_contrib.get("needed", False):
+        if not subtask and not domain_contrib.get("needed", False):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
-        focus = domain_contrib.get("focus", mission.get("primary_goal", "分析球员发展趋势"))
+        focus = subtask.get("goal") if subtask else domain_contrib.get("focus", mission.get("primary_goal", "分析球员发展趋势"))
 
         # ---- 代码层预处理：加载历史数据并计算 ----
         training_history = read_training_history()
@@ -80,7 +82,7 @@ class AnalystAgent(BaseAgent):
         trend_analysis = self._analyze_trends(weekly_loads, match_ratings, player)
 
         # ---- Layer 2: Mission Context ----
-        mission_context = build_mission_context(mission, "Analyst")
+        mission_context = build_mission_context(mission, "Analyst", subtask)
 
         # ---- ReAct Task Prompt ----
         task_prompt = f"""{mission_context}

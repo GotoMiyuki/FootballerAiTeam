@@ -1,0 +1,49 @@
+关于目前已有的架构：
+
+1、agent在整个任务流中的权限高于Domain State（相关领域的状态），应该更靠近我们之前讨论过的“任务驱动”方案（Manager 是 top-level intent holder，而 Document 是 intent executor），不过这里可能是受到了我们更新之前的README影响
+
+2、重构Domain State以让LLM搭配代码得到更加高效合理的决策，LLM不再直接决定系统内部的数据结构而是交给python代码
+
+3、真正的Orchestrator？这一点怎么理解，我现在的manager的程度不够吗？
+
+4、把简单的“看起来是否正确”的Reviewer检查器变成完整的检验器（就是里面的每一个细节、推理都检查并寻找有无证据），而不是让所有事情都让LLM判断。
+LLM → 生成判断
+Python → 验证事实
+Reviewer → 判断是否通过
+
+5、在原有的RAG上增加Metadata filtering，而不是简单的vector_search(query)。不然在知识库增加后容易因为语义相似而无法得到需要的消息
+“如果未来数据规模上去了，再考虑 PostgreSQL + pgvector。类似的足球 AI 项目已经采用 Postgres/pgvector 做玩家数据检索；不过这并不意味着你现在必须迁移。”
+
+6、目前小数据阶段用json保存记忆是可行的，不需要盲目更换大的数据库。
+但是加一层抽象接口函数更有利于未来的维护提升：
+class PlayerRepository(Protocol):
+
+    def get_profile(self, player_id): ...
+
+7、更改Pipeline，把AI直接给报告变成AI团队和用户共同做决策
+
+关于未来UI的建设：
+
+1、高内聚低耦合，将CLI与核心逻辑层完全分离。而目前只是简单的app.py - graph.py - agents
+
+2、未来项目界面不应该设计成一个单对话聊天的界面，而更应该像一个团队，更进一步可以做Agent Cards
+
+3、暴露“Agent Activity”，但是不暴露思维链。
+
+4、前端技术栈推荐：
+React
+  ↓
+HTTP / SSE
+  ↓
+FastAPI
+  ↓
+LangGraph
+
+5、也可以让LangGraph直接UI，后端如此设计，并且UI不需要知道LangGraph具体怎么做：
+LangGraph Event
+       ↓
+Event Adapter
+       ↓
+SSE
+       ↓
+React

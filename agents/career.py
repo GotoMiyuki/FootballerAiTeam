@@ -22,6 +22,7 @@ from prompts.agent_prompts import (
 from tools import CAREER_TOOLS
 from tools.database import read_career_history
 from utils.helpers import describe_player_attributes
+from registry import get_active_subtask
 
 
 class CareerAgent(BaseAgent):
@@ -48,15 +49,16 @@ class CareerAgent(BaseAgent):
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Career", {})
+        subtask = get_active_subtask(state, {"career_planning", "transfer_analysis"})
 
-        if not domain_contrib.get("needed", False):
+        if not subtask and not domain_contrib.get("needed", False):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
 
         # ---- 从 Mission 获取任务参数 ----
-        mode = domain_contrib.get("mode", "career_planning")
-        focus = domain_contrib.get("focus", mission.get("primary_goal", "制定职业发展规划"))
+        mode = subtask.get("capability") if subtask else domain_contrib.get("mode", "career_planning")
+        focus = subtask.get("goal") if subtask else domain_contrib.get("focus", mission.get("primary_goal", "制定职业发展规划"))
 
         # mode 合法性校验
         mode_fallback = False
@@ -92,7 +94,7 @@ class CareerAgent(BaseAgent):
         current_level = self._get_current_level(overall)
 
         # ---- Layer 2: Mission Context ----
-        mission_context = build_mission_context(mission, "Career")
+        mission_context = build_mission_context(mission, "Career", subtask)
 
         # ---- Mode 分派的 ReAct 循环 ----
         if mode == "transfer_analysis":
