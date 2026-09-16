@@ -11,16 +11,19 @@ Layer 3: Execution Guide  — 领域特定的执行指引（按 mode 选择）
 - Mission Context 由 build_mission_context() 在运行时动态生成
 """
 
+import json
+
 # ============================================================
 # Manager Prompt
 # ============================================================
 MANAGER_PROMPT = """你是一名足球俱乐部总经理（General Manager），负责统筹球员发展团队。
 
 ## 核心职责
-1. 理解球员的真实需求，识别意图类型
-2. 创建 Mission 对象：定义核心目标、受众、语气、成功标准
-3. 决定哪些领域需要贡献，并标注每个领域的优先级
-4. 作为 Intent Holder，在关键节点校验执行方向
+1. 理解真实需求并创建 Mission：目标、约束、上下文、交付物和成功标准
+2. 在存在不确定性时维护多个候选 Hypothesis 及其正反证据
+3. 将 Mission 动态分解为问题导向的 Subtask，设置优先级与依赖
+4. 根据 Observation 和 Reviewer findings 先 KEEP，再做最小范围 REVISION
+5. 判断显式终止条件，作为 Intent Holder 防止计划偏离
 
 ## 意图分类
 分析需求时按以下维度思考，而非关键词匹配：
@@ -28,12 +31,13 @@ MANAGER_PROMPT = """你是一名足球俱乐部总经理（General Manager），
 - 最终产出应该是什么形式？（报告/声明/方案/回答/分析）
 - 谁将阅读这个产出？（球员本人/媒体/俱乐部/公众/经纪人）
 
-## 领域贡献决策
-对每个领域 Agent 决定：
-- needed: 该领域的专业能力是否必要
-- priority: primary（直接用于最终产出）/ secondary（提供支撑）/ supplementary（补充参考）
-- focus: 该领域应聚焦的具体方向
-- output_usage: 该领域产出将如何被 Document 使用
+## 决策边界
+- Mission 只描述“为什么做”，不得包含 Agent 名称或固定执行方案
+- Plan 描述“当前准备解决哪些问题”，通过 capability 与执行器解耦
+- 不用 intent→固定 Agent 列表、固定顺序或任务模板替代动态规划
+- Reviewer 负责指出问题；是否保留、局部修订、阻塞等待、重规划或终止由 Manager 决定
+- REVISION 只处理 finding 明确影响的 Subtask，保留其余任务和有效结果
+- 只有核心 Hypothesis、多个任务共享的基础假设或 Mission 解释发生变化时才 REPLAN
 
 ## 置信度说明
 - 9-10 分：需求非常明确，领域贡献精准匹配
@@ -90,7 +94,7 @@ DOCUMENT_DOMAIN_IDENTITY = """你是信息表达与对外沟通领域的专家�
 # Layer 2: Mission Context Builder（运行时动态生成）
 # ============================================================
 
-def build_mission_context(mission: dict, agent_display_name: str) -> str:
+def build_mission_context(mission: dict, agent_display_name: str, subtask: dict = None) -> str:
     """为指定 Agent 生成 Mission Context（Layer 2）。
 
     从 Mission 对象中提取与该 Agent 相关的上下文，
@@ -106,8 +110,10 @@ def build_mission_context(mission: dict, agent_display_name: str) -> str:
     if not mission:
         return ""
 
+    # domain_contributions is accepted only for old persisted runs. New runs
+    # pass the selected Plan subtask explicitly so Mission stays execution-free.
     domain_contrib = mission.get("domain_contributions", {}).get(agent_display_name, {})
-    if not domain_contrib.get("needed", False):
+    if not subtask and not domain_contrib.get("needed", False):
         return ""
 
     parts = [
@@ -121,23 +127,43 @@ def build_mission_context(mission: dict, agent_display_name: str) -> str:
         "## 你在本 Mission 中的角色",
     ]
 
-    focus = domain_contrib.get("focus", "")
+    focus = subtask.get("goal", "") if subtask else domain_contrib.get("focus", "")
     if focus:
         parts.append(f"**聚焦方向**: {focus}")
 
-    priority = domain_contrib.get("priority", "secondary")
+    priority = subtask.get("priority", "secondary") if subtask else domain_contrib.get("priority", "secondary")
     parts.append(f"**贡献优先级**: {priority}")
 
-    output_usage = domain_contrib.get("output_usage", "")
+    output_usage = subtask.get("purpose", "") if subtask else domain_contrib.get("output_usage", "")
     if output_usage:
         parts.append(f"**你的输出将用于**: {output_usage}")
 
-    global_constraints = mission.get("global_constraints", [])
+    global_constraints = mission.get("constraints", mission.get("global_constraints", []))
     if global_constraints:
         parts.append("")
         parts.append("## 全局约束（适用于所有 Agent）")
         for c in global_constraints:
             parts.append(f"- {c}")
+
+    revision_context = subtask.get("revision_context", {}) if subtask else {}
+    if revision_context:
+        parts.extend(["", "## 本次局部 Revision 上下文"])
+        findings = revision_context.get("reviewer_findings", [])
+        if findings:
+            parts.append("**必须修复的 Reviewer findings**:")
+            parts.append(json.dumps(findings, ensure_ascii=False, default=str)[:5000])
+        dependencies = revision_context.get("relevant_dependencies", {})
+        if dependencies:
+            parts.append("**仅与本任务相关的依赖结果**:")
+            parts.append(json.dumps(dependencies, ensure_ascii=False, default=str)[:5000])
+        previous_result = revision_context.get("previous_result")
+        if previous_result:
+            parts.append("**上一版本结果（在此基础上修复）**:")
+            parts.append(json.dumps(previous_result, ensure_ascii=False, default=str)[:3500])
+        rules = revision_context.get("revision_rules")
+        if rules:
+            parts.append("**Revision 边界**:")
+            parts.append(str(rules))
 
     return "\n".join(parts)
 

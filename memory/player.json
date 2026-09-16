@@ -9,30 +9,32 @@
   "overall": 72,
   "attributes": {
     "offense": {
-      "attacking_awareness": 68,
+      "attacking_awareness": 71,
       "ball_control": 78,
-      "passing": 75,
-      "shooting": 76,
+      "passing": 76,
+      "shooting": 80,
       "offense_awareness": 76,
-      "进攻意识": 68,
+      "进攻意识": 73,
       "射门": 79,
       "控球": 78,
-      "传球": 75
+      "传球": 75,
+      "control": 79,
+      "attack_awareness": 72
     },
     "defense": {
-      "defensive_awareness": 58,
+      "defensive_awareness": 61,
       "defense_awareness": 74,
-      "防守意识": 62
+      "防守意识": 63
     },
     "physical": {
-      "speed": 82,
-      "strength": 73,
-      "stamina": 78,
-      "jumping": 70,
+      "speed": 83,
+      "strength": 78,
+      "stamina": 81,
+      "jumping": 73,
       "弹跳": 71,
       "速度": 83,
       "耐力": 80,
-      "力量": 75
+      "力量": 77
     },
     "goalkeeping": {
       "gk_awareness": 40,
@@ -44,16 +46,16 @@
   "preferred_foot": "右脚",
   "contract_until": "2027-06-30",
   "training_intensity": "High",
-  "last_updated": "2026-07-20",
+  "last_updated": "2026-09-08",
   "other_features": {
-    "weak_foot_frequency": 1,
-    "weak_foot_accuracy": 3,
-    "form_consistency": 4,
+    "weak_foot_frequency": 2,
+    "weak_foot_accuracy": 4,
+    "form_consistency": 5,
     "injury_resistance": 3,
     "非惯用脚频率": 1,
-    "状态稳定性": 4,
-    "非惯用脚精度": 3,
-    "抗伤能力": 3
+    "状态稳定性": "5/8",
+    "非惯用脚精度": 4,
+    "抗伤能力": "3/5"
   },
   "预期变化_4周后": {
     "进攻意识": "提升至72（通过无球跑位训练）",
@@ -189,7 +191,7 @@
     "进攻意识": 75,
     "射门": 80
   },
-  "note": "通过针对性跑位和射门训练，进攻意识有望提升至71，射门稳定在77，速度爆发力增强。",
+  "note": "以下为本周期训练模式沿用4周后的预期变化（首战前1周仅恢复与微调，不应期待显著数值提升）",
   "recommendation": "持续进行无球跑动和射门决策训练，同时保持速度和爆发力训练，以巩固提升效果。",
   "notes": "赛前一周以维持和微调为主，大幅提升需在赛后周期进行。",
   "training_cycle_weeks": 4,
@@ -266,5 +268,38 @@
       "非惯用脚精度": 4,
       "状态稳定性": 5
     }
-  }
+  },
+  "4周后预期变化": {
+    "physical": {
+      "stamina": 81,
+      "speed": 83
+    },
+    "offense": {
+      "ball_control": 79,
+      "offense_awareness": 70
+    },
+    "other_features": {
+      "weak_foot_frequency": 2,
+      "injury_resistance": 3
+    }
+  },
+  "说明": "Day1-2为恢复性训练，主要目标是重建有氧基础和激活技术状态。耐力预计在4周内从80提升至81，控球从78提升至79。速度维持83（爆发力训练在Day3后逐步引入）。进攻意识因跑位训练尚未系统展开，预计小幅提升至70。非惯用脚频率因Day2已开始左脚专项触球，预计从1/5提升至2/5。",
+  "expected_changes": {
+    "offense": {
+      "attack_awareness": 74,
+      "control": 79,
+      "passing": 76,
+      "shooting": 80
+    },
+    "physical": {
+      "speed": 83,
+      "stamina": 80,
+      "jumping": 72,
+      "strength": 77
+    },
+    "other_features": {
+      "weak_foot_frequency": 3
+    }
+  },
+  "rationale": "4周后进攻意识+2（跑位时机课累积效果）、控球+1、弱脚使用频率2/5→3/5；射门与速度以维持为主不强行追涨；弹跳+1为辅助收益。周计划中D3冲刺课与D4专项课为每周核心，其余为维持"
 }

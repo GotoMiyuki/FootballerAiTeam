@@ -36,7 +36,7 @@ def build_agent_graph():
     """构建并返回编译后的 LangGraph 图。"""
     llm = create_llm()
 
-    from agents.manager import create_manager_node, create_assess_node
+    from agents.manager import create_manager_node, create_assess_node, create_manager_loop_nodes
     from agents.nutrition import create_nutrition_node
     from agents.coach import create_coach_node
     from agents.analyst import create_analyst_node
@@ -46,10 +46,13 @@ def build_agent_graph():
 
     manager_node, intent_checkpoint_node, manager = create_manager_node(llm)
     assess_node = create_assess_node(manager)
+    revision_node, replan_node = create_manager_loop_nodes(manager)
 
     agent_nodes = {
         "manager": manager_node,
         "manager_assess": assess_node,
+        "manager_revision": revision_node,
+        "manager_replan": replan_node,
         "intent_checkpoint": intent_checkpoint_node,
         "reviewer": create_reviewer_node(llm),
         "nutrition": create_nutrition_node(llm),
@@ -65,7 +68,7 @@ def build_agent_graph():
 def print_header():
     print("=" * 60)
     print("  FootballAI Career Agent - 多智能体协作系统")
-    print("  基于 LangGraph + DeepSeek | Mission-driven v2")
+    print("  基于 LangGraph + DeepSeek | Mission-driven v1.1")
     print("=" * 60)
     print()
 
@@ -82,9 +85,10 @@ def _process_events(graph, input_data, config_dict):
                     print(f"[Manager] {mission.get('intent_summary', '')}")
                     print(f"[Manager] 核心目标: {mission.get('primary_goal', '')[:80]}...")
                     print(f"[Manager] 置信度: {mission.get('confidence', '?')}/10")
-                    needed = [n for n, c in mission.get("domain_contributions", {}).items()
-                              if c.get("needed")]
-                    print(f"[Manager] 执行领域: {', '.join(needed)}")
+                    subtasks = node_output.get("plan", {}).get("subtasks", [])
+                    print(f"[Manager] 动态子任务: {len(subtasks)} 个")
+                    for task in subtasks:
+                        print(f"  - {task.get('id')}: {task.get('goal')} [{task.get('capability')}]")
 
             elif node_name == "intent_checkpoint":
                 pass  # run_checkpoint 内部已打印详情
@@ -98,9 +102,7 @@ def _process_events(graph, input_data, config_dict):
             elif node_name == "manager_confirm":
                 mission = node_output.get("mission", {})
                 if mission:
-                    needed = [n for n, c in mission.get("domain_contributions", {}).items()
-                              if c.get("needed")]
-                    print(f"[Manager 确认] 聚焦领域: {', '.join(needed)}")
+                    print(f"[Manager 确认] Mission: {mission.get('objective', '')}")
 
             elif node_name == "manager_assess":
                 plan_ver = node_output.get("plan_version", 1)
@@ -108,13 +110,26 @@ def _process_events(graph, input_data, config_dict):
                 if reason:
                     print(f"[Manager Assess v{plan_ver}] {reason}")
 
+            elif node_name == "manager_revision":
+                targets = node_output.get("loop_control", {}).get("revision_targets", [])
+                if targets:
+                    print(f"[Manager Revision] 仅重做: {', '.join(targets)}")
+
+            elif node_name == "manager_replan":
+                reason = node_output.get("replan_reason", "")
+                print(f"[Manager Replan] {reason or '核心假设已变化，生成新 Plan'}")
+
+            elif node_name == "human_input":
+                next_decision = node_output.get("review_v2", {}).get("decision", "")
+                print(f"[Human-in-the-loop] 已收到补充信息，重新判定为 {next_decision or 'PASS'}")
+
             elif node_name == "reviewer":
-                passed = node_output.get("review_passed", False)
+                decision = node_output.get("review_v2", {}).get("decision", "")
                 findings = node_output.get("review_findings", [])
-                if passed:
-                    print(f"[Reviewer] 审查通过")
+                if decision == "PASS":
+                    print("[Reviewer] PASS")
                 else:
-                    print(f"[Reviewer] 发现问题: {'; '.join(findings[:3])}")
+                    print(f"[Reviewer] {decision or 'UNKNOWN'}: {'; '.join(findings[:3])}")
 
             elif node_name == "__interrupt__":
                 pass  # LangGraph interrupt 事件，跳过
@@ -139,21 +154,27 @@ def _show_interrupt_summary(graph, config_dict):
     mission = values.get("mission", {})
     review_passed = values.get("review_passed", False)
     review_findings = values.get("review_findings", [])
+    review_v2 = values.get("review_v2", {})
     plan_version = values.get("plan_version", 1)
+    next_nodes = tuple(getattr(state, "next", ()) or ())
 
     print("\n" + "-" * 40)
-    print("  [Human-in-the-loop] 审核点")
+    label = "补充信息" if "human_input" in next_nodes else "最终报告审核点"
+    print(f"  [Human-in-the-loop] {label}")
     print(f"  核心目标: {mission.get('primary_goal', '')[:60]}")
 
-    domain_outputs = values.get("domain_outputs", {})
-    completed = [k for k in domain_outputs if k != "Document"]
-    print(f"  已完成领域: {', '.join(completed) if completed else '无'}")
+    completed = [task.get("id") for task in values.get("plan", {}).get("subtasks", [])
+                 if task.get("status") == "completed"]
+    print(f"  已完成子任务: {', '.join(completed) if completed else '无'}")
 
     if review_findings:
         print(f"  Reviewer 发现: {'; '.join(review_findings[:2])}")
     elif review_passed:
         print(f"  Reviewer: 审查通过")
     print(f"  计划版本: v{plan_version}")
+    if "human_input" in next_nodes:
+        blocking = review_v2.get("blocking_information", [])
+        print(f"  需要补充: {'; '.join(blocking) if blocking else '受影响 Subtask 所需的关键事实'}")
     print("-" * 40)
 
 
@@ -163,7 +184,7 @@ def run_stream(graph, initial_state, thread_id):
     在 Document 节点前暂停，展示中间结果等待用户确认。
     返回 (final_report, final_state)。
     """
-    config_dict = {"configurable": {"thread_id": thread_id}}
+    config_dict = {"configurable": {"thread_id": thread_id}, "recursion_limit": 80}
     final_report = ""
 
     # 第一阶段：运行到 interrupt 点（Document 之前）
@@ -172,27 +193,29 @@ def run_stream(graph, initial_state, thread_id):
     # 如果被中断，等待用户确认后继续
     while interrupted:
         _show_interrupt_summary(graph, config_dict)
+        snapshot = graph.get_state(config_dict)
+        next_nodes = tuple(getattr(snapshot, "next", ()) or ()) if snapshot else ()
 
-        choice = input("\n继续生成最终报告？[回车=继续 / r=重新规划 / q=退出]: ").strip().lower()
-
-        if choice == 'q':
-            print("[中断] 用户取消，流程终止。")
-            break
-        elif choice == 'r':
-            # 触发 Replan：清除 domain_outputs 中部分内容
-            from langgraph.types import Command
+        if "human_input" in next_nodes:
+            supplied = input("\n请补充上述关键信息（q=退出）: ").strip()
+            if supplied.lower() == "q":
+                print("[中断] 本次运行已停在 BLOCKED；当前 checkpoint 仅在本进程内有效。")
+                break
+            if not supplied:
+                print("[提示] 补充信息不能为空。")
+                continue
             final_report, interrupted = _process_events(
-                graph,
-                Command(resume={"action": "replan"}),
-                config_dict,
+                graph, Command(resume={"information": supplied}), config_dict,
             )
         else:
-            # 默认：继续执行 Document
-            from langgraph.types import Command
+            choice = input("\n继续生成最终报告？[回车=继续 / q=退出]: ").strip().lower()
+            if choice == "q":
+                print("[中断] 用户取消，流程终止。")
+                break
+            # Static Document breakpoint: resume the fixed next node. Replan is
+            # authorized only by a structured Reviewer decision.
             final_report, interrupted = _process_events(
-                graph,
-                Command(resume={"action": "continue"}),
-                config_dict,
+                graph, None, config_dict,
             )
 
     final_state = graph.get_state(config_dict)
@@ -215,10 +238,17 @@ def print_result(final_report, final_state, config_dict, graph):
                 print("=" * 60 + "\n")
                 print(report)
             else:
-                print("\n[提示] 未生成最终报告，请检查 Mission 配置。")
+                control = final_state.values.get("loop_control", {})
+                if control.get("waiting_for_user"):
+                    print("\n[提示] 流程停在 BLOCKED；需在本次运行的提示中补充信息才能继续，"
+                          "未触发 Agent 重试或 Replan。")
+                else:
+                    print("\n[提示] 未生成最终报告，请检查 Mission 配置。")
 
     print("\n" + "=" * 60)
-    print("  多智能体协作流程完成！")
+    waiting = bool(final_state and final_state.values
+                   and final_state.values.get("loop_control", {}).get("waiting_for_user"))
+    print("  本次多智能体流程停在 BLOCKED" if waiting else "  多智能体协作流程完成！")
     print("=" * 60)
 
 

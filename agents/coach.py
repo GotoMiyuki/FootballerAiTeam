@@ -20,6 +20,7 @@ from prompts.agent_prompts import (
 from tools import COACH_TOOLS
 from tools.database import UpdatePlayerAttributeTool
 from tools.rag import get_last_citations
+from registry import get_active_subtask
 from utils.helpers import (
     get_weakest_attributes,
     get_strongest_attributes,
@@ -51,12 +52,13 @@ class CoachAgent(BaseAgent):
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Coach", {})
+        subtask = get_active_subtask(state, {"skill_training"})
 
-        if not domain_contrib.get("needed", False):
+        if not subtask and not domain_contrib.get("needed", False):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
-        focus = domain_contrib.get("focus", mission.get("primary_goal", "制定训练计划"))
+        focus = subtask.get("goal") if subtask else domain_contrib.get("focus", mission.get("primary_goal", "制定训练计划"))
         attributes = player.get("attributes", {})
 
         # ---- 代码层预处理（保留，非工具调用） ----
@@ -75,7 +77,7 @@ class CoachAgent(BaseAgent):
             strong_hints.append(attr_display_name(name))
 
         # ---- Layer 2: Mission Context ----
-        mission_context = build_mission_context(mission, "Coach")
+        mission_context = build_mission_context(mission, "Coach", subtask)
 
         # ---- ReAct Task Prompt ----
         task_prompt = f"""{mission_context}
