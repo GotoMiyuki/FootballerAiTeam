@@ -263,7 +263,7 @@ class ReviewerAgent(BaseAgent):
 只输出 JSON。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=review_prompt),
             ])
@@ -461,4 +461,5 @@ def create_reviewer_node(llm: BaseChatModel):
     def node_fn(state: Dict[str, Any]) -> Dict[str, Any]:
         return agent.run(state)
 
+    node_fn._telemetry_agent = agent
     return node_fn

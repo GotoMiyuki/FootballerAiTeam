@@ -5,12 +5,14 @@ P1 升级：增加 ReAct 循环（Thought → Action → Observation → Finish�
 """
 
 import json
+import time
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
 from config import config
+from utils.telemetry import token_usage_from_response
 
 # ReAct 循环最大迭代次数（防止死循环和 Token 爆炸）
 MAX_REACT_ITERATIONS = 5
@@ -30,6 +32,7 @@ class BaseAgent(ABC):
         self.memory_size = memory_size or config.SHORT_MEMORY_SIZE
         self._short_memory: List[Dict[str, Any]] = []
         self._tool_call_log: List[Dict[str, Any]] = []
+        self._telemetry_events: List[Dict[str, Any]] = []
 
     @property
     @abstractmethod
@@ -66,6 +69,41 @@ class BaseAgent(ABC):
         self._short_memory.append(message)
         if len(self._short_memory) > self.memory_size:
             self._short_memory = self._short_memory[-self.memory_size :]
+
+    # Telemetry is deliberately scoped to one graph-node invocation.  The graph
+    # starts and drains this buffer, so agent implementations remain focused on
+    # their domain result contract.
+    def _reset_telemetry(self) -> None:
+        self._telemetry_events = []
+
+    def _consume_telemetry(self) -> List[Dict[str, Any]]:
+        events = list(self._telemetry_events)
+        self._telemetry_events = []
+        return events
+
+    def _invoke_model(self, model: Any, messages: Any, operation: str = "llm") -> Any:
+        """Invoke a chat model and retain metadata only for controller telemetry."""
+        started = time.perf_counter()
+        try:
+            response = model.invoke(messages)
+        except Exception:
+            # A provider failure is still an attempted LLM call.  Keep its
+            # count/latency visible without retaining exception text or input.
+            self._telemetry_events.append({
+                "kind": "llm", "agent": self.name, "operation": operation,
+                "latency_ms": round((time.perf_counter() - started) * 1000, 3),
+                "input_tokens": 0, "output_tokens": 0, "failed": True,
+            })
+            raise
+        usage = token_usage_from_response(response)
+        self._telemetry_events.append({
+            "kind": "llm", "agent": self.name, "operation": operation,
+            "latency_ms": round((time.perf_counter() - started) * 1000, 3), **usage,
+        })
+        return response
+
+    def _invoke_llm(self, messages: Any, operation: str = "llm") -> Any:
+        return self._invoke_model(self.llm, messages, operation)
 
     def build_messages(self, user_input: str, context: List[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """构建发送给 LLM 的完整消息列表。"""
@@ -119,7 +157,7 @@ class BaseAgent(ABC):
         llm_with_tools = self.llm.bind_tools(self.tools) if self.tools else self.llm
 
         for iteration in range(max_iterations):
-            response = llm_with_tools.invoke(messages)
+            response = self._invoke_model(llm_with_tools, messages, "react")
             messages.append(response)
 
             if hasattr(response, "tool_calls") and response.tool_calls:

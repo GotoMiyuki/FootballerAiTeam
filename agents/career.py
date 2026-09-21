@@ -275,7 +275,7 @@ market_valuation, recommendations。
 请只输出 JSON 数组，例如：["皇家马德里", "英超"] 或 []"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content="你是一个信息提取助手。只输出 JSON 数组。"),
                 HumanMessage(content=extract_prompt),
             ])
@@ -390,4 +390,5 @@ def create_career_node(llm: BaseChatModel):
     def node_fn(state: Dict[str, Any]) -> Dict[str, Any]:
         return agent.run(state)
 
+    node_fn._telemetry_agent = agent
     return node_fn

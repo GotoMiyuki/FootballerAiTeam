@@ -172,7 +172,7 @@ class ManagerAgent(BaseAgent):
 请只输出JSON，不要有任何其他文本。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=mission_prompt),
             ])
@@ -228,7 +228,7 @@ Mission：{json.dumps({'objective': mission.get('objective'), 'constraints': mis
 若这是明确的生成/整理任务，输出 []。若需要诊断或比较，输出不超过 4 个候选假设。
 只输出 JSON 数组，每项严格包含：id、statement、confidence(0到1)、status(open)、supporting_evidence([])、contradicting_evidence([])。"""
         try:
-            response = self.llm.invoke([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)])
+            response = self._invoke_llm([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)], "manager_hypotheses")
             raw = response.content.strip()
             if "```" in raw:
                 raw = raw.split("```", 2)[1].replace("json", "", 1).strip()
@@ -263,7 +263,7 @@ Hypotheses: {json.dumps(hypotheses, ensure_ascii=False)}
 只安排为解决当前目标或验证假设所必需的工作。Subtask 的 goal/purpose 必须描述问题，不得写“调用某 Agent”。允许并行任务；有依赖时，depends_on 只能引用前面 subtask id。
 只输出 JSON：{{"plan_id":"...","version":1,"objective":"...","hypotheses":["h1"],"information_gaps":[],"subtasks":[{{"id":"subtask_01","goal":"...","purpose":"...","capability":"...","priority":1,"depends_on":[],"status":"pending"}}],"dependencies":[],"constraints":[],"termination_conditions":["goal_satisfied","no_meaningful_improvement","max_total_loops","blocked"]}}"""
         try:
-            response = self.llm.invoke([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)])
+            response = self._invoke_llm([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)], "manager_plan")
             raw = response.content.strip()
             if "```json" in raw:
                 raw = raw.split("```json", 1)[1].split("```", 1)[0].strip()
@@ -358,7 +358,7 @@ Hypotheses: {json.dumps(hypotheses, ensure_ascii=False)}
 Observations: {json.dumps(compact_observations, ensure_ascii=False, default=str)}
 返回 JSON 数组。保留每项 id、statement、confidence(0到1)、status(open/supported/weakened/rejected)、supporting_evidence、contradicting_evidence。"""
         try:
-            response = self.llm.invoke([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)])
+            response = self._invoke_llm([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)], "manager_hypothesis_update")
             updated = json.loads(response.content.strip().replace("```json", "").replace("```", ""))
             by_id = {str(item.get("id")): item for item in updated if isinstance(item, dict)}
             merged = []
@@ -538,7 +538,7 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
 若 Mission 解释确实变化，mission_changed=true 且 mission_change_reason 必须给出证据，并仅通过 mission_patch 更新 objective、constraints、context、success_criteria、required_deliverable；用户原始 primary_goal 不可改。否则 mission_patch 必须为空对象。
 只输出 JSON：{{"reason":"核心变化及证据","mission_changed":false,"mission_change_reason":"无或具体原因","mission_patch":{{}},"hypotheses":[{{"id":"h1","statement":"...","confidence":0.5,"status":"open|supported|weakened|rejected","supporting_evidence":[],"contradicting_evidence":[]}}],"plan":{{"objective":"...","information_gaps":[],"subtasks":[{{"id":"subtask_01","goal":"...","purpose":"...","capability":"...","priority":1,"depends_on":[],"status":"pending"}}]}}}}"""
         try:
-            response = self.llm.invoke([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)])
+            response = self._invoke_llm([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)], "manager_replan")
             raw = response.content.strip()
             if "```json" in raw:
                 raw = raw.split("```json", 1)[1].split("```", 1)[0].strip()
@@ -1072,6 +1072,7 @@ def create_manager_node(llm: BaseChatModel):
             result["final_result"] = ""
             result["revision_contexts"] = {}
             result["manager_decision"] = "KEEP"
+            result["telemetry"] = {"__RESET_TELEMETRY__": True}
             return result
 
         if mission.get("pending_confirmation"):
@@ -1086,6 +1087,8 @@ def create_manager_node(llm: BaseChatModel):
     def intent_checkpoint_node(state: Dict[str, Any]) -> Dict[str, Any]:
         return manager.run_checkpoint(state)
 
+    manager_node._telemetry_agent = manager
+    intent_checkpoint_node._telemetry_agent = manager
     return manager_node, intent_checkpoint_node, manager
 
 
@@ -1103,6 +1106,7 @@ def create_assess_node(manager_instance: ManagerAgent):
     def assess_node(state: Dict[str, Any]) -> Dict[str, Any]:
         return manager_instance.run_assess(state)
 
+    assess_node._telemetry_agent = manager_instance
     return assess_node
 
 
@@ -1114,4 +1118,6 @@ def create_manager_loop_nodes(manager_instance: ManagerAgent):
     def replan_node(state: Dict[str, Any]) -> Dict[str, Any]:
         return manager_instance.run_replan(state)
 
+    revision_node._telemetry_agent = manager_instance
+    replan_node._telemetry_agent = manager_instance
     return revision_node, replan_node

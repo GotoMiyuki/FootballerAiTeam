@@ -408,7 +408,7 @@ class DocumentAgent(BaseAgent):
 请直接输出完整报告。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
@@ -497,7 +497,7 @@ class DocumentAgent(BaseAgent):
 请直接输出声明文本，开头标注 **【对外发布稿】**。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
@@ -543,7 +543,7 @@ class DocumentAgent(BaseAgent):
 请直接输出完整商业评估报告。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
@@ -591,7 +591,7 @@ Markdown 格式，开头标注 **【媒体应答手册】**。
 请直接输出完整应答手册。"""
 
         try:
-            response = self.llm.invoke([
+            response = self._invoke_llm([
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
@@ -641,4 +641,5 @@ def create_document_node(llm: BaseChatModel):
     def node_fn(state: Dict[str, Any]) -> Dict[str, Any]:
         return agent.run(state)
 
+    node_fn._telemetry_agent = agent
     return node_fn

@@ -233,4 +233,5 @@ def create_coach_node(llm: BaseChatModel):
     def node_fn(state: Dict[str, Any]) -> Dict[str, Any]:
         return agent.run(state)
 
+    node_fn._telemetry_agent = agent
     return node_fn
