@@ -8,6 +8,7 @@ FootballAI Career Agent - LangGraph 状态定义与图构建
 """
 
 import json
+import time
 from typing import TypedDict, List, Dict, Any, Annotated, Optional
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
@@ -34,6 +35,7 @@ from loop_contracts import (
     normalise_loop_control,
     normalise_review_result,
 )
+from utils.telemetry import default_telemetry, make_node_telemetry_delta, merge_telemetry
 
 
 # ============================================================
@@ -116,6 +118,39 @@ def merge_subtask_results(existing: Dict[str, Any], new: Dict[str, Any]) -> Dict
         if candidate_version >= current_version:
             merged[subtask_id] = candidate
     return merged
+
+
+def _instrument_node(fn: callable, node_name: str, role: str) -> callable:
+    """Run a node with bounded operational telemetry, without recording content.
+
+    Factories may expose their BaseAgent through ``_telemetry_agent``.  This
+    keeps LLM-call accounting at the shared execution boundary while preserving
+    the pure state-update contract of every node.
+    """
+    telemetry_agent = getattr(fn, "_telemetry_agent", None)
+
+    def instrumented(state: Dict[str, Any], wrapped=fn, agent=telemetry_agent):
+        if agent is not None and hasattr(agent, "_reset_telemetry"):
+            agent._reset_telemetry()
+        started = time.perf_counter()
+        result = wrapped(state) or {}
+        elapsed_ms = (time.perf_counter() - started) * 1000
+        events = []
+        if agent is not None and hasattr(agent, "_consume_telemetry"):
+            events = agent._consume_telemetry()
+        # Some backwards-compatible nodes return the incoming state wholesale.
+        # Removing its prior telemetry prevents reducer double-counting.
+        result = dict(result)
+        reset_telemetry = bool((result.get("telemetry") or {}).get("__RESET_TELEMETRY__"))
+        result.pop("telemetry", None)
+        result["telemetry"] = make_node_telemetry_delta(
+            node_name=node_name, role=role, latency_ms=elapsed_ms, llm_events=events,
+        )
+        if reset_telemetry:
+            result["telemetry"]["__RESET_TELEMETRY__"] = True
+        return result
+
+    return instrumented
 
 
 def _as_list(value: Any) -> List[Any]:
@@ -269,6 +304,7 @@ class AgentState(TypedDict):
     loop_control: LoopControl
     revision_contexts: Dict[str, Dict[str, Any]]
     manager_decision: str
+    telemetry: Annotated[Dict[str, Any], merge_telemetry]
 
 
 # ============================================================
@@ -669,23 +705,31 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
 
     # ---- Manager Decision compatibility node ----
     if "manager_assess" in agent_nodes:
-        workflow.add_node("manager_assess", agent_nodes["manager_assess"])
+        workflow.add_node("manager_assess", _instrument_node(
+            agent_nodes["manager_assess"], "manager_assess", "manager",
+        ))
 
     # ---- Same Manager, explicit Revision/Replanning modes ----
     if "manager_revision" in agent_nodes:
-        workflow.add_node("manager_revision", agent_nodes["manager_revision"])
+        workflow.add_node("manager_revision", _instrument_node(
+            agent_nodes["manager_revision"], "manager_revision", "manager",
+        ))
     if "manager_replan" in agent_nodes:
-        workflow.add_node("manager_replan", agent_nodes["manager_replan"])
+        workflow.add_node("manager_replan", _instrument_node(
+            agent_nodes["manager_replan"], "manager_replan", "manager",
+        ))
     workflow.add_node("human_input", human_input_node)
 
     # ---- Manager 节点 ----
     manager_fn = agent_nodes["manager"]
-    workflow.add_node("manager", manager_fn)
-    workflow.add_node("manager_confirm", manager_fn)
+    workflow.add_node("manager", _instrument_node(manager_fn, "manager", "manager"))
+    workflow.add_node("manager_confirm", _instrument_node(manager_fn, "manager_confirm", "manager"))
 
     # ---- Intent Checkpoint 节点 ----
     if "intent_checkpoint" in agent_nodes:
-        workflow.add_node("intent_checkpoint", agent_nodes["intent_checkpoint"])
+        workflow.add_node("intent_checkpoint", _instrument_node(
+            agent_nodes["intent_checkpoint"], "intent_checkpoint", "manager",
+        ))
 
     # ---- Reviewer 节点（P3：审查 → 放行或 Replan） ----
     if "reviewer" in agent_nodes:
@@ -728,7 +772,8 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
             result["termination_reason"] = "evidence_sufficient" if decision == "PASS" else ""
             return result
 
-        workflow.add_node("reviewer", reviewer_node)
+        reviewer_node._telemetry_agent = getattr(reviewer_fn, "_telemetry_agent", None)
+        workflow.add_node("reviewer", _instrument_node(reviewer_node, "reviewer", "reviewer"))
 
     # ---- 子 Agent 节点（由 registry 驱动） ----
     for display_name, info in AGENT_REGISTRY.items():
@@ -851,7 +896,8 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                 })
                 return result
 
-            workflow.add_node(node_name, execution_node)
+            execution_node._telemetry_agent = getattr(agent_nodes[node_name], "_telemetry_agent", None)
+            workflow.add_node(node_name, _instrument_node(execution_node, node_name, "agent"))
         else:
             raise ValueError(
                 f"Agent '{display_name}' (node_name='{node_name}') 在 registry 中已注册，"
@@ -863,6 +909,12 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
 
     # ---- 条件边（由 registry 动态生成映射表） ----
     route_map = _build_route_map()
+    # Optional controller nodes are useful for focused regression graphs too.
+    # LangGraph validates every declared branch target during compilation, even
+    # if a route will not be reached by this particular graph instance.
+    for optional_node in ("manager_assess", "manager_revision", "manager_replan", "reviewer"):
+        if optional_node not in agent_nodes:
+            route_map.pop(optional_node, None)
 
     # Manager → 动态路由
     workflow.add_conditional_edges("manager", route_after_manager, route_map)
@@ -984,4 +1036,5 @@ def create_initial_state(user_input: str) -> AgentState:
         "loop_control": default_loop_control(),
         "revision_contexts": {},
         "manager_decision": "KEEP",
+        "telemetry": default_telemetry(),
     }

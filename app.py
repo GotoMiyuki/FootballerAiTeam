@@ -245,6 +245,20 @@ def print_result(final_report, final_state, config_dict, graph):
                 else:
                     print("\n[提示] 未生成最终报告，请检查 Mission 配置。")
 
+    if final_state and final_state.values:
+        telemetry = final_state.values.get("telemetry", {}) or {}
+        if telemetry:
+            print(
+                "\n[Telemetry] "
+                f"LLM={telemetry.get('llm_call_count', 0)} | "
+                f"Reviewer={telemetry.get('review_count', 0)} | "
+                f"Agent={telemetry.get('agent_call_count', 0)} | "
+                f"Revision={telemetry.get('revision_count', 0)} | "
+                f"Replan={telemetry.get('replan_count', 0)} | "
+                f"Latency={telemetry.get('latency_ms', 0):.0f}ms | "
+                f"Tokens in/out={telemetry.get('input_tokens', 0)}/{telemetry.get('output_tokens', 0)}"
+            )
+
     print("\n" + "=" * 60)
     waiting = bool(final_state and final_state.values
                    and final_state.values.get("loop_control", {}).get("waiting_for_user"))
