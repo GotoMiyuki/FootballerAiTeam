@@ -950,7 +950,7 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
         workflow.add_edge(doc_node_name, END)
 
     # ---- 编译 ----
-    memory = MemorySaver()
+    memory = kwargs.get("checkpointer") or MemorySaver()
     interrupt_before = kwargs.get("interrupt_before", [])
     return workflow.compile(checkpointer=memory, interrupt_before=interrupt_before)
 
