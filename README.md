@@ -129,4 +129,31 @@ python app.py --continue <thread_id>       # 恢复历史会话
 - DeepSeek API（或 OpenAI 兼容接口）
 - ChromaDB（向量检索）
 - Tavily API（可选，联网搜索）
-#
+# Web 工作台 V0.1
+
+根据 `docs/FootballerAiTeam_Frontend_V0.1_开发指南.md` 新增 React + TypeScript + Vite 前端及 FastAPI Application Layer。现有 CLI 继续独立运行。
+
+安装 Web 依赖：
+
+```powershell
+& .\venv\Scripts\python.exe -m pip install -r requirements-web.txt
+cd frontend
+npm.cmd ci
+```
+
+在仓库根目录启动真实后端（读取原有 `.env` 模型配置）：
+
+```powershell
+& .\venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
+
+另开终端启动前端：
+
+```powershell
+cd frontend
+npm.cmd run dev
+```
+
+访问 <http://127.0.0.1:5173/>。不调用模型的演示模式在启动后端前设置 `$env:FAIT_DEMO='1'`；真实与演示任务默认分开保存。
+
+详细说明和验收命令见 [前端运行与验收](docs/Frontend_V0.1_运行与验收.md)。

@@ -37,3 +37,13 @@ Thumbs.db
 # 临时文件
 *.tmp
 *.log
+
+# Web workspace and local verification artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/
+memory/web/
+.web-test-data/
+.npm-cache/
