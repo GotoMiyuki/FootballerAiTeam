@@ -6,6 +6,8 @@ P1 升级：增加 ReAct 循环（Thought → Action → Observation → Finish�
 
 import json
 import time
+from dataclasses import dataclass, field
+from execution_contracts import ReactError
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from langchain_core.language_models import BaseChatModel
@@ -16,6 +18,31 @@ from utils.telemetry import token_usage_from_response
 
 # ReAct 循环最大迭代次数（防止死循环和 Token 爆炸）
 MAX_REACT_ITERATIONS = 5
+
+
+def model_text(content):
+    """Accept only provider text/string blocks, never stringify arbitrary data."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list) and all(isinstance(b, dict) and b.get('type') in {'text', 'output_text'}
+                                         and isinstance(b.get('text'), str) for b in content):
+        return '\n'.join(b['text'] for b in content)
+    raise ValueError('Unsupported content shape')
+
+
+@dataclass
+class ReactResult:
+    exit_reason: str
+    text: str = ''
+    tool_log: list = field(default_factory=list)
+    observations: list = field(default_factory=list)
+
+    def __iter__(self):
+        # Transitional tuple consumption fails closed in all existing specialists.
+        if self.exit_reason != 'FINAL':
+            raise ReactError(self)
+        yield self.text
+        yield self.tool_log
 
 
 class BaseAgent(ABC):
@@ -127,7 +154,7 @@ class BaseAgent(ABC):
         task_prompt: str,
         player_profile: Dict[str, Any] = None,
         max_iterations: int = MAX_REACT_ITERATIONS,
-    ) -> tuple[str, List[Dict[str, Any]]]:
+    ) -> ReactResult:
         """执行 ReAct 推理循环。
 
         LLM 绑定工具后自主决定何时调用工具、何时输出最终结果。
@@ -141,9 +168,11 @@ class BaseAgent(ABC):
             max_iterations: 最大推理迭代次数。
 
         Returns:
-            (final_output, tool_call_log) — LLM 最终文本输出 + 工具调用日志。
+            ReactResult — 终止原因、最终文本、结构化工具日志与有效观察。
         """
         self._tool_call_log = []
+        observations = []
+        required_failure = False
 
         messages = [SystemMessage(content=self.system_prompt)]
 
@@ -154,10 +183,16 @@ class BaseAgent(ABC):
 
         messages.append(HumanMessage(content=task_prompt))
 
-        llm_with_tools = self.llm.bind_tools(self.tools) if self.tools else self.llm
+        try:
+            llm_with_tools = self.llm.bind_tools(self.tools) if self.tools else self.llm
+        except Exception:
+            return ReactResult('MODEL_FAILED')
 
         for iteration in range(max_iterations):
-            response = self._invoke_model(llm_with_tools, messages, "react")
+            try:
+                response = self._invoke_model(llm_with_tools, messages, "react")
+            except Exception:
+                return ReactResult('MODEL_FAILED', tool_log=self._tool_call_log, observations=observations)
             messages.append(response)
 
             if hasattr(response, "tool_calls") and response.tool_calls:
@@ -166,23 +201,50 @@ class BaseAgent(ABC):
                     tool_args = tool_call.get("args", {})
                     tool_id = tool_call.get("id", "")
 
-                    result_str = self._execute_tool(tool_name, tool_args)
-
-                    self._tool_call_log.append({
-                        "agent": self.name,
-                        "tool": tool_name,
-                        "args": tool_args,
-                        "result_preview": result_str[:300],
-                    })
+                    record = self._execute_tool_result(tool_name, tool_args, tool_id)
+                    result_str = record['result']
+                    self._tool_call_log.append(record)
+                    if record['status'] == 'SUCCESS':
+                        observations.append(record)
+                    elif record['required']:
+                        required_failure = True
 
                     messages.append(ToolMessage(
                         content=result_str,
                         tool_call_id=tool_id,
                     ))
             else:
-                return response.content, self._tool_call_log
+                try:
+                    final_text = model_text(response.content)
+                except ValueError:
+                    return ReactResult('INVALID_CONTENT', tool_log=self._tool_call_log, observations=observations)
+                reason = 'TOOL_ERROR' if required_failure else 'FINAL' if final_text.strip() else 'EMPTY_OUTPUT'
+                return ReactResult(reason, final_text if reason == 'FINAL' else '', self._tool_call_log, observations)
 
-        return messages[-1].content, self._tool_call_log
+        return ReactResult('BUDGET_EXHAUSTED', tool_log=self._tool_call_log, observations=observations)
+
+    def _execute_tool_result(self, tool_name, tool_args, tool_id):
+        required = tool_name not in {'SearchTool'}
+        record = {'agent': self.name, 'tool': tool_name, 'call_id': tool_id,
+                  'required': required, 'status': 'ERROR', 'error_type': '', 'result': ''}
+        selected = next((tool for tool in self.tools if tool.name == tool_name), None)
+        if selected is None:
+            record['error_type'] = 'UNKNOWN_TOOL'
+        elif not isinstance(tool_args, dict):
+            record['error_type'] = 'INVALID_ARGUMENTS'
+        else:
+            try:
+                result = selected.invoke(tool_args)
+                record.update(status='SUCCESS', result=result if isinstance(result, str) else json.dumps(result, ensure_ascii=False))
+                if tool_name == 'FootballKnowledgeRAG':
+                    from tools.rag import get_last_citations
+                    record['citations'] = get_last_citations()
+            except Exception as exc:
+                record['error_type'] = getattr(exc, 'error_type', None) or ('INVALID_ARGUMENTS' if type(exc).__name__ in {'ValidationError', 'TypeError'} else 'EXECUTION_ERROR')
+        if record['status'] == 'ERROR':
+            record['result'] = json.dumps({'tool_error': record['error_type'], 'tool': tool_name})
+        record['result_preview'] = record['result'][:300]
+        return record
 
     def _execute_tool(self, tool_name: str, tool_args: Dict[str, Any]) -> str:
         """根据工具名称查找并执行工具。

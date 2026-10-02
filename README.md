@@ -66,11 +66,19 @@ Document（报告官）          ← 整合所有产出，生成最终报告
 - RAG 知识库检索（ChromaDB + 足球专业文献）
 - 联网搜索引擎（Tavily API）
 - 运动营养计算器（BMI / BMR / TDEE / 宏量营养素）
-- 球员数据库读写（档案、训练史、比赛史）
+- 球员快照只读访问（档案、训练史、比赛史）；事实更新使用独立的受控观察导入接口
 
 **质量保障闭环**：Reviewer 审查 → 不通过 → Manager 重新规划（最多3轮）→ Agent 重新执行 → 再次审查
 
 **人工审核点**：生成最终报告前暂停，可查看中间结果并选择继续 / 重新规划 / 退出。
+
+**数据与交付边界（2026-10-01）**：预测只作为建议，不写入球员事实。API、Graph 和工具使用同一 Repository 快照；真实档案须显式配置 `FAIT_PLAYER_DATA_MODE=actual` 与独立的 `FAIT_PLAYER_DATA_ROOT`，缺数据时不回退样本。模型、工具、输出结构或审查失败均不生成固定答案。最终交付要求当前专业成果通过审查、正文通过确定性检查；正文尚未进行全文语义审查。
+
+已完成开发统一见 [路线图开发汇总](docs/completed/README.md)。数据配置与导入见 [A 汇总](docs/completed/A_球员数据与事实边界.md)，执行与审查契约见 [B 汇总](docs/completed/B_执行协作与审查正确性.md)。
+
+**历史与续跑边界（2026-10-02，C1）**：查看历史只读；解释旧报告沿用原任务材料与数据版本，解释失败不撤回报告。Web 与 CLI 的缺输入、报告审批从原 SQLite checkpoint 续跑；原快照或 checkpoint 缺失时拒绝恢复。重新评估或失败重试创建有关联的新任务，提交时冻结同一球员的最新快照与选定历史；请求去重与完整输入持久化，新任务失败不覆盖原报告。详情见 [C1 会话恢复与任务延续汇总](docs/completed/C_C1_会话恢复与任务延续.md)。
+
+**建议来源与适用性（2026-10-02，E1.1）**：工作台可查看已验证、当前有效且通过版本审查的训练焦点建议，保留原任务/成果版本、固定基线和条件。重复投影防重，最新数据变化时标待重评，失效来源保留历史但退出当前状态。游戏操作仍待验证，缺少指标与窗口时不计算效果；选择与执行反馈将在 E1.2 实现。接口、数据边界和验收见 [E1.1 建议来源与适用性汇总](docs/completed/E_E1.1_建议来源与适用性.md)。
 
 ## 项目结构
 
@@ -97,6 +105,7 @@ footballerAITeam/
 ├── prompts/
 │   └── agent_prompts.py  # 三层 Prompt 架构
 ├── memory/             # 持久化数据（球员档案、历史记录）
+├── career_actions/     # 有来源建议、适用性读取与独立业务事件
 ├── knowledge/          # 足球专业文献（PDF/TXT）
 └── utils/
     ├── helpers.py      # 工具函数
@@ -108,19 +117,20 @@ footballerAITeam/
 ```bash
 python app.py                              # 交互模式，新会话
 python app.py "帮我制定训练计划"            # 直接输入需求
-python app.py --list                       # 列出历史会话
-python app.py --continue <thread_id>       # 恢复历史会话
+python app.py --list                       # 只读 CLI 任务索引和旧元数据
+python app.py --show <mission_id>          # 只读原任务/报告/输入引用
+python app.py --continue <mission_id>      # 恢复原缺输入或报告审批暂停
+python app.py --reevaluate <mission_id> "新要求" --reason "新比赛"
+python app.py --retry <mission_id> "重试要求" --reason "明确重试"
 ```
+
+CLI 使用独立目录 `local_data/cli/fixture/` 或 `local_data/cli/actual/`，可用 `FAIT_CLI_DATA_DIR` 覆盖；真实球员访问仍需配置 actual 模式与数据根。目录保存任务库和 SQLite checkpoint；同一目录只允许一个 CLI/Web 写入进程，历史读取不占用写入锁。关联创建可提供 `--request-id`，相同内容重试返回同一任务；修改内容使用新请求身份。
 
 ## 多轮对话
 
-系统支持会话持久化，可以追问：
+Web 工作台持久化任务、报告和对话。完成后可解释原报告；根据新比赛或新约束调整方案时，可选择原报告/有效专业结果并创建关联任务，使用提交时的最新球员状态，仍可返回来源任务。失败任务也可创建关联重试。暂停任务的补信息与报告生成审批保留原任务编号和原快照。
 
-```
-第1轮: "三个月后参加大学联赛，想提升爆发力"
-第2轮: "最近训练后膝盖有点不舒服，调整一下计划"    # Agent 会基于上下文调整
-第3轮: "顺便帮我看看现在的市场价值"
-```
+CLI 在等待输入/审批时输入 `q` 保存暂停并退出，稍后用 `--continue` 从原状态恢复，使用原快照。完成任务的 `--show/--continue` 只读，不要求模型配置；根据新数据分析使用 `--reevaluate` 的新身份。旧 `memory/sessions.json` 只保存元数据，保留未验证历史，不推断或迁移成可恢复任务。
 
 ## 依赖
 

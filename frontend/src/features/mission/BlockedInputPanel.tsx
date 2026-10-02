@@ -6,6 +6,10 @@ import { ErrorNotice } from '../../components/ui'
 import type { Mission } from '../../types/mission'
 export function BlockedInputPanel({ mission }: { mission: Mission }) {
   const blocked = mission.blocked!
+  const canResume =
+    mission.available_operations?.includes(
+      blocked.reason === 'report_approval' ? 'approve_report' : 'supply_input',
+    ) ?? false
   const [values, setValues] = useState<Record<string, string | number | boolean>>(() =>
     Object.fromEntries(
       blocked.required_inputs
@@ -40,7 +44,7 @@ export function BlockedInputPanel({ mission }: { mission: Mission }) {
       <form
         onSubmit={(event) => {
           event.preventDefault()
-          mutation.mutate()
+          if (canResume) mutation.mutate()
         }}
       >
         <div className="input-grid">
@@ -138,8 +142,14 @@ export function BlockedInputPanel({ mission }: { mission: Mission }) {
         </div>
         {mutation.isError && <ErrorNotice message={mutation.error.message} />}
         <div className="blocked-footer">
-          <span>提交后，团队会从当前任务继续。</span>
-          <button className="primary-button" disabled={mutation.isPending}>
+          <span>
+            {canResume
+              ? blocked.reason === 'report_approval'
+                ? '确认只续跑报告生成；不更新球员能力，也不代表正文已审核。'
+                : '提交后从原任务暂停处继续，保留原数据快照。'
+              : '当前无法恢复，请查看提示并新建任务。'}
+          </span>
+          <button className="primary-button" disabled={mutation.isPending || !canResume}>
             {mutation.isPending ? '正在提交…' : '提交并继续'}
             <ArrowRight size={16} />
           </button>

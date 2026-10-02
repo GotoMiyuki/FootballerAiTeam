@@ -7,6 +7,7 @@ FootballAI Career Agent - 联网搜索工具
 from langchain_core.tools import tool
 
 from config import config
+from tools.errors import ToolExecutionError
 
 
 @tool
@@ -22,7 +23,7 @@ def SearchTool(query: str) -> str:
     """
     tavily_key = config.TAVILY_API_KEY
     if not tavily_key or tavily_key == "tvly-your-tavily-api-key-here":
-        return "联网搜索不可用（未配置 TAVILY_API_KEY）。请改用 FootballKnowledgeRAG 检索本地足球知识库。"
+        raise ToolExecutionError('UNAVAILABLE')
 
     try:
         from tavily import TavilyClient
@@ -43,12 +44,16 @@ def SearchTool(query: str) -> str:
             results.append(f"  {item.get('content', 'N/A')[:200]}...")
             results.append(f"  来源: {item.get('url', 'N/A')}\n")
 
-        return "\n".join(results) if results else f"未找到关于 '{query}' 的相关结果。"
+        if not results:
+            raise ToolExecutionError('NO_DATA')
+        return '\n'.join(results)
 
     except ImportError:
-        return "联网搜索不可用（未安装 tavily-python）。请改用 FootballKnowledgeRAG 检索本地足球知识库。"
-    except Exception as e:
-        return f"搜索出错: {str(e)}"
+        raise ToolExecutionError('UNAVAILABLE')
+    except ToolExecutionError:
+        raise
+    except Exception:
+        raise ToolExecutionError('EXECUTION_ERROR')
 
 
 SEARCH_TOOLS = [SearchTool]

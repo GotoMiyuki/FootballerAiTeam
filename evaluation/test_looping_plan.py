@@ -41,9 +41,9 @@ def task(task_id, capability="skill_training", status="pending", priority=1):
 def completed_result(task_id, version=1):
     return {
         "subtask_id": task_id, "status": "COMPLETED",
-        "observation": {"facts": [f"{task_id} fact"], "findings": [], "data_used": [], "result": "ok"},
+        "observation": {"facts": [f"{task_id} fact"], "findings": [], "data_used": [], "result": complete_output(task_id)},
         "recommendation": "ok", "evidence": [], "assumptions": [], "uncertainties": [],
-        "constraints_checked": [], "source_version": version, "blocked_reason": "",
+        "constraints_checked": [], "source_version": version, "blocked_reason": "", "validated": True, "validity": "CURRENT",
     }
 
 
@@ -51,7 +51,7 @@ def state_for(tasks, *, hypotheses=None, results=None):
     state = create_initial_state("loop controller regression")
     state["mission"] = {
         "primary_goal": "produce a safe recommendation", "objective": "produce a safe recommendation",
-        "constraints": [], "context": {"information_gaps": []},
+        "constraints": [], "context": {"information_gaps": []}, "output_type": "report",
     }
     state["plan"] = {
         "version": 1, "objective": state["mission"]["objective"], "constraints": [],
@@ -59,12 +59,29 @@ def state_for(tasks, *, hypotheses=None, results=None):
     }
     state["hypotheses"] = hypotheses or []
     state["subtask_results"] = results or {}
+    from execution_context import input_fingerprint, input_material
+    for item in tasks:
+        result = state['subtask_results'].get(item['id'])
+        if result and item.get('status') == 'completed':
+            result['input_fingerprint'] = input_fingerprint(state, item)
+            result['input_material'] = input_material(state, item)
     state.update(build_v2_state_patch(state))
     return state
 
 
 def complete_output(label):
     return {
+        "focus_areas": [label], "weekly_schedule": {"Monday": "training"},
+        "drill_details": [{"name": label, "sets": "3", "frequency": "weekly", "description": "practice"}],
+        "imbalance_notes": [], "attribute_update_suggestions": {}, "notes": [],
+        "daily_calories": 2000, "carbs_g": 200, "protein_g": 100, "fat_g": 50,
+        "bmi": 22, "bmr_kcal": 1500, "tdee_kcal": 2000,
+        "meal_plan": [{"meal": "lunch", "time": "12:00", "food": "meal"}], "supplements": [], "hydration_plan": "water",
+        "period": "fixture period", "data_sources": ["demo_fixture"], "trends": [], "cross_category_findings": [],
+        "injury_risk": {"level": "unknown", "score": None, "factors": [], "detail": "unknown"},
+        "form_assessment": "unknown", "recommendations": [label], "summary": label,
+        "current_status": {"source": "fixture"}, "career_paths": [{"direction": "development", "description": label, "pros": "opportunity", "cons": "uncertain", "timeline": "season"}],
+        "marginal_value_analysis": {}, "risks": [],
         "status": "COMPLETED", "result": f"{label} result", "facts": [f"{label} fact"],
         "findings": [], "evidence": [], "assumptions": [], "uncertainties": [],
         "constraints_checked": [], "recommendation": f"{label} recommendation",
@@ -103,14 +120,22 @@ def build_harness(reviewer, *, outputs=None, manager_llm=None, calls=None):
             return {"domain_outputs": {display_name: payload}}
         return node
 
+    def reviewed(state):
+        patch = reviewer(state)
+        review = patch.get("review_v2") or {}
+        review["reviewed_subtasks"] = [t["id"] for t in state["plan"]["subtasks"]]
+        patch["review_v2"] = review
+        return patch
+
     def document_node(_state):
         calls.append(("Document", "final"))
-        return {"final_report": "final report"}
+        from report_validation import accept_document
+        return accept_document(_state, '# final report\n' + _state['mission']['primary_goal'] + '\n依据与限制：fixture')
 
     return build_graph({
         "manager": manager_node, "intent_checkpoint": checkpoint_node,
         "manager_revision": revision_node, "manager_replan": replan_node,
-        "reviewer": reviewer, "nutrition": specialist("Nutrition"), "coach": specialist("Coach"),
+        "reviewer": reviewed, "nutrition": specialist("Nutrition"), "coach": specialist("Coach"),
         "analyst": specialist("Analyst"), "career": specialist("Career"), "document": document_node,
     }), calls
 
@@ -132,6 +157,11 @@ class LoopingPlanContractTests(unittest.TestCase):
         ]}
         self.assertEqual(_ready_subtask(state)["id"], "evidence")
         state["plan"]["subtasks"][0]["status"] = "completed"
+        # A completion label alone no longer authorizes dependent execution.
+        self.assertIsNone(_ready_subtask(state))
+        state['subtask_results']['evidence'] = completed_result('evidence')
+        from execution_context import input_fingerprint
+        state['subtask_results']['evidence']['input_fingerprint'] = input_fingerprint(state, state['plan']['subtasks'][0])
         self.assertEqual(_ready_subtask(state)["id"], "action")
         self.assertEqual(merge_observations(
             [{"subtask_id": "action", "result": "evidence"}],
@@ -145,7 +175,7 @@ class LoopingPlanContractTests(unittest.TestCase):
         graph, calls = build_harness(reviewer)
         result, _ = invoke(graph, state_for([task("subtask_01")]))
         telemetry = result["telemetry"]
-        self.assertEqual(result["final_report"], "final report")
+        self.assertIn("final report", result["final_report"])
         self.assertEqual(telemetry["review_count"], 1)
         self.assertEqual(telemetry["revision_count"], 0)
         self.assertEqual(telemetry["replan_count"], 0)
@@ -223,7 +253,7 @@ class LoopingPlanContractTests(unittest.TestCase):
         graph.invoke(Command(resume={"information": "无近期伤病，允许常规训练"}), config)
         result = graph.get_state(config).values
         self.assertEqual(blocked_once["count"], 2)
-        self.assertEqual(result["final_report"], "final report")
+        self.assertIn("final report", result["final_report"])
         self.assertEqual(result["user_context"]["human_inputs"], ["无近期伤病，允许常规训练"])
         self.assertIn(("Coach", "subtask_01"), calls)
 
@@ -275,7 +305,7 @@ class LoopingPlanContractTests(unittest.TestCase):
             return {"review_v2": normalise_review_result({"decision": "REVISE", "findings": [{
                 "id": "style", "subtask_ids": ["subtask_01"], "severity": "LOW", "category": "style",
                 "description": "non-material wording preference", "evidence": [], "action": "REVISION",
-            }]}, state.get("subtasks", []))}
+            }], "reviewed_subtasks": ["subtask_01"]}, state.get("subtasks", []))}
 
         initial = task("subtask_01", "skill_training", "completed")
         graph, _ = build_harness(reviewer)
@@ -283,7 +313,7 @@ class LoopingPlanContractTests(unittest.TestCase):
         self.assertEqual(result["review_v2"]["decision"], "PASS")
         self.assertEqual(result["telemetry"]["review_count"], 1)
         self.assertEqual(result["telemetry"]["revision_count"], 0)
-        self.assertEqual(result["final_report"], "final report")
+        self.assertIn("final report", result["final_report"])
 
 
 if __name__ == "__main__":

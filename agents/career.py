@@ -9,11 +9,13 @@ P1 ReAct 升级：
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape
 from typing import Dict, Any, List
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from agents.base import BaseAgent
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import (
     CAREER_DOMAIN_IDENTITY,
     CAREER_MODE_PROMPTS,
@@ -46,6 +48,7 @@ class CareerAgent(BaseAgent):
         guide = CAREER_MODE_PROMPTS.get(self._current_mode, CAREER_MODE_PROMPTS["career_planning"])
         return f"{identity}\n\n{guide}"
 
+    @guarded("Career")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Career", {})
@@ -55,6 +58,11 @@ class CareerAgent(BaseAgent):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
+        missing = [key for key in ('overall', 'age', 'position') if player.get(key) is None]
+        missing += [key for key in ('form_consistency', 'injury_resistance', 'weak_foot_accuracy')
+                    if (player.get('other_features') or {}).get(key) is None]
+        if missing:
+            raise MissingInput('职业估计缺少实际记录：' + '、'.join(missing))
 
         # ---- 从 Mission 获取任务参数 ----
         mode = subtask.get("capability") if subtask else domain_contrib.get("mode", "career_planning")
@@ -63,32 +71,28 @@ class CareerAgent(BaseAgent):
         # mode 合法性校验
         mode_fallback = False
         if mode not in ("career_planning", "transfer_analysis"):
-            print(f"[Career Warn] 非法 mode '{mode}'，fallback 到 career_planning")
-            mode_fallback = True
-            mode = "career_planning"
+            raise OutputError('Unsupported capability')
 
         self._current_mode = mode
 
         # ---- 公共预计算 ----
-        overall = player.get("overall", 72)
-        age = player.get("age", 20)
-        position = player.get("position", "LW")
+        overall, age, position = (player[key] for key in ('overall', 'age', 'position'))
         attributes = player.get("attributes", {})
         other = player.get("other_features", {})
         career_history = read_career_history()
 
         market_value = self._estimate_market_value(
             overall, age, position,
-            other.get("form_consistency", 5),
-            other.get("injury_resistance", 3),
-            other.get("weak_foot_accuracy", 3),
+            other['form_consistency'],
+            other['injury_resistance'],
+            other['weak_foot_accuracy'],
         )
 
         marginal = self._compute_marginal_value(
             attributes, overall, age, position,
-            other.get("form_consistency", 5),
-            other.get("injury_resistance", 3),
-            other.get("weak_foot_accuracy", 3),
+            other['form_consistency'],
+            other['injury_resistance'],
+            other['weak_foot_accuracy'],
         )
 
         current_level = self._get_current_level(overall)
@@ -177,19 +181,9 @@ marginal_value_analysis, recommendations, risks。
             content = content.split("```")[1].split("```")[0].strip()
 
         try:
-            return json.loads(content), tool_log
-        except (json.JSONDecodeError, Exception):
-            return {
-                "current_status": {"overall": overall, "age": age, "estimated_market_value": f"€{market_value:,}"},
-                "career_paths": [
-                    {"direction": "保守", "description": "国内稳定球队，保障出场时间", "pros": "稳定性高", "cons": "成长空间有限", "timeline": "1-2年"},
-                    {"direction": "激进", "description": "欧洲二级联赛，高风险高回报", "pros": "成长空间大", "cons": "竞争激烈", "timeline": "2-3年"},
-                    {"direction": "商业", "description": "中东/北美，薪资优先", "pros": "经济回报高", "cons": "竞技成长有限", "timeline": "1-2年"},
-                ],
-                "marginal_value_analysis": marginal,
-                "recommendations": ["优先提升 ROI 最高的属性"],
-                "risks": ["需关注抗伤能力和状态稳定性"],
-            }, tool_log
+            return validate_specialist(self._current_mode, parse_json(content)), tool_log
+        except Exception:
+            raise
 
     # ================================================================
     # Mode: transfer_analysis (ReAct)
@@ -200,6 +194,8 @@ marginal_value_analysis, recommendations, risks。
         career_history, mission_context,
     ) -> tuple:
         extracted_targets = self._extract_targets(focus)
+        if not extracted_targets:
+            raise MissingInput('请提供要比较的目标俱乐部或联赛')
         search_hint = ""
         if extracted_targets:
             search_hint = (
@@ -237,7 +233,7 @@ marginal_value_analysis, recommendations, risks。
 3. **成长潜力与风险**: 比赛时间保障、训练水平、伤病风险、Plan B
 
 ## 输出格式
-JSON，字段：current_status, target_clubs（含 tactical_fit/league_environment/growth_potential/feasibility）,
+JSON，字段：current_status, target_clubs（对象列表，每项含 name/tactical_fit/league_environment/growth_potential/feasibility，文字说明）,
 market_valuation, recommendations。
 只输出 JSON，不要其他文本。"""
 
@@ -253,14 +249,9 @@ market_valuation, recommendations。
             content = content.split("```")[1].split("```")[0].strip()
 
         try:
-            return json.loads(content), tool_log
-        except (json.JSONDecodeError, Exception):
-            return {
-                "current_status": {"overall": overall, "age": age, "estimated_market_value": f"€{market_value:,}"},
-                "targets_analyzed": extracted_targets or ["未指定目标"],
-                "analysis": "JSON 解析失败，已触发 fallback",
-                "recommendations": ["建议明确目标俱乐部/联赛后重新分析"],
-            }, tool_log
+            return validate_specialist(self._current_mode, parse_json(content)), tool_log
+        except Exception:
+            raise
 
     # ================================================================
     # 目标提取（代码层预处理）
@@ -284,12 +275,12 @@ market_valuation, recommendations。
                 content = content.split("```")[1].split("```")[0].strip()
             if "```json" in content:
                 content = content.split("```json")[1].split("```")[0].strip()
-            targets = json.loads(content)
-            if isinstance(targets, list):
+            targets = parse_json(content)
+            if isinstance(targets, list) and all(isinstance(t, str) and t.strip() for t in targets):
                 return targets[:5]
         except Exception:
-            pass
-        return []
+            raise
+        raise OutputError('Invalid target extraction')
 
     # ================================================================
     # 辅助：市场估值、边际价值（保留原逻辑不变）
