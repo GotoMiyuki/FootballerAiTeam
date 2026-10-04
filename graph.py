@@ -9,6 +9,7 @@ FootballAI Career Agent - LangGraph 状态定义与图构建
 
 import json
 import time
+from copy import deepcopy
 from typing import TypedDict, List, Dict, Any, Annotated, Optional
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
@@ -133,7 +134,9 @@ def _instrument_node(fn: callable, node_name: str, role: str) -> callable:
         if agent is not None and hasattr(agent, "_reset_telemetry"):
             agent._reset_telemetry()
         started = time.perf_counter()
-        result = wrapped(state) or {}
+        from player_data.repository import snapshot_scope
+        with snapshot_scope(state.get('player_snapshot')):
+            result = wrapped(state) or {}
         elapsed_ms = (time.perf_counter() - started) * 1000
         events = []
         if agent is not None and hasattr(agent, "_consume_telemetry"):
@@ -172,16 +175,9 @@ def _structured_agent_observation(output: Any, evidence: Any) -> Dict[str, Any]:
             parsed = output
 
     if isinstance(parsed, dict):
-        explicit_facts = parsed.get("facts")
-        facts = _as_list(explicit_facts) if explicit_facts is not None else [
-            {key: value}
-            for key, value in list(parsed.items())[:12]
-            if key not in {
-                "status", "result", "findings", "recommendation", "recommendations",
-                "evidence", "data_used", "assumptions", "uncertainties",
-                "constraints_checked", "blocked_reason", "blocking_information",
-            }
-        ]
+        # Advice dictionaries are not observed facts. Explicit model claims
+        # remain unverified findings; observations come from repository/tools.
+        facts = []
         findings = _as_list(parsed.get("findings", parsed.get("recommendations", [])))
         structured_result: Any = parsed
     else:
@@ -228,7 +224,10 @@ def _executor_outcome(structured_result: Any, output: Any) -> tuple[str, str, st
     if explicit_status == "BLOCKED":
         reason = blocked_reason or "执行器明确报告缺少继续所需的关键输入"
         return "blocked", "BLOCKED", reason, list(dict.fromkeys(uncertainties + [reason]))
-    if explicit_status in {"REVISION_REQUIRED", "NEEDS_REVISION", "REVISE", "FAILED", "ERROR"}:
+    if explicit_status in {'FAILED', 'ERROR', 'NO_RESULT', 'PARTIAL'}:
+        reason = str(structured_result.get('reason') or '未输出有效结果')
+        return 'failed', 'FAILED', reason, uncertainties
+    if explicit_status in {"REVISION_REQUIRED", "NEEDS_REVISION", "REVISE"}:
         reason = blocked_reason or "执行器结果需要修订"
         return "needs_revision", "REVISION_REQUIRED", reason, list(dict.fromkeys(uncertainties + [reason]))
     if explicit_status == "SKIPPED":
@@ -239,7 +238,7 @@ def _executor_outcome(structured_result: Any, output: Any) -> tuple[str, str, st
     completed = bool(output.strip()) if isinstance(output, str) else bool(output)
     if completed:
         return "completed", "COMPLETED", "", uncertainties
-    return "needs_revision", "REVISION_REQUIRED", "executor_no_result", ["执行器未返回可接受结果"]
+    return "failed", "FAILED", "executor_no_result", ["执行器未返回可接受结果"]
 
 
 # ============================================================
@@ -268,6 +267,11 @@ class AgentState(TypedDict):
     """
     messages: Annotated[List[Dict[str, Any]], add_messages]
     player_profile: Dict[str, Any]
+    player_snapshot: Dict[str, Any]
+    continuation_context: Dict[str, Any]
+    mission_id: str
+    execution_context: Dict[str, Any]
+    result_history: Annotated[List[Dict[str, Any]], merge_lists]
     mission: Dict[str, Any]
     user_context: Dict[str, Any]
     domain_outputs: Annotated[Dict[str, Any], merge_domain_outputs]
@@ -294,6 +298,12 @@ class AgentState(TypedDict):
     current_subtask: Optional[str]
     termination_reason: str
     final_result: str
+    execution_outcome: str
+    failure_reason: str
+    error_type: str
+    delivery_status: str
+    report_draft: str
+    body_validation: Dict[str, Any]
     # V2 compatibility fields.  Existing controllers continue reading the
     # legacy fields until their state-machine migration is complete.
     plan_v2: Plan
@@ -322,11 +332,11 @@ def _ready_subtask(state: AgentState) -> Optional[Dict[str, Any]]:
     by_id = {item.get("id"): item for item in subtasks if item.get("id")}
     ready = []
     for item in subtasks:
-        if str(item.get("status", "pending")).lower() != "pending":
+        if str(item.get("status", "pending")).lower() not in {'pending', 'invalidated'}:
             continue
         dependencies = item.get("depends_on", item.get("dependencies", []))
-        if all(str(by_id.get(dep, {}).get("status", "")).lower() == "completed"
-               for dep in dependencies):
+        from execution_context import valid_result
+        if all(valid_result(state, dep, check_fingerprint=True) for dep in dependencies):
             ready.append(item)
     if not ready:
         return None
@@ -354,6 +364,8 @@ def route_after_manager(state: AgentState) -> str:
     4. 所有领域 Agent 已执行 → intent_checkpoint
     5. 其他 → END
     """
+    if state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+        return END
     if _iteration_limit_reached(state):
         return "intent_checkpoint"
 
@@ -395,6 +407,8 @@ def route_after_sub_agent(state: AgentState) -> str:
     - 所有领域已执行 → intent_checkpoint
     - 迭代次数超限 → END（熔断）
     """
+    if state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+        return END
     if _iteration_limit_reached(state):
         return "intent_checkpoint"
 
@@ -466,8 +480,6 @@ def route_after_assess(state: AgentState) -> str:
 
 def route_after_checkpoint(state: AgentState) -> str:
     """Intent Checkpoint 后的路由：进入 Reviewer 审查。"""
-    if state.get("final_report"):
-        return END
     return "reviewer"
 
 
@@ -475,6 +487,8 @@ def route_after_reviewer(state: AgentState) -> str:
     """Route only on the canonical V2 decision; legacy fields are display-only."""
     review = state.get("review_v2") or state.get("review") or {}
     decision = str(review.get("decision", "")).upper()
+    if review.get('availability') != 'COMPLETED':
+        return END
     if decision == "PASS":
         return "Document"
     if decision == "REVISE":
@@ -484,11 +498,13 @@ def route_after_reviewer(state: AgentState) -> str:
     if decision == "REPLAN":
         return "manager_replan"
     # A malformed/missing decision cannot safely authorize another loop.
-    return "Document"
+    return END
 
 
 def route_after_manager_action(state: AgentState) -> str:
     """Continue only the tasks selected by Revision/Replanning."""
+    if state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+        return END
     if state.get("termination_reason") or _iteration_limit_reached(state):
         return "Document"
     ready_agent = _route_ready_subtask(state)
@@ -721,7 +737,17 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
     workflow.add_node("human_input", human_input_node)
 
     # ---- Manager 节点 ----
-    manager_fn = agent_nodes["manager"]
+    original_manager = agent_nodes['manager']
+    def manager_fn(state):
+        result = original_manager(state) or {}
+        if result.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+            return result
+        from result_validity import reconcile_results
+        reuse = reconcile_results({**state, **result})
+        from loop_contracts import build_v2_state_patch
+        projected = build_v2_state_patch({**state, **result, **reuse})
+        return {**result, **projected, **reuse}
+    manager_fn._telemetry_agent = getattr(original_manager, '_telemetry_agent', None)
     workflow.add_node("manager", _instrument_node(manager_fn, "manager", "manager"))
     workflow.add_node("manager_confirm", _instrument_node(manager_fn, "manager_confirm", "manager"))
 
@@ -736,7 +762,22 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
         reviewer_fn = agent_nodes["reviewer"]
 
         def reviewer_node(state, fn=reviewer_fn):
-            result = fn(state)
+            try:
+                result = fn(state)
+            except Exception:
+                from execution_contracts import unavailable_review
+                result = {'review_v2': unavailable_review('审查执行失败')}
+            result['review_v2'] = normalise_review_result(result.get('review_v2') or result.get('review'),
+                                                        state.get('subtasks') or [])
+            result['review_v2']['reviewed_versions'] = {
+                identity: (state.get('subtask_results') or {}).get(identity, {}).get('source_version')
+                for identity in result['review_v2'].get('reviewed_subtasks', [])}
+            result['review_passed'] = (result['review_v2'].get('availability') == 'COMPLETED'
+                                       and result['review_v2'].get('decision') == 'PASS')
+            if result['review_v2'].get('availability') != 'COMPLETED':
+                result.update(execution_outcome='FAILED', failure_reason='审查未完成',
+                              review_passed=False, reviewed_data={}, final_report='', final_result='',
+                              delivery_status='NOT_GENERATED')
             decision = str((result.get("review_v2") or {}).get("decision", "")).upper()
             control = normalise_loop_control(state.get("loop_control"))
             mode_map = {
@@ -794,7 +835,13 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                             item["status"] = "running"
                     runtime_plan["subtasks"] = runtime_tasks
                     runtime_state["plan"] = runtime_plan
+                    from execution_context import build_execution_context
+                    runtime_state['execution_context'] = build_execution_context(state, task)
 
+                if display_name == 'Document':
+                    from execution_contracts import review_passed, failure_patch
+                    if not review_passed(state) or state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+                        return failure_patch('Document', state, reason='当前成果尚未通过审查，无法发布报告')
                 result = fn(runtime_state) or {}
                 if not task:
                     return result
@@ -810,6 +857,7 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                     if isinstance(parsed_result, dict) else []
                 )
                 evidence = _as_list(external_evidence or embedded_evidence)
+                optional_failures = [call for call in result.get('tool_call_log', []) if call.get('status') == 'ERROR' and not call.get('required', True)]
                 if isinstance(parsed_result, dict) and parsed_result.get("data_used"):
                     structured_observation["data_used"] = _as_list(parsed_result.get("data_used"))[:20]
                 else:
@@ -817,6 +865,18 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                 legacy_status, result_status, blocked_reason, outcome_uncertainties = (
                     _executor_outcome(parsed_result, output)
                 )
+                from output_validation import validate_specialist
+                from execution_contracts import OutputError
+                try:
+                    validate_specialist(task['capability'], parsed_result)
+                    validated = result_status == 'COMPLETED'
+                except (OutputError, TypeError, ValueError):
+                    validated = False
+                    legacy_status, result_status, blocked_reason = 'failed', 'FAILED', '专业输出校验失败，未输出有效结果'
+                if result_status == 'FAILED':
+                    result.update(execution_outcome=result.get('execution_outcome', 'NO_RESULT'),
+                                  failure_reason=blocked_reason, final_report='', final_result='',
+                                  delivery_status='NOT_GENERATED')
                 was_revision_target = task.get("id") in set(plan.get("revision_targets", []) or [])
                 previous_result = state.get("subtask_results", {}).get(task.get("id"), {})
                 source_version = int(previous_result.get("source_version", 0) or 0) + 1
@@ -842,6 +902,7 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                     [str(item) for item in _as_list(parsed_result.get("uncertainties"))]
                     if isinstance(parsed_result, dict) else []
                 )
+                parsed_uncertainties.extend('可选检索不可用：' + str(call.get('tool', '')) for call in optional_failures)
                 all_uncertainties = list(dict.fromkeys(parsed_uncertainties + outcome_uncertainties))
                 observation = {
                     "subtask_id": task.get("id"),
@@ -871,7 +932,15 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                     "constraints_checked": [str(item) for item in constraints_checked],
                     "source_version": source_version,
                     "blocked_reason": blocked_reason,
+                    "validated": validated,
+                    "validity": "CURRENT" if validated else "INVALID",
+                    "input_reference": runtime_state.get('execution_context', {}).get('player_input', {}),
+                    "dependency_versions": {identity: dependency['source_version'] for identity, dependency in
+                                            runtime_state.get('execution_context', {}).get('dependencies', {}).items()},
                 }
+                from execution_context import input_fingerprint, input_material
+                v2_result['input_fingerprint'] = input_fingerprint(state, task)
+                v2_result['input_material'] = input_material(state, task)
                 for v2_subtask in v2_patch["subtasks"]:
                     if v2_subtask.get("id") == task.get("id"):
                         v2_subtask["observation"] = dict(v2_result["observation"])
@@ -894,6 +963,15 @@ def build_graph(agent_nodes: Dict[str, callable], **kwargs):
                     "iteration": next_iteration,
                     "termination_reason": "max_iterations" if next_iteration >= state.get("max_iterations", MAX_GRAPH_NODE_ITERATIONS) else "",
                 })
+                from result_validity import reconcile_results
+                merged_results = {**(state.get('subtask_results') or {}), **result['subtask_results']}
+                reuse = reconcile_results({**state, **result, 'subtask_results': merged_results})
+                # An accepted specialist result changes the review input even
+                # when its text happens to match its previous version.
+                from result_validity import clear_delivery
+                cleared = clear_delivery(state)
+                cleared['domain_outputs'] = {**(result.get('domain_outputs') or {}), **cleared['domain_outputs']}
+                result.update({**build_v2_state_patch({**state, **result, **reuse}), **reuse, **cleared})
                 return result
 
             execution_node._telemetry_agent = getattr(agent_nodes[node_name], "_telemetry_agent", None)
@@ -982,15 +1060,11 @@ def trim_messages_for_next_round(messages: List[Dict[str, Any]], summary: str) -
 
 def load_player_profile() -> Dict[str, Any]:
     """从 memory/player.json 加载球员档案。"""
-    from config import config
-    try:
-        with open(config.PLAYER_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+    from player_data.repository import read_snapshot
+    return read_snapshot().profile
 
 
-def create_initial_state(user_input: str) -> AgentState:
+def create_initial_state(user_input: str, *, repository=None, context=None, snapshot=None, continuation_context=None) -> AgentState:
     """创建初始状态。
 
     Args:
@@ -999,11 +1073,17 @@ def create_initial_state(user_input: str) -> AgentState:
     Returns:
         初始化的 AgentState。
     """
-    profile = load_player_profile()
+    from player_data.repository import read_snapshot
+    snapshot = snapshot or (repository.read_snapshot(context) if repository is not None else read_snapshot())
+    profile = snapshot.profile
 
     return {
         "messages": [{"role": "user", "content": user_input}],
         "player_profile": profile,
+        "player_snapshot": snapshot.to_dict(),
+        "continuation_context": deepcopy(continuation_context or {}),
+        "mission_id": "",
+        "result_history": [],
         "user_context": {"request": user_input, "player_profile": profile},
         "mission": {},
         "domain_outputs": {},

@@ -20,6 +20,7 @@ env/
 # IDE
 .vscode/
 .idea/
+.claude/settings.local.json
 *.swp
 *.swo
 *~
@@ -45,5 +46,9 @@ frontend/*.tsbuildinfo
 frontend/test-results/
 frontend/playwright-report/
 memory/web/
+local_data/cli/
 .web-test-data/
 .npm-cache/
+
+# Real game captures stay local; synthetic fixtures use a separate root.
+game_adapters/raw/real_test/

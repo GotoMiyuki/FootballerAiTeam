@@ -9,6 +9,13 @@ import { BlockedInputPanel } from './BlockedInputPanel'
 import { ConversationPanel } from '../conversation/ConversationPanel'
 import { MissionResult } from './MissionResult'
 import { ReportViewer } from '../report/ReportViewer'
+import { ReevaluationPanel } from './ReevaluationPanel'
+import { RecommendationsPanel } from './RecommendationsPanel'
+const sourceLabels: Record<string, string> = {
+  demo_fixture: '测试样本',
+  game_observation: '游戏观察',
+  user_confirmed: '用户确认',
+}
 export function MissionWorkspace({
   id,
   draftConversationId,
@@ -28,7 +35,7 @@ export function MissionWorkspace({
   if (id && query.isPending)
     return (
       <main className="mission-workspace">
-        <Loading label="恢复任务快照…" />
+        <Loading label="读取历史任务…" />
       </main>
     )
   if (id && query.isError)
@@ -87,6 +94,44 @@ export function MissionWorkspace({
                 新建任务
               </button>
             </div>
+            <div className="mission-input-reference">
+              <span>任务编号：{mission.id}</span>
+              {mission.lineage && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onMission(mission.lineage!.parent_mission_id)}
+                  >
+                    查看来源任务
+                  </button>
+                  <span>发起原因：{mission.lineage.reason}</span>
+                  <span>引用历史：{mission.lineage.history_references.length} 项</span>
+                </>
+              )}
+              {mission.input_reference?.verification === 'VERIFIED' ? (
+                <>
+                  <span>
+                    原数据上下文：{mission.input_reference.context?.career_id} /{' '}
+                    {mission.input_reference.context?.branch_id} /{' '}
+                    {mission.input_reference.context?.player_id}
+                  </span>
+                  <span>原数据版本：{mission.input_reference.state_version}</span>
+                  <span>
+                    来源：
+                    {mission.input_reference.source_types
+                      .map((source) => sourceLabels[source] || '未验证')
+                      .join('、') || '未记录'}
+                  </span>
+                </>
+              ) : (
+                <span>
+                  {mission.input_reference?.verification === 'DEMO'
+                    ? '演示任务：确定性样本，不代表实际球员观察'
+                    : '旧任务原数据来源与版本未验证'}
+                </span>
+              )}
+              <span>查看历史不会重新执行。解释使用原报告；补信息和审批续跑原任务。</span>
+            </div>
           </>
         ) : (
           <>
@@ -117,6 +162,7 @@ export function MissionWorkspace({
         </div>
       )}
       {mission?.error && <ErrorNotice message={mission.error} />}
+      {mission?.resume_error && <ErrorNotice message={mission.resume_error} />}
       <div className="workflow-grid">
         <PlanProgress plan={mission?.plan || null} missionStatus={mission?.status} />
         <AgentActivityPanel agents={mission?.agents || []} />
@@ -132,12 +178,15 @@ export function MissionWorkspace({
         <BlockedInputPanel key={`${mission.id}-${mission.blocked.reason}`} mission={mission} />
       )}
       {mission && <MissionResult mission={mission} onView={() => setReport(true)} />}
+      {mission && <RecommendationsPanel mission={mission} onReport={() => setReport(true)} />}
+      {mission && <ReevaluationPanel key={mission.id} mission={mission} onMission={onMission} />}
       <ConversationPanel
         key={mission?.conversation_id || draftConversationId}
         mission={mission}
         conversationId={mission?.conversation_id || draftConversationId}
         demo={demo}
         onMission={onMission}
+        onNew={onNew}
       />
       {mission && (
         <details className="telemetry">

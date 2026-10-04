@@ -1,0 +1,584 @@
+{
+  "schema_version": 1,
+  "task": "D0.2",
+  "retrieved_at": "2026-10-02T11:20:30.9508916+08:00",
+  "scope": "public_source_metadata_only; no_game_or_tool_execution",
+  "repositories": [
+    {
+      "name": "sider7",
+      "repository": "pes-modding/sider7",
+      "requested_ref": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "commit": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "commit_date": "2021-06-15T19:21:31Z",
+      "files": [
+        {
+          "path": "DDSTextureLoader.cpp",
+          "size": 61778,
+          "sha": "a5c37588f5f2f5d9d0adcf888915fe2164a47c6b"
+        },
+        {
+          "path": "DDSTextureLoader.h",
+          "size": 4866,
+          "sha": "0b5cb19d9515445e6d1780b590d4765b1471ca8e"
+        },
+        {
+          "path": "README.md",
+          "size": 396,
+          "sha": "2f15f4bd89284da6b1521981347fc227c65f9dc9"
+        },
+        {
+          "path": "WICTextureLoader.cpp",
+          "size": 34408,
+          "sha": "257bb4b3b45f029731056bce9e5e5b0b90984473"
+        },
+        {
+          "path": "WICTextureLoader.h",
+          "size": 4690,
+          "sha": "8843c33747852aa73d50844a6587d31194226908"
+        },
+        {
+          "path": "audio.cpp",
+          "size": 15814,
+          "sha": "812bdba877ac4fb1cd4eccf248a8ec1aecbaf468"
+        },
+        {
+          "path": "audio.h",
+          "size": 546,
+          "sha": "c3c1062c9dc4e37cb11a7f57b77823cac51e14ac"
+        },
+        {
+          "path": "common.cpp",
+          "size": 5087,
+          "sha": "76cec90d0d1ca2974ff92e039c0f6054c026ab9a"
+        },
+        {
+          "path": "common.h",
+          "size": 685,
+          "sha": "c47b68942f710abc312b8a961b2eced9a86211fa"
+        },
+        {
+          "path": "config.h",
+          "size": 19491,
+          "sha": "8004f9288f05d62bebceefa9d7f287532c00911f"
+        },
+        {
+          "path": "content/kit-server/France/config.txt",
+          "size": 1444,
+          "sha": "8696a25f82c760a5dd81f041e0265a04006d9434"
+        },
+        {
+          "path": "content/trophy-server/eng_premier_league/readme.txt",
+          "size": 193,
+          "sha": "3b28dffec68a6f92375d69a0680ce9877297135c"
+        },
+        {
+          "path": "content/trophy-server/map.txt",
+          "size": 1128,
+          "sha": "95b61c5f7192c1e1139e6e9a9926690b19909143"
+        },
+        {
+          "path": "doc/history.txt",
+          "size": 1024,
+          "sha": "3c8dcb6b0b8ecce259dfe19b451fa6323968b960"
+        },
+        {
+          "path": "doc/license-kmp.txt",
+          "size": 1191,
+          "sha": "2b6907ae2ce249a688d940cbc9a9cdfac9ccce7c"
+        },
+        {
+          "path": "doc/license-luajit.txt",
+          "size": 2932,
+          "sha": "6ed40025ae076fa48318e747d74b15991613b137"
+        },
+        {
+          "path": "doc/license-ma.txt",
+          "size": 2597,
+          "sha": "aa2f82ce3caf322f3b2c26dc0f83160e20850392"
+        },
+        {
+          "path": "doc/license-zlib.txt",
+          "size": 986,
+          "sha": "d81cc722c36d2696144c85499f2e0984a507c724"
+        },
+        {
+          "path": "doc/license.txt",
+          "size": 1376,
+          "sha": "90b522af807fa2d889064d144e9700d72710828b"
+        },
+        {
+          "path": "doc/readme.html",
+          "size": 16549,
+          "sha": "5c27cd49d31f209780afca3f40045d67ee5dcde9"
+        },
+        {
+          "path": "doc/scripting.html",
+          "size": 62361,
+          "sha": "813db287b0f0f068189277e6d8851237b7a565f1"
+        },
+        {
+          "path": "doc/tournaments.txt",
+          "size": 5751,
+          "sha": "300c33940126916a2c6ebe0cb2828942a9ff7122"
+        },
+        {
+          "path": "imageutil.cpp",
+          "size": 8149,
+          "sha": "b7d38eb029d08b52d66de93f3fd4d7906c74195f"
+        },
+        {
+          "path": "imageutil.h",
+          "size": 855,
+          "sha": "530dd42346fa0023a4f2a72e81b6d30139b3b890"
+        },
+        {
+          "path": "kitinfo.cpp",
+          "size": 19768,
+          "sha": "82389544582a69ae5f9cfa69bd972e0c339b8acf"
+        },
+        {
+          "path": "kitinfo.h",
+          "size": 2514,
+          "sha": "4cfd7f9e0f15612cffd3220cbd059ea187569b84"
+        },
+        {
+          "path": "kmp.cpp",
+          "size": 2667,
+          "sha": "cd4cb4d06f7b5c0d5b8264c762d38ee28d09adf2"
+        },
+        {
+          "path": "kmp.h",
+          "size": 146,
+          "sha": "8dff17c16ad77648441fb21abbb6881ddcfa54ee"
+        },
+        {
+          "path": "libz.cpp",
+          "size": 5743,
+          "sha": "ccf0f32e88ca7dd340ccccaa0a7bbc464b982f47"
+        },
+        {
+          "path": "libz.h",
+          "size": 145,
+          "sha": "d0035e45127ad0bd296eaa8d3cfc35a6ad6ac751"
+        },
+        {
+          "path": "main.cpp",
+          "size": 4237,
+          "sha": "f384f4325ce169f7aebf41981fc8af1ea26a7622"
+        },
+        {
+          "path": "makefileutilhdr.c",
+          "size": 901,
+          "sha": "975766b1b3f60614b781499b1e959c5f706d961d"
+        },
+        {
+          "path": "makememlibhdr.c",
+          "size": 889,
+          "sha": "b51e0c774f48df395c99b24f51522122784642fa"
+        },
+        {
+          "path": "memlib.cpp",
+          "size": 662,
+          "sha": "4ca10b647c584ab2bcb979a4faa9d8e466c7c2c0"
+        },
+        {
+          "path": "memlib.h",
+          "size": 97,
+          "sha": "ccd7905c1c6ef9e7052b942b5cb320b6207b3d41"
+        },
+        {
+          "path": "memory.lua",
+          "size": 9816,
+          "sha": "0e93f5e2370b38c5e1f74042fb88bc36e9fcf255"
+        },
+        {
+          "path": "modules/audiodemo.lua",
+          "size": 4760,
+          "sha": "629deda6e3a5f71dfe409c19efba63cf2d5d3a0f"
+        },
+        {
+          "path": "modules/camera.lua",
+          "size": 12622,
+          "sha": "d6012ae0268f5e787addf675f14682776c50d947"
+        },
+        {
+          "path": "modules/cr7_audio.lua",
+          "size": 1013,
+          "sha": "2e72cb07e624f947148231af3d0e8ab714e9d708"
+        },
+        {
+          "path": "modules/env.lua",
+          "size": 429,
+          "sha": "36e45951a41ed6f29e823fafa48031c3e6402414"
+        },
+        {
+          "path": "modules/etrace.lua",
+          "size": 2267,
+          "sha": "ed5de38e9f0d558e2f82e995b537411f11855875"
+        },
+        {
+          "path": "modules/facedump.lua",
+          "size": 2644,
+          "sha": "482fdb3058df9af44ca6fcae22e84553ab61420e"
+        },
+        {
+          "path": "modules/filedump.lua",
+          "size": 609,
+          "sha": "32a11a9d456e11f6ab368eadc0d992881c49a3cf"
+        },
+        {
+          "path": "modules/filedump2.lua",
+          "size": 959,
+          "sha": "922ff92723b5448b9cc33a02e4c50306eef01870"
+        },
+        {
+          "path": "modules/fileevents.lua",
+          "size": 832,
+          "sha": "3518f2f992b541aef4c0e76f6a8f71147b09272c"
+        },
+        {
+          "path": "modules/gameplay.lua",
+          "size": 2055,
+          "sha": "843846837621d753a64c4df6b78b0c942195d017"
+        },
+        {
+          "path": "modules/gc64test.lua",
+          "size": 740,
+          "sha": "b9b2f0ead05ece210d50070c1250c3b975b75ef2"
+        },
+        {
+          "path": "modules/inputdemo.lua",
+          "size": 2455,
+          "sha": "200a1be806600b72896369acea1a70d70a5769df"
+        },
+        {
+          "path": "modules/jittest.lua",
+          "size": 369,
+          "sha": "9607ea14d478cda9f389f71582b12e2110eb4086"
+        },
+        {
+          "path": "modules/kitrewrite.lua",
+          "size": 381,
+          "sha": "9ddb6bd24490bb5b5bac0879da8f428a04c96625"
+        },
+        {
+          "path": "modules/kserv.lua",
+          "size": 19987,
+          "sha": "b524d9e3bbb519ac83e37a9c44fef11efcd08b2a"
+        },
+        {
+          "path": "modules/matchset.lua",
+          "size": 746,
+          "sha": "fb2e97afdc64db0336ed62935feba2452bff886e"
+        },
+        {
+          "path": "modules/memtest.lua",
+          "size": 1447,
+          "sha": "833c58569677b08c8a3fbd2ce00bcef095b10520"
+        },
+        {
+          "path": "modules/mstats.lua",
+          "size": 858,
+          "sha": "9ae0ad81c99dcd9df1b9d5698175ea4368fd329a"
+        },
+        {
+          "path": "modules/netblock.lua",
+          "size": 1076,
+          "sha": "83086c2bfc50717a9a93b0bb41f32bc3e1f5b700"
+        },
+        {
+          "path": "modules/overdemo.lua",
+          "size": 1692,
+          "sha": "9905f97056c9f81787ec7d6393072c8969f96ab6"
+        },
+        {
+          "path": "modules/pointers.lua",
+          "size": 904,
+          "sha": "992c3b3d35c8817c0f9606811ef2b24e8adf0812"
+        },
+        {
+          "path": "modules/snow.lua",
+          "size": 356,
+          "sha": "9ea5265201237d9b8420886b5e96672fb0a8688b"
+        },
+        {
+          "path": "modules/stadswitch.lua",
+          "size": 860,
+          "sha": "cd04ed1bbaa48e713bc547fccc858672288c6905"
+        },
+        {
+          "path": "modules/team_bin_reader.lua",
+          "size": 1541,
+          "sha": "228fe3cffe1da33d37cbf13506856f4cb051be89"
+        },
+        {
+          "path": "modules/timeaccel.lua",
+          "size": 462,
+          "sha": "195bc24b5dc5de052125d40b2ffd463df8715e5d"
+        },
+        {
+          "path": "modules/tracer.lua",
+          "size": 433,
+          "sha": "2ddf07dbaf3ec70ae4bb54d8087e1db1691ffb2c"
+        },
+        {
+          "path": "modules/trophy.lua",
+          "size": 3104,
+          "sha": "20351ad55ebe2f977a08cc51b4b4e5fd5ff32194"
+        },
+        {
+          "path": "modules/vchange.lua",
+          "size": 1432,
+          "sha": "7cb006378b80a097d0ec0c1f4c3e845c99f792c6"
+        },
+        {
+          "path": "modules/zlibtest.lua",
+          "size": 1972,
+          "sha": "55a33191dc700c62e796f419b6452184914a2214"
+        },
+        {
+          "path": "patterns.h",
+          "size": 44155,
+          "sha": "b82ac1f2a626ab45d947ce949e337c146455b829"
+        },
+        {
+          "path": "sider.cpp",
+          "size": 276119,
+          "sha": "b97c8cd16464c1ea8f08fe2a49d67df81ca85f3d"
+        },
+        {
+          "path": "sider.h",
+          "size": 843,
+          "sha": "e4acee6ba42e60484332261cc4cc9089a6c83d89"
+        },
+        {
+          "path": "simple_playback.c",
+          "size": 1898,
+          "sha": "579be9bda1a233bcbec33031e53f1808d98a57f4"
+        },
+        {
+          "path": "utf8.h",
+          "size": 10077,
+          "sha": "a2a08cd7fbb95a4c4a824ce3aeff97b0e2c3e99a"
+        },
+        {
+          "path": "version.cpp",
+          "size": 1249,
+          "sha": "1bea408a5b0babdeb286fe56a544240b5c91586e"
+        }
+      ]
+    },
+    {
+      "name": "cheat_table",
+      "repository": "xAranaktu/PES-2021-Cheat-Table",
+      "requested_ref": "master",
+      "commit": "6043cabf2b8b314064d06d63ae5fc3e5f522d2ed",
+      "commit_date": "2022-11-26T11:45:54Z",
+      "files": [
+        {
+          "path": "PES 2021 - v21.1.0.CT",
+          "size": 109521,
+          "sha": "0adbfe372244b60e933450c102c7d8342c3779fc"
+        },
+        {
+          "path": "README.md",
+          "size": 1067,
+          "sha": "d6e3b3d9ec43d77fbb761c81122bd3e56b0d9e7f"
+        },
+        {
+          "path": "SP Football Life 2023 - v21.1.0.CT",
+          "size": 106692,
+          "sha": "815cea004b54e7915881934ce169bc4c95918392"
+        },
+        {
+          "path": "changelog.txt",
+          "size": 33,
+          "sha": "2ca079f5e3d57868bf7d0b4921d28065e712c969"
+        }
+      ]
+    },
+    {
+      "name": "save_editor",
+      "repository": "the4chancup/4ccEditor",
+      "requested_ref": "c92d5351a65e179781a2353f9660c20b6a4f6d7c",
+      "commit": "c92d5351a65e179781a2353f9660c20b6a4f6d7c",
+      "commit_date": "2026-04-01T20:52:08Z",
+      "files": [
+        {
+          "path": "LICENSE.md",
+          "size": 882,
+          "sha": "e5e906e379477ad29cd84a2815fb4a39a36fc0f0"
+        },
+        {
+          "path": "README.md",
+          "size": 506,
+          "sha": "626301e2e332e2872968f6c6c253fbb1f3a48aba"
+        },
+        {
+          "path": "aatf.cpp",
+          "size": 27608,
+          "sha": "75b3c573ab815fc947dd2a2d0a5788a33c7f50a2"
+        },
+        {
+          "path": "aatf.h",
+          "size": 1340,
+          "sha": "95521c9a56be65cd6190494725b2d363c41e0c10"
+        },
+        {
+          "path": "comparator.cpp",
+          "size": 22360,
+          "sha": "583af8e05ae9c494066dd5ca3b9500331b5b4193"
+        },
+        {
+          "path": "crypt.cpp",
+          "size": 782,
+          "sha": "2b3e078df899e90233737b2eae802085b1c17c25"
+        },
+        {
+          "path": "crypt.h",
+          "size": 2977,
+          "sha": "89e9f7727aa7e4c0114d3e26cfb65c0ac2621594"
+        },
+        {
+          "path": "data_util.cpp",
+          "size": 5686,
+          "sha": "ffc64f7a0a45df3d93355e9f1d86a00e11790464"
+        },
+        {
+          "path": "editor.h",
+          "size": 30143,
+          "sha": "21212879c590cacaf481d758cfeb6bdbe5402ed0"
+        },
+        {
+          "path": "fpc.cpp",
+          "size": 6305,
+          "sha": "dec8314d6d6a2cd03d05356d456deb1e2a98b181"
+        },
+        {
+          "path": "main.cpp",
+          "size": 193920,
+          "sha": "889681ebee9058bebdad98db283e9fcdcca8c469"
+        },
+        {
+          "path": "menu_lists.cpp",
+          "size": 4091,
+          "sha": "8d36932edf55ebd072c823f54344091bf708953c"
+        },
+        {
+          "path": "pes15.cpp",
+          "size": 27454,
+          "sha": "761e6f32792eddc234aed554cf60ee581a0cb508"
+        },
+        {
+          "path": "pes16.cpp",
+          "size": 28228,
+          "sha": "679453e56a9737736f2ddcd249d2eaf163a2951c"
+        },
+        {
+          "path": "pes17.cpp",
+          "size": 28463,
+          "sha": "7e43f2f0fb60536daf76c367feec4f7708992b3f"
+        },
+        {
+          "path": "pes18.cpp",
+          "size": 35596,
+          "sha": "ef648bc58a0c73434484bf1bd0dd89d097d0cfa7"
+        },
+        {
+          "path": "pes19.cpp",
+          "size": 35565,
+          "sha": "f0a9c9b22d6098365a0910e5ff25a16cab5d31ea"
+        },
+        {
+          "path": "pes20.cpp",
+          "size": 36273,
+          "sha": "ff4c400f927f68ae957d8fe491cbc0f493fe5726"
+        },
+        {
+          "path": "pstdint.h",
+          "size": 32102,
+          "sha": "f4a30815abeea774b0862e18678bee9c53f515b2"
+        },
+        {
+          "path": "resource.h",
+          "size": 12531,
+          "sha": "26836337da23ca3e656d1918427837602a91cdde"
+        },
+        {
+          "path": "window.cpp",
+          "size": 113595,
+          "sha": "f63207d5eba736574ff2a19f56a513fcd52860dd"
+        },
+        {
+          "path": "window.h",
+          "size": 2654,
+          "sha": "6a3c5146ff4f1bd8ad61d9f90ab9f6e5eb0683d0"
+        }
+      ]
+    },
+    {
+      "name": "decrypter",
+      "repository": "the4chancup/pesXdecrypter",
+      "requested_ref": "master",
+      "commit": "2214f035600eb317d089d93c0bcb5b078f8e9eb8",
+      "commit_date": "2020-09-18T13:40:48Z",
+      "files": [
+        {
+          "path": "CMakeLists.txt",
+          "size": 3143,
+          "sha": "1f81549d7feecf46e4eae32ae1d75e043be17b94"
+        },
+        {
+          "path": "LICENSE.txt",
+          "size": 3326,
+          "sha": "85efb54421c021d6ab74f3576a195176b8632577"
+        },
+        {
+          "path": "README.md",
+          "size": 5513,
+          "sha": "6807d5f0a08c27091528ead04bbc91875541f01b"
+        },
+        {
+          "path": "src/crypt.c",
+          "size": 12364,
+          "sha": "679d97746051f24c1e457563052c84f875eb34cb"
+        },
+        {
+          "path": "src/crypt.h",
+          "size": 3214,
+          "sha": "48f5e414475a144f31938f44bdd87beac45004df"
+        },
+        {
+          "path": "src/decrypter.c",
+          "size": 1900,
+          "sha": "ebc2d6be2ae9d363aa7ea731304f22dd05679f0f"
+        },
+        {
+          "path": "src/encrypter.c",
+          "size": 1900,
+          "sha": "3b4b9b8fd672aeadee991a615bbbf02c2727725c"
+        },
+        {
+          "path": "src/masterkey.c",
+          "size": 6204,
+          "sha": "5b66b5dd0883a1222fb121e69c23562279806e28"
+        },
+        {
+          "path": "src/masterkey.h",
+          "size": 2099,
+          "sha": "823d71f8b500d007162386235767875d080af96a"
+        },
+        {
+          "path": "src/mt19937ar.c",
+          "size": 4947,
+          "sha": "f7ee7d73fd105f0a1df2b19c9a65b262f54b8aca"
+        },
+        {
+          "path": "src/mt19937ar.h",
+          "size": 154,
+          "sha": "3f4100cd2700468bf93744c5708db78355cb3ca8"
+        }
+      ]
+    }
+  ]
+}

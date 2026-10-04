@@ -24,6 +24,54 @@ function event(sequence = 4): MissionEvent {
   }
 }
 describe('ordered public mission events', () => {
+  it('accepts explanation messages while preserving the completed report and input version', () => {
+    const changed = event()
+    changed.type = 'message.created'
+    changed.data.snapshot = {
+      ...changed.data.snapshot,
+      status: 'COMPLETED',
+      report: { title: '原报告', plan_version: 1 },
+      delivery_status: 'PUBLISHABLE',
+      input_reference: {
+        verification: 'VERIFIED',
+        context: null,
+        state_version: 'v1',
+        snapshot_id: 's1',
+        source_types: [],
+      },
+    }
+    const parsed = parseEvent(JSON.stringify(changed))
+    expect(reduceMissionEvent(mission, parsed)?.report?.title).toBe('原报告')
+    expect(reduceMissionEvent(mission, parsed)?.input_reference?.state_version).toBe('v1')
+  })
+  it('accepts failure, unavailable review and invalidation snapshots without success residue', () => {
+    for (const type of [
+      'subtask.failed',
+      'review.unavailable',
+      'review.invalidated',
+      'subtask.invalidated',
+      'agent.failed',
+    ] as const) {
+      const changed = event()
+      changed.type = type
+      changed.data.snapshot = {
+        ...changed.data.snapshot,
+        status: 'FAILED',
+        report: null,
+        result: null,
+        review: {
+          availability: 'UNAVAILABLE',
+          decision: null,
+          summary: '审查未完成',
+          affected_subtasks: [],
+          severity: 'INFO',
+        },
+      }
+      const parsed = parseEvent(JSON.stringify(changed))
+      expect(reduceMissionEvent(mission, parsed)?.report).toBeNull()
+      expect(reduceMissionEvent(mission, parsed)?.review?.decision).toBeNull()
+    }
+  })
   it('replaces the plan atomically when replan removes old tasks', () => {
     expect(reduceMissionEvent(mission, event())?.plan).toEqual(event().data.snapshot.plan)
   })

@@ -1,7 +1,7 @@
 """
 FootballAI Career Agent - 会话管理
 
-多轮对话的 session 持久化与恢复。
+旧 JSON 元数据索引保留兼容；新 CLI 索引只读投影任务库，不推导 checkpoint。
 """
 import json
 import os
@@ -9,8 +9,54 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from config import config
+from pathlib import Path
+import sqlite3
 
 SESSIONS_FILE = os.path.join(config.MEMORY_DIR, "sessions.json")
+
+
+class SessionRepository:
+    """Read-only index over the shared Mission format in an independent CLI root."""
+    storage_format = 'mission-sqlite-v1'
+
+    def __init__(self, root=None):
+        self.root = Path(root or config.CLI_DATA_DIR).resolve()
+        self.workspace_path = self.root / 'workspace.sqlite3'
+        self.checkpoint_path = self.root / 'checkpoints.sqlite3'
+
+    def _read(self, statement, parameters=()):
+        if not self.workspace_path.is_file():
+            return []
+        try:
+            db = sqlite3.connect(self.workspace_path.as_uri() + '?mode=ro', uri=True)
+            try:
+                return db.execute(statement, parameters).fetchall()
+            finally:
+                db.close()
+        except sqlite3.Error as error:
+            raise ValueError('CLI 任务索引无法读取或格式不兼容，不会初始化旧数据') from error
+
+    def mission(self, thread_id):
+        from backend.models import MissionView
+        rows = self._read('SELECT snapshot FROM missions WHERE id=?', (thread_id,))
+        return MissionView.model_validate_json(rows[0][0]) if rows else None
+
+    def list(self):
+        from backend.models import MissionView
+        records = []
+        for (raw,) in self._read('SELECT snapshot FROM missions ORDER BY rowid DESC'):
+            mission = MissionView.model_validate_json(raw)
+            records.append({'thread_id': mission.id, 'conversation_id': mission.conversation_id,
+                'status': mission.status, 'first_input': mission.objective, 'created_at': mission.created_at,
+                'storage_format': self.storage_format, 'workspace_path': str(self.workspace_path),
+                'checkpoint_path': str(self.checkpoint_path), 'input_reference': mission.input_reference.model_dump()})
+        return records
+
+    def report(self, mission):
+        if mission.status != 'COMPLETED' or mission.delivery_status != 'PUBLISHABLE' or not mission.report:
+            return None
+        rows = self._read('SELECT report FROM missions WHERE id=?', (mission.id,))
+        return rows[0][0] if rows else None
 
 
 def _read_sessions() -> List[Dict[str, Any]]:

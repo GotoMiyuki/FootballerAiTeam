@@ -1,88 +1,59 @@
 """
 FootballAI Career Agent - 球员数据库工具
 
-提供长时记忆（Long Memory）的读写接口。
+提供统一 Repository 快照的只读接口；旧写入符号仅保留拒绝调用的兼容入口。
 支持 offense/defense/physical/goalkeeping 四维属性结构。
 """
 
 import json
-import os
-from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from langchain_core.tools import tool
 
-from config import config
-from utils.helpers import deep_merge_attributes
-
-
-def _read_json(filepath: str) -> Dict[str, Any]:
-    """读取 JSON 文件，不存在则返回空字典/空列表。"""
-    if not os.path.exists(filepath):
-        return {}
-    with open(filepath, "r", encoding="utf-8") as f:
-        return json.load(f)
+from player_data.repository import read_snapshot
 
 
 def _write_json(filepath: str, data: Any) -> None:
-    """写入 JSON 文件。"""
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    """已停用的旧直接写入入口。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 # ============================================================
-# 基础读写函数
+# 基础读取函数与拒绝写入的兼容符号
 # ============================================================
 
 def read_player_profile() -> Dict[str, Any]:
-    """从 memory/player.json 读取球员档案。"""
-    return _read_json(config.PLAYER_FILE)
+    """从当前任务固定的只读快照读取球员档案。"""
+    return read_snapshot().profile
 
 
 def update_player_profile(updates: Dict[str, Any]) -> Dict[str, Any]:
-    """更新 memory/player.json 中的球员数据。
-
-    Args:
-        updates: 需要更新的字段，会与现有数据合并。
-    """
-    profile = read_player_profile()
-    profile.update(updates)
-    profile["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-    _write_json(config.PLAYER_FILE, profile)
-    return profile
+    """已停用；事实更新必须通过应用配置的 ObservationImporter。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 def read_training_history() -> List[Dict[str, Any]]:
     """读取训练历史记录。"""
-    data = _read_json(config.TRAINING_HISTORY_FILE)
-    return data if isinstance(data, list) else []
+    return read_snapshot().training
 
 
 def read_match_history() -> List[Dict[str, Any]]:
     """读取比赛历史记录。"""
-    data = _read_json(config.MATCH_HISTORY_FILE)
-    return data if isinstance(data, list) else []
+    return read_snapshot().matches
 
 
 def read_career_history() -> Dict[str, Any]:
     """读取职业发展历史记录。"""
-    return _read_json(config.CAREER_HISTORY_FILE)
+    return read_snapshot().career
 
 
 def append_training_record(record: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """向训练历史追加一条记录。"""
-    history = read_training_history()
-    history.append(record)
-    _write_json(config.TRAINING_HISTORY_FILE, history)
-    return history
+    """已停用的训练历史直接写入入口。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 def append_match_record(record: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """向比赛历史追加一条记录。"""
-    history = read_match_history()
-    history.append(record)
-    _write_json(config.MATCH_HISTORY_FILE, history)
-    return history
+    """已停用的比赛历史直接写入入口。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 # ============================================================
@@ -102,72 +73,14 @@ def ReadPlayerProfileTool() -> str:
 
 @tool
 def UpdatePlayerProfileTool(updates_json: str) -> str:
-    """更新球员档案顶层数据（身高、体重、年龄等）。不适用于嵌套属性更新。
-    如需更新能力值，请使用 UpdatePlayerAttributeTool。
-
-    Args:
-        updates_json: JSON 格式的更新数据字符串，例如 '{"weight": 57, "training_intensity": "Medium"}'
-    """
-    try:
-        updates = json.loads(updates_json)
-    except json.JSONDecodeError:
-        return "错误：输入不是有效的 JSON 格式。"
-    updated = update_player_profile(updates)
-    return json.dumps(updated, ensure_ascii=False, indent=2)
+    """已停用的旧工具符号，调用一律拒绝；不注册给模型。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 @tool
 def UpdatePlayerAttributeTool(update_json: str) -> str:
-    """更新球员能力属性值，支持深层嵌套更新 offense/defense/physical/goalkeeping/other_features。
-
-    使用方式：
-    - 更新单项: '{"offense": {"shooting": 73}}'
-    - 更新多项: '{"physical": {"speed": 83, "stamina": 77}}'
-    - 更新特征: '{"other_features": {"form_consistency": 7}}'
-    - 组合更新: '{"offense": {"passing": 75}, "physical": {"speed": 83}}'
-
-    工具会自动将新值与现有值深度合并，不会覆盖未提及的属性。
-
-    Args:
-        update_json: JSON 格式的属性更新数据。
-    """
-    try:
-        updates = json.loads(update_json)
-    except json.JSONDecodeError:
-        return "错误：输入不是有效的 JSON 格式。"
-
-    profile = read_player_profile()
-    if not profile:
-        return "错误：未找到球员档案。"
-
-    # 深度合并 attributes
-    current_attrs = profile.get("attributes", {})
-    if "attributes" in updates:
-        profile["attributes"] = deep_merge_attributes(current_attrs, updates["attributes"])
-        del updates["attributes"]
-
-    # other_features 深度合并
-    current_other = profile.get("other_features", {})
-    if "other_features" in updates:
-        profile["other_features"] = deep_merge_attributes(current_other, updates["other_features"])
-        del updates["other_features"]
-
-    # offense/defense/physical/goalkeeping 直接合并到 attributes 下
-    for category in ("offense", "defense", "physical", "goalkeeping"):
-        if category in updates:
-            current_attrs = profile.get("attributes", {})
-            profile["attributes"] = deep_merge_attributes(
-                current_attrs, {category: updates[category]}
-            )
-            del updates[category]
-
-    # 其余顶层字段更新
-    if updates:
-        profile.update(updates)
-
-    profile["last_updated"] = datetime.now().strftime("%Y-%m-%d")
-    _write_json(config.PLAYER_FILE, profile)
-    return json.dumps(profile, ensure_ascii=False, indent=2)
+    """已停用的旧工具符号，预测不得更新能力事实；不注册给模型。"""
+    raise PermissionError("Uncontrolled fact writes are disabled; use a configured ObservationImporter")
 
 
 @tool
@@ -208,8 +121,6 @@ def ReadCareerHistoryTool() -> str:
 # 工具列表，方便 Agent 注册
 DATABASE_TOOLS = [
     ReadPlayerProfileTool,
-    UpdatePlayerProfileTool,
-    UpdatePlayerAttributeTool,
     ReadTrainingHistoryTool,
     ReadMatchHistoryTool,
     ReadCareerHistoryTool,

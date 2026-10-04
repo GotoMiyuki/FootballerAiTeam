@@ -1,0 +1,1020 @@
+{
+  "schema_version": 1,
+  "task": "D0.2",
+  "retrieved_at": "2026-10-02T03:26:14.8950701+00:00",
+  "note": "Read source as text only. No CT, Lua, C or tool was executed. Matches are lookup aids, not field compatibility evidence.",
+  "sources": [
+    {
+      "repository": "pes-modding/sider7",
+      "commit": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "path": "doc/history.txt",
+      "raw_url": "https://raw.githubusercontent.com/pes-modding/sider7/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/history.txt",
+      "browser_url": "https://github.com/pes-modding/sider7/blob/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/history.txt",
+      "sha256": "5270743cf494793b16c7caf859d05e8b64fe5999787b2248477ba9fb609ced6b",
+      "size_bytes": 1024,
+      "line_count": 50,
+      "matches": [
+        {
+          "line": 32,
+          "text": "- small tweak to support PES 2021 Lite 1.05.00 exe"
+        }
+      ]
+    },
+    {
+      "repository": "pes-modding/sider7",
+      "commit": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "path": "doc/scripting.html",
+      "raw_url": "https://raw.githubusercontent.com/pes-modding/sider7/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/scripting.html",
+      "browser_url": "https://github.com/pes-modding/sider7/blob/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/scripting.html",
+      "sha256": "0dc43b1fb0fe88f9e84c7b64b216a7a170374ef1e1235cd59c3f4d6977254a12",
+      "size_bytes": 62361,
+      "line_count": 1610,
+      "matches": [
+        {
+          "line": 42,
+          "text": "<h4>For sider.dll version: 7.1</h4>"
+        },
+        {
+          "line": 1136,
+          "text": "This function queries the game process (PES2021.exe) for information"
+        },
+        {
+          "line": 1583,
+          "text": "<p class=\"func\">match.stats()</p>"
+        },
+        {
+          "line": 1592,
+          "text": "<li><b>home_score</b>, <b>away_score</b>: current score</li>"
+        },
+        {
+          "line": 1593,
+          "text": "<li><b>pk_home_score</b>, <b>pk_away_score</b>: current score in penalty shootout (if one is happening)</li>"
+        },
+        {
+          "line": 1596,
+          "text": "<li><b>clock_minutes</b>, <b>clock_seconds</b>: current match clock</li>"
+        }
+      ]
+    },
+    {
+      "repository": "pes-modding/sider7",
+      "commit": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "path": "doc/readme.html",
+      "raw_url": "https://raw.githubusercontent.com/pes-modding/sider7/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/readme.html",
+      "browser_url": "https://github.com/pes-modding/sider7/blob/ed4413f013e2d9ad5357c9872149452e238ed1ca/doc/readme.html",
+      "sha256": "6987ad2b28cb5c8f159695a1546ef8efb962f18bebe7abf37ff4bd8b1929b05b",
+      "size_bytes": 16549,
+      "line_count": 418,
+      "matches": [
+        {
+          "line": 28,
+          "text": "<h4>version 7.1.4 from June 15, 2021</h4>"
+        },
+        {
+          "line": 33,
+          "text": "<p>Sider is a companion program for PES 2021 and PES 2021 Lite. It allows for"
+        },
+        {
+          "line": 72,
+          "text": "for PES 2021. I am not entirely sure where that idea originated. One possibilty is a"
+        },
+        {
+          "line": 110,
+          "text": "<p class=\"gwarn\">The very first time (or after Steam downloads a new, updated PES2021.exe), there will be a small delay"
+        },
+        {
+          "line": 147,
+          "text": "exe.name = \"\\PES2021.exe\""
+        }
+      ]
+    },
+    {
+      "repository": "pes-modding/sider7",
+      "commit": "ed4413f013e2d9ad5357c9872149452e238ed1ca",
+      "path": "sider.cpp",
+      "raw_url": "https://raw.githubusercontent.com/pes-modding/sider7/ed4413f013e2d9ad5357c9872149452e238ed1ca/sider.cpp",
+      "browser_url": "https://github.com/pes-modding/sider7/blob/ed4413f013e2d9ad5357c9872149452e238ed1ca/sider.cpp",
+      "sha256": "cbe59dde0bacc1cd7affdeb3b2262a1c68754331bdec2e6abcfec1a29315f280",
+      "size_bytes": 276119,
+      "line_count": 7646,
+      "matches": [
+        {
+          "line": 230,
+          "text": "BYTE home_score;"
+        },
+        {
+          "line": 252,
+          "text": "DWORD home_score;"
+        },
+        {
+          "line": 255,
+          "text": "DWORD clock_minutes;"
+        },
+        {
+          "line": 260,
+          "text": "DWORD clock_minutes_again;"
+        },
+        {
+          "line": 1668,
+          "text": "static int sider_match_get_stats(lua_State *L) {"
+        },
+        {
+          "line": 1681,
+          "text": "int home_score = _sci->home_score;"
+        },
+        {
+          "line": 1685,
+          "text": "home_score = _sci->sci2->home_score;"
+        },
+        {
+          "line": 1689,
+          "text": "lua_pushstring(L, \"home_score\");"
+        },
+        {
+          "line": 1690,
+          "text": "lua_pushnumber(L, home_score);"
+        },
+        {
+          "line": 1696,
+          "text": "lua_pushstring(L, \"pk_home_score\");"
+        },
+        {
+          "line": 1705,
+          "text": "int minutes = _sci->clock_minutes;"
+        },
+        {
+          "line": 1731,
+          "text": "lua_pushstring(L, \"clock_minutes\");"
+        },
+        {
+          "line": 6211,
+          "text": "lua_pushcclosure(L, sider_match_get_stats, 1);"
+        },
+        {
+          "line": 7150,
+          "text": "// pes 2021 lite: does not work"
+        }
+      ]
+    },
+    {
+      "repository": "xAranaktu/PES-2021-Cheat-Table",
+      "commit": "6043cabf2b8b314064d06d63ae5fc3e5f522d2ed",
+      "path": "README.md",
+      "raw_url": "https://raw.githubusercontent.com/xAranaktu/PES-2021-Cheat-Table/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/README.md",
+      "browser_url": "https://github.com/xAranaktu/PES-2021-Cheat-Table/blob/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/README.md",
+      "sha256": "4910ea86d028dc4b97aad4b404867c418b7da61b5dae707a6923d6a65a2f016b",
+      "size_bytes": 1067,
+      "line_count": 42,
+      "matches": [
+        {
+          "line": 1,
+          "text": "# eFootball PES 2021 Cheat Table"
+        },
+        {
+          "line": 7,
+          "text": "1. Activate Edit Player script"
+        },
+        {
+          "line": 10,
+          "text": "## How to edit your player in Become a Legend Game Mode"
+        },
+        {
+          "line": 12,
+          "text": "1. Activate Edit Player script"
+        },
+        {
+          "line": 15,
+          "text": "## How to Edit player in other team (same in both game modes)"
+        },
+        {
+          "line": 17,
+          "text": "1. Activate Edit Player Script"
+        },
+        {
+          "line": 27,
+          "text": "- Edit Focus Points in BAL Mode"
+        },
+        {
+          "line": 31,
+          "text": "- Edit Player:"
+        }
+      ]
+    },
+    {
+      "repository": "xAranaktu/PES-2021-Cheat-Table",
+      "commit": "6043cabf2b8b314064d06d63ae5fc3e5f522d2ed",
+      "path": "PES 2021 - v21.1.0.CT",
+      "raw_url": "https://raw.githubusercontent.com/xAranaktu/PES-2021-Cheat-Table/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/PES%202021%20-%20v21.1.0.CT",
+      "browser_url": "https://github.com/xAranaktu/PES-2021-Cheat-Table/blob/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/PES%202021%20-%20v21.1.0.CT",
+      "sha256": "da67eb5c8f7b13243ad5be654d618ea5e4baeb52449fecbc453144af6c89af7c",
+      "size_bytes": 109521,
+      "line_count": 2830,
+      "matches": [
+        {
+          "line": 33,
+          "text": "<Description>\"Edit Player\"</Description>"
+        },
+        {
+          "line": 37,
+          "text": "<AssemblerScript>{ Game   : PES2021.exe"
+        },
+        {
+          "line": 50,
+          "text": "aobscanmodule(INJECT_ptrPlayer,PES2021.exe,CB B8 02 00 00 00 0F 1F 40 00 66 0F 1F 84 00 00 00 00 00 0F 10 02 0F 11 01) // should be unique"
+        },
+        {
+          "line": 51,
+          "text": "alloc(newmem,$1000,\"PES2021.exe\"+C650F0)"
+        },
+        {
+          "line": 53,
+          "text": "alloc(ptrPlayer, 8, \"PES2021.exe\"+C650F0)"
+        },
+        {
+          "line": 77,
+          "text": "aobscanmodule(INJECT_ptrPlayerTwo,PES2021.exe,48 8B 40 2C 48 89 02) // should be unique"
+        },
+        {
+          "line": 78,
+          "text": "alloc(newmem_ptrPlayerTwo,$1000,\"PES2021.exe\"+730FFA7)"
+        },
+        {
+          "line": 117,
+          "text": "// ORIGINAL CODE - INJECT_ptrPlayerION POINT: \"PES2021.exe\"+C650F0"
+        },
+        {
+          "line": 119,
+          "text": "\"PES2021.exe\"+C650C3: 90                          -  nop"
+        },
+        {
+          "line": 120,
+          "text": "\"PES2021.exe\"+C650C4: E9 6B 03 00 00              -  jmp PES2021.exe+C65434"
+        },
+        {
+          "line": 121,
+          "text": "\"PES2021.exe\"+C650C9: 48 8B 96 98 00 00 00        -  mov rdx,[rsi+00000098]"
+        },
+        {
+          "line": 122,
+          "text": "\"PES2021.exe\"+C650D0: 48 8B CF                    -  mov rcx,rdi"
+        },
+        {
+          "line": 123,
+          "text": "\"PES2021.exe\"+C650D3: E8 F8 AE 81 00              -  call PES2021.exe+147FFD0"
+        },
+        {
+          "line": 124,
+          "text": "\"PES2021.exe\"+C650D8: 48 8B D0                    -  mov rdx,rax"
+        },
+        {
+          "line": 125,
+          "text": "\"PES2021.exe\"+C650DB: 48 8B CB                    -  mov rcx,rbx"
+        },
+        {
+          "line": 126,
+          "text": "\"PES2021.exe\"+C650DE: B8 02 00 00 00              -  mov eax,00000002"
+        },
+        {
+          "line": 127,
+          "text": "\"PES2021.exe\"+C650E3: 0F 1F 40 00                 -  nop [rax+00]"
+        },
+        {
+          "line": 128,
+          "text": "\"PES2021.exe\"+C650E7: 66 0F 1F 84 00 00 00 00 00  -  nop [rax+rax+00000000]"
+        },
+        {
+          "line": 130,
+          "text": "\"PES2021.exe\"+C650F0: 0F 10 02                    -  movups xmm0,[rdx]"
+        },
+        {
+          "line": 131,
+          "text": "\"PES2021.exe\"+C650F3: 0F 11 01                    -  movups [rcx],xmm0"
+        },
+        {
+          "line": 133,
+          "text": "\"PES2021.exe\"+C650F6: 0F 10 4A 10                 -  movups xmm1,[rdx+10]"
+        },
+        {
+          "line": 134,
+          "text": "\"PES2021.exe\"+C650FA: 0F 11 49 10                 -  movups [rcx+10],xmm1"
+        },
+        {
+          "line": 135,
+          "text": "\"PES2021.exe\"+C650FE: 0F 10 42 20                 -  movups xmm0,[rdx+20]"
+        },
+        {
+          "line": 136,
+          "text": "\"PES2021.exe\"+C65102: 0F 11 41 20                 -  movups [rcx+20],xmm0"
+        },
+        {
+          "line": 137,
+          "text": "\"PES2021.exe\"+C65106: 0F 10 4A 30                 -  movups xmm1,[rdx+30]"
+        },
+        {
+          "line": 138,
+          "text": "\"PES2021.exe\"+C6510A: 0F 11 49 30                 -  movups [rcx+30],xmm1"
+        },
+        {
+          "line": 139,
+          "text": "\"PES2021.exe\"+C6510E: 0F 10 42 40                 -  movups xmm0,[rdx+40]"
+        },
+        {
+          "line": 140,
+          "text": "\"PES2021.exe\"+C65112: 0F 11 41 40                 -  movups [rcx+40],xmm0"
+        },
+        {
+          "line": 141,
+          "text": "\"PES2021.exe\"+C65116: 0F 10 4A 50                 -  movups xmm1,[rdx+50]"
+        },
+        {
+          "line": 142,
+          "text": "\"PES2021.exe\"+C6511A: 0F 11 49 50                 -  movups [rcx+50],xmm1"
+        },
+        {
+          "line": 147,
+          "text": "// ORIGINAL code_ptrPlayerTwo - INJECT_ptrPlayerTwoION POINT: \"PES2021.exe\"+730FFA7"
+        },
+        {
+          "line": 149,
+          "text": "\"PES2021.exe\"+730FF86: FF E7                 -  jmp rdi"
+        },
+        {
+          "line": 150,
+          "text": "\"PES2021.exe\"+730FF88: C6                    -  db -3A"
+        },
+        {
+          "line": 151,
+          "text": "\"PES2021.exe\"+730FF89: 0F 1F 80 00 00 00 00  -  nop [rax+00000000]"
+        },
+        {
+          "line": 152,
+          "text": "\"PES2021.exe\"+730FF90: 48 8B 41 08           -  mov rax,[rcx+08]"
+        },
+        {
+          "line": 153,
+          "text": "\"PES2021.exe\"+730FF94: 48 85 C0              -  test rax,rax"
+        },
+        {
+          "line": 154,
+          "text": "\"PES2021.exe\"+730FF97: 75 0E                 -  jne PES2021.exe+730FFA7"
+        },
+        {
+          "line": 155,
+          "text": "\"PES2021.exe\"+730FF99: 48 8B 05 40 FE 17 FC  -  mov rax,[PES2021.exe+348FDE0]"
+        },
+        {
+          "line": 156,
+          "text": "\"PES2021.exe\"+730FFA0: 48 89 02              -  mov [rdx],rax"
+        },
+        {
+          "line": 157,
+          "text": "\"PES2021.exe\"+730FFA3: 48 89 D0              -  mov rax,rdx"
+        },
+        {
+          "line": 158,
+          "text": "\"PES2021.exe\"+730FFA6: C3                    -  ret"
+        },
+        {
+          "line": 160,
+          "text": "\"PES2021.exe\"+730FFA7: 48 8B 40 2C           -  mov rax,[rax+2C]"
+        },
+        {
+          "line": 161,
+          "text": "\"PES2021.exe\"+730FFAB: 48 89 02              -  mov [rdx],rax"
+        },
+        {
+          "line": 163,
+          "text": "\"PES2021.exe\"+730FFAE: 48 89 D0              -  mov rax,rdx"
+        },
+        {
+          "line": 164,
+          "text": "\"PES2021.exe\"+730FFB1: C3                    -  ret"
+        },
+        {
+          "line": 165,
+          "text": "\"PES2021.exe\"+730FFB2: 4C 8B 1C 24           -  mov r11,[rsp]"
+        },
+        {
+          "line": 166,
+          "text": "\"PES2021.exe\"+730FFB6: 4D 89 DD              -  mov r13,r11"
+        },
+        {
+          "line": 167,
+          "text": "\"PES2021.exe\"+730FFB9: 48 8D 64 24 08        -  lea rsp,[rsp+08]"
+        },
+        {
+          "line": 168,
+          "text": "\"PES2021.exe\"+730FFBE: 4C 8B 04 24           -  mov r8,[rsp]"
+        },
+        {
+          "line": 169,
+          "text": "\"PES2021.exe\"+730FFC2: 48 83 EC F8           -  sub rsp,-08"
+        },
+        {
+          "line": 170,
+          "text": "\"PES2021.exe\"+730FFC6: E9 45 F8 5D 0E        -  jmp PES2021.exe+158EF810"
+        },
+        {
+          "line": 171,
+          "text": "\"PES2021.exe\"+730FFCB: 48 31 D2              -  xor rdx,rdx"
+        },
+        {
+          "line": 172,
+          "text": "\"PES2021.exe\"+730FFCE: 56                    -  push rsi"
+        },
+        {
+          "line": 2345,
+          "text": "<AssemblerScript>{ Game   : PES2021.exe"
+        },
+        {
+          "line": 2356,
+          "text": "aobscanmodule(INJECT_ClubBudget,PES2021.exe,8B 87 F4 CB 6E 01 89 45 C4) // should be unique"
+        },
+        {
+          "line": 2357,
+          "text": "alloc(newmem,$1000,\"PES2021.exe\"+E947D8)"
+        },
+        {
+          "line": 2390,
+          "text": "// ORIGINAL CODE - INJECTION POINT: \"PES2021.exe\"+EA4C58"
+        },
+        {
+          "line": 2392,
+          "text": "\"PES2021.exe\"+EA4C2D: 48 8B D8              -  mov rbx,rax"
+        },
+        {
+          "line": 2393,
+          "text": "\"PES2021.exe\"+EA4C30: E8 9B C7 FB FF        -  call PES2021.exe+E613D0"
+        },
+        {
+          "line": 2394,
+          "text": "\"PES2021.exe\"+EA4C35: 48 8B C8              -  mov rcx,rax"
+        },
+        {
+          "line": 2395,
+          "text": "\"PES2021.exe\"+EA4C38: 48 8B D3              -  mov rdx,rbx"
+        },
+        {
+          "line": 2396,
+          "text": "\"PES2021.exe\"+EA4C3B: E8 A0 D9 FB FF        -  call PES2021.exe+E625E0"
+        },
+        {
+          "line": 2397,
+          "text": "\"PES2021.exe\"+EA4C40: E8 8B C7 FB FF        -  call PES2021.exe+E613D0"
+        },
+        {
+          "line": 2398,
+          "text": "\"PES2021.exe\"+EA4C45: 48 8B C8              -  mov rcx,rax"
+        },
+        {
+          "line": 2399,
+          "text": "\"PES2021.exe\"+EA4C48: BA 02 00 00 00        -  mov edx,00000002"
+        },
+        {
+          "line": 2400,
+          "text": "\"PES2021.exe\"+EA4C4D: 41 B8 86 02 19 00     -  mov r8d,00190286"
+        },
+        {
+          "line": 2401,
+          "text": "\"PES2021.exe\"+EA4C53: E8 B8 EB FB FF        -  call PES2021.exe+E63810"
+        },
+        {
+          "line": 2403,
+          "text": "\"PES2021.exe\"+EA4C58: 8B 87 F4 CB 6E 01     -  mov eax,[rdi+016ECBF4]"
+        },
+        {
+          "line": 2405,
+          "text": "\"PES2021.exe\"+EA4C5E: 89 45 C4              -  mov [rbp-3C],eax"
+        },
+        {
+          "line": 2406,
+          "text": "\"PES2021.exe\"+EA4C61: 48 8D 55 C4           -  lea rdx,[rbp-3C]"
+        },
+        {
+          "line": 2407,
+          "text": "\"PES2021.exe\"+EA4C65: 48 8D 4D D0           -  lea rcx,[rbp-30]"
+        },
+        {
+          "line": 2408,
+          "text": "\"PES2021.exe\"+EA4C69: E8 92 2F 6C 00        -  call PES2021.exe+1567C00"
+        },
+        {
+          "line": 2409,
+          "text": "\"PES2021.exe\"+EA4C6E: 48 8B D8              -  mov rbx,rax"
+        },
+        {
+          "line": 2410,
+          "text": "\"PES2021.exe\"+EA4C71: E8 5A C7 FB FF        -  call PES2021.exe+E613D0"
+        },
+        {
+          "line": 2411,
+          "text": "\"PES2021.exe\"+EA4C76: 48 8B C8              -  mov rcx,rax"
+        },
+        {
+          "line": 2412,
+          "text": "\"PES2021.exe\"+EA4C79: 4C 8B C3              -  mov r8,rbx"
+        },
+        {
+          "line": 2413,
+          "text": "\"PES2021.exe\"+EA4C7C: BA 02 00 00 00        -  mov edx,00000002"
+        },
+        {
+          "line": 2414,
+          "text": "\"PES2021.exe\"+EA4C81: E8 BA FF FB FF        -  call PES2021.exe+E64C40"
+        },
+        {
+          "line": 2461,
+          "text": "<AssemblerScript>{ Game   : PES2021.exe"
+        },
+        {
+          "line": 2472,
+          "text": "aobscanmodule(INJECT_TrainingOnEnter,PES2021.exe,49 8B 86 90 00 00 00 0F BE) // should be unique"
+        },
+        {
+          "line": 2473,
+          "text": "alloc(newmem,$1000,\"PES2021.exe\"+C0FC5B1)"
+        },
+        {
+          "line": 2475,
+          "text": "alloc(ptrFocusPoints, 8, \"PES2021.exe\"+C0FC5B1)"
+        },
+        {
+          "line": 2497,
+          "text": "aobscanmodule(INJECT_TrainingOnChange,PES2021.exe,0F BE 41 0A 2B C2) // should be unique"
+        },
+        {
+          "line": 2498,
+          "text": "alloc(newmem_onchange,$1000,\"PES2021.exe\"+C0FB881)"
+        },
+        {
+          "line": 2532,
+          "text": "// ORIGINAL CODE - INJECT_TrainingOnEnterION POINT: \"PES2021.exe\"+C0FC5B1"
+        },
+        {
+          "line": 2534,
+          "text": "\"PES2021.exe\"+C0FC582: FF 90 50 02 00 00     -  call qword ptr [rax+00000250]"
+        },
+        {
+          "line": 2535,
+          "text": "\"PES2021.exe\"+C0FC588: 49 8B 06              -  mov rax,[r14]"
+        },
+        {
+          "line": 2536,
+          "text": "\"PES2021.exe\"+C0FC58B: BA 02 00 00 00        -  mov edx,00000002"
+        },
+        {
+          "line": 2537,
+          "text": "\"PES2021.exe\"+C0FC590: 4C 89 F1              -  mov rcx,r14"
+        },
+        {
+          "line": 2538,
+          "text": "\"PES2021.exe\"+C0FC593: FF 90 50 02 00 00     -  call qword ptr [rax+00000250]"
+        },
+        {
+          "line": 2539,
+          "text": "\"PES2021.exe\"+C0FC599: E8 D2 72 D5 F4        -  call PES2021.exe+E53870"
+        },
+        {
+          "line": 2540,
+          "text": "\"PES2021.exe\"+C0FC59E: 48 89 C1              -  mov rcx,rax"
+        },
+        {
+          "line": 2541,
+          "text": "\"PES2021.exe\"+C0FC5A1: BA 01 00 00 00        -  mov edx,00000001"
+        },
+        {
+          "line": 2542,
+          "text": "\"PES2021.exe\"+C0FC5A6: 41 B8 20 00 81 02     -  mov r8d,02810020"
+        },
+        {
+          "line": 2543,
+          "text": "\"PES2021.exe\"+C0FC5AC: E8 FF 96 D5 F4        -  call PES2021.exe+E55CB0"
+        },
+        {
+          "line": 2545,
+          "text": "\"PES2021.exe\"+C0FC5B1: 49 8B 86 90 00 00 00  -  mov rax,[r14+00000090]"
+        },
+        {
+          "line": 2547,
+          "text": "\"PES2021.exe\"+C0FC5B8: 0F BE 58 0A           -  movsx ebx,byte ptr [rax+0A]"
+        },
+        {
+          "line": 2548,
+          "text": "\"PES2021.exe\"+C0FC5BC: E8 AF 72 D5 F4        -  call PES2021.exe+E53870"
+        },
+        {
+          "line": 2549,
+          "text": "\"PES2021.exe\"+C0FC5C1: 48 89 C1              -  mov rcx,rax"
+        },
+        {
+          "line": 2550,
+          "text": "\"PES2021.exe\"+C0FC5C4: 41 89 D8              -  mov r8d,ebx"
+        },
+        {
+          "line": 2551,
+          "text": "\"PES2021.exe\"+C0FC5C7: BA 01 00 00 00        -  mov edx,00000001"
+        },
+        {
+          "line": 2552,
+          "text": "\"PES2021.exe\"+C0FC5CC: E8 1F AC D5 F4        -  call PES2021.exe+E571F0"
+        },
+        {
+          "line": 2553,
+          "text": "\"PES2021.exe\"+C0FC5D1: 4C 89 F1              -  mov rcx,r14"
+        },
+        {
+          "line": 2554,
+          "text": "\"PES2021.exe\"+C0FC5D4: E8 57 89 D3 F4        -  call PES2021.exe+E34F30"
+        },
+        {
+          "line": 2555,
+          "text": "\"PES2021.exe\"+C0FC5D9: 48 8B 6C 24 38        -  mov rbp,[rsp+38]"
+        },
+        {
+          "line": 2556,
+          "text": "\"PES2021.exe\"+C0FC5DE: 48 8B 5C 24 30        -  mov rbx,[rsp+30]"
+        },
+        {
+          "line": 2560,
+          "text": "// ORIGINAL CODE - INJECTION POINT: \"PES2021.exe\"+BB35C1"
+        },
+        {
+          "line": 2562,
+          "text": "\"PES2021.exe\"+BB359D: 74 78                 -  je PES2021.exe+BB3617"
+        },
+        {
+          "line": 2563,
+          "text": "\"PES2021.exe\"+BB359F: 41 02 F7              -  add sil,r15l"
+        },
+        {
+          "line": 2564,
+          "text": "\"PES2021.exe\"+BB35A2: 45 33 C0              -  xor r8d,r8d"
+        },
+        {
+          "line": 2565,
+          "text": "\"PES2021.exe\"+BB35A5: 40 0F BE D6           -  movsx edx,sil"
+        },
+        {
+          "line": 2566,
+          "text": "\"PES2021.exe\"+BB35A9: 48 8B C8              -  mov rcx,rax"
+        },
+        {
+          "line": 2567,
+          "text": "\"PES2021.exe\"+BB35AC: E8 DF 6B 2A 00        -  call PES2021.exe+E5A190"
+        },
+        {
+          "line": 2568,
+          "text": "\"PES2021.exe\"+BB35B1: 48 8B 8F 90 00 00 00  -  mov rcx,[rdi+00000090]"
+        },
+        {
+          "line": 2569,
+          "text": "\"PES2021.exe\"+BB35B8: 41 0F BE D6           -  movsx edx,r14l"
+        },
+        {
+          "line": 2570,
+          "text": "\"PES2021.exe\"+BB35BC: 83 FB 0A              -  cmp ebx,0A"
+        },
+        {
+          "line": 2571,
+          "text": "\"PES2021.exe\"+BB35BF: 7D 14                 -  jnl PES2021.exe+BB35D5"
+        },
+        {
+          "line": 2573,
+          "text": "\"PES2021.exe\"+BB35C1: 0F BE 41 0A           -  movsx eax,byte ptr [rcx+0A]"
+        },
+        {
+          "line": 2574,
+          "text": "\"PES2021.exe\"+BB35C5: 2B C2                 -  sub eax,edx"
+        },
+        {
+          "line": 2576,
+          "text": "\"PES2021.exe\"+BB35C7: 83 F8 15              -  cmp eax,15"
+        },
+        {
+          "line": 2577,
+          "text": "\"PES2021.exe\"+BB35CA: 77 09                 -  ja PES2021.exe+BB35D5"
+        },
+        {
+          "line": 2578,
+          "text": "\"PES2021.exe\"+BB35CC: 48 63 C3              -  movsxd  rax,ebx"
+        },
+        {
+          "line": 2579,
+          "text": "\"PES2021.exe\"+BB35CF: 00 14 08              -  add [rax+rcx],dl"
+        },
+        {
+          "line": 2580,
+          "text": "\"PES2021.exe\"+BB35D2: 28 51 0A              -  sub [rcx+0A],dl"
+        },
+        {
+          "line": 2581,
+          "text": "\"PES2021.exe\"+BB35D5: 48 8B 87 90 00 00 00  -  mov rax,[rdi+00000090]"
+        },
+        {
+          "line": 2582,
+          "text": "\"PES2021.exe\"+BB35DC: 0F BE 58 0A           -  movsx ebx,byte ptr [rax+0A]"
+        },
+        {
+          "line": 2583,
+          "text": "\"PES2021.exe\"+BB35E0: E8 EB DD 2A 00        -  call PES2021.exe+E613D0"
+        },
+        {
+          "line": 2584,
+          "text": "\"PES2021.exe\"+BB35E5: 48 8B C8              -  mov rcx,rax"
+        },
+        {
+          "line": 2585,
+          "text": "\"PES2021.exe\"+BB35E8: 44 8B C3              -  mov r8d,ebx"
+        },
+        {
+          "line": 2614,
+          "text": "<AssemblerScript>{ Game   : PES2021.exe"
+        },
+        {
+          "line": 2625,
+          "text": "aobscanmodule(INJECT_MatchTime,PES2021.exe,8B 44 24 40 89 44 24 40) // should be unique"
+        },
+        {
+          "line": 2626,
+          "text": "alloc(newmem,$1000,\"PES2021.exe\"+7ABD593)"
+        },
+        {
+          "line": 2628,
+          "text": "alloc(MatchTime, 4, \"PES2021.exe\"+7ABD593)"
+        },
+        {
+          "line": 2665,
+          "text": "// ORIGINAL CODE - INJECT_MatchTimeION POINT: \"PES2021.exe\"+7ABD593"
+        },
+        {
+          "line": 2667,
+          "text": "\"PES2021.exe\"+7ABD571: 48 31 C1                       -  xor rcx,rax"
+        },
+        {
+          "line": 2668,
+          "text": "\"PES2021.exe\"+7ABD574: 41 0F B6 C1                    -  movzx eax,r9l"
+        },
+        {
+          "line": 2669,
+          "text": "\"PES2021.exe\"+7ABD578: 49 0F AF C8                    -  imul rcx,r8"
+        },
+        {
+          "line": 2670,
+          "text": "\"PES2021.exe\"+7ABD57C: 48 31 C1                       -  xor rcx,rax"
+        },
+        {
+          "line": 2671,
+          "text": "\"PES2021.exe\"+7ABD57F: 0F B6 C2                       -  movzx eax,dl"
+        },
+        {
+          "line": 2672,
+          "text": "\"PES2021.exe\"+7ABD582: 49 0F AF C8                    -  imul rcx,r8"
+        },
+        {
+          "line": 2673,
+          "text": "\"PES2021.exe\"+7ABD586: 48 31 C1                       -  xor rcx,rax"
+        },
+        {
+          "line": 2674,
+          "text": "\"PES2021.exe\"+7ABD589: 49 0F AF C8                    -  imul rcx,r8"
+        },
+        {
+          "line": 2675,
+          "text": "\"PES2021.exe\"+7ABD58D: 48 39 4B 10                    -  cmp [rbx+10],rcx"
+        },
+        {
+          "line": 2676,
+          "text": "\"PES2021.exe\"+7ABD591: 75 14                          -  jne PES2021.exe+7ABD5A7"
+        },
+        {
+          "line": 2678,
+          "text": "\"PES2021.exe\"+7ABD593: 8B 44 24 40                    -  mov eax,[rsp+40]"
+        },
+        {
+          "line": 2679,
+          "text": "\"PES2021.exe\"+7ABD597: 89 44 24 40                    -  mov [rsp+40],eax"
+        },
+        {
+          "line": 2681,
+          "text": "\"PES2021.exe\"+7ABD59B: F3 0F 10 44 24 40              -  movss xmm0,[rsp+40]"
+        },
+        {
+          "line": 2682,
+          "text": "\"PES2021.exe\"+7ABD5A1: 48 83 C4 30                    -  add rsp,30"
+        },
+        {
+          "line": 2683,
+          "text": "\"PES2021.exe\"+7ABD5A5: 5B                             -  pop rbx"
+        },
+        {
+          "line": 2684,
+          "text": "\"PES2021.exe\"+7ABD5A6: C3                             -  ret"
+        },
+        {
+          "line": 2685,
+          "text": "\"PES2021.exe\"+7ABD5A7: 31 D2                          -  xor edx,edx"
+        },
+        {
+          "line": 2686,
+          "text": "\"PES2021.exe\"+7ABD5A9: 31 C9                          -  xor ecx,ecx"
+        },
+        {
+          "line": 2687,
+          "text": "\"PES2021.exe\"+7ABD5AB: E8 04 79 AB F9                 -  call PES2021.exe+1574EB4"
+        },
+        {
+          "line": 2688,
+          "text": "\"PES2021.exe\"+7ABD5B0: CC                             -  int 3"
+        },
+        {
+          "line": 2689,
+          "text": "\"PES2021.exe\"+7ABD5B1: CC                             -  int 3"
+        },
+        {
+          "line": 2690,
+          "text": "\"PES2021.exe\"+7ABD5B2: 41 BB FF FF FF FF              -  mov r11d,FFFFFFFF"
+        },
+        {
+          "line": 2736,
+          "text": "<AssemblerScript>{ Game   : PES2021.exe"
+        },
+        {
+          "line": 2749,
+          "text": "aobscanmodule(INJECT_UnlimitedStamina,PES2021.exe,F7 7D 18 48 83 C4 30) // should be unique"
+        },
+        {
+          "line": 2750,
+          "text": "alloc(newmem,$1000,\"PES2021.exe\"+7F2B341)"
+        },
+        {
+          "line": 2779,
+          "text": "// ORIGINAL CODE - INJECT_UnlimitedStaminaION POINT: \"PES2021.exe\"+7F2B341"
+        },
+        {
+          "line": 2781,
+          "text": "\"PES2021.exe\"+7F2B31B: 0F B6 C2              -  movzx eax,dl"
+        },
+        {
+          "line": 2782,
+          "text": "\"PES2021.exe\"+7F2B31E: 49 0F AF CB           -  imul rcx,r11"
+        },
+        {
+          "line": 2783,
+          "text": "\"PES2021.exe\"+7F2B322: 48 31 C1              -  xor rcx,rax"
+        },
+        {
+          "line": 2784,
+          "text": "\"PES2021.exe\"+7F2B325: 49 0F AF CB           -  imul rcx,r11"
+        },
+        {
+          "line": 2785,
+          "text": "\"PES2021.exe\"+7F2B329: 48 39 8B E8 00 00 00  -  cmp [rbx+000000E8],rcx"
+        },
+        {
+          "line": 2786,
+          "text": "\"PES2021.exe\"+7F2B330: 75 2C                 -  jne PES2021.exe+7F2B35E"
+        },
+        {
+          "line": 2787,
+          "text": "\"PES2021.exe\"+7F2B332: 6B 45 10 64           -  imul eax,[rbp+10],64"
+        },
+        {
+          "line": 2788,
+          "text": "\"PES2021.exe\"+7F2B336: 48 8B 5C 24 50        -  mov rbx,[rsp+50]"
+        },
+        {
+          "line": 2789,
+          "text": "\"PES2021.exe\"+7F2B33B: 48 8B 7C 24 58        -  mov rdi,[rsp+58]"
+        },
+        {
+          "line": 2790,
+          "text": "\"PES2021.exe\"+7F2B340: 99                    -  cdq"
+        },
+        {
+          "line": 2792,
+          "text": "\"PES2021.exe\"+7F2B341: F7 7D 18              -  idiv [rbp+18]"
+        },
+        {
+          "line": 2793,
+          "text": "\"PES2021.exe\"+7F2B344: 48 83 C4 30           -  add rsp,30"
+        },
+        {
+          "line": 2795,
+          "text": "\"PES2021.exe\"+7F2B348: 5D                    -  pop rbp"
+        },
+        {
+          "line": 2796,
+          "text": "\"PES2021.exe\"+7F2B349: C3                    -  ret"
+        },
+        {
+          "line": 2797,
+          "text": "\"PES2021.exe\"+7F2B34A: 31 D2                 -  xor edx,edx"
+        },
+        {
+          "line": 2798,
+          "text": "\"PES2021.exe\"+7F2B34C: 31 C9                 -  xor ecx,ecx"
+        },
+        {
+          "line": 2799,
+          "text": "\"PES2021.exe\"+7F2B34E: E8 61 9B 64 F9        -  call PES2021.exe+1574EB4"
+        },
+        {
+          "line": 2800,
+          "text": "\"PES2021.exe\"+7F2B353: CC                    -  int 3"
+        },
+        {
+          "line": 2801,
+          "text": "\"PES2021.exe\"+7F2B354: 31 D2                 -  xor edx,edx"
+        },
+        {
+          "line": 2802,
+          "text": "\"PES2021.exe\"+7F2B356: 31 C9                 -  xor ecx,ecx"
+        },
+        {
+          "line": 2803,
+          "text": "\"PES2021.exe\"+7F2B358: E8 57 9B 64 F9        -  call PES2021.exe+1574EB4"
+        },
+        {
+          "line": 2804,
+          "text": "\"PES2021.exe\"+7F2B35D: CC                    -  int 3"
+        }
+      ]
+    },
+    {
+      "repository": "xAranaktu/PES-2021-Cheat-Table",
+      "commit": "6043cabf2b8b314064d06d63ae5fc3e5f522d2ed",
+      "path": "changelog.txt",
+      "raw_url": "https://raw.githubusercontent.com/xAranaktu/PES-2021-Cheat-Table/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/changelog.txt",
+      "browser_url": "https://github.com/xAranaktu/PES-2021-Cheat-Table/blob/6043cabf2b8b314064d06d63ae5fc3e5f522d2ed/changelog.txt",
+      "sha256": "f7c7de285bc7d016228125960aa557ec157e4b8a2e589f5c898fe680b6dcaf4b",
+      "size_bytes": 33,
+      "line_count": 3,
+      "matches": []
+    },
+    {
+      "repository": "the4chancup/4ccEditor",
+      "commit": "c92d5351a65e179781a2353f9660c20b6a4f6d7c",
+      "path": "README.md",
+      "raw_url": "https://raw.githubusercontent.com/the4chancup/4ccEditor/c92d5351a65e179781a2353f9660c20b6a4f6d7c/README.md",
+      "browser_url": "https://github.com/the4chancup/4ccEditor/blob/c92d5351a65e179781a2353f9660c20b6a4f6d7c/README.md",
+      "sha256": "bd07ae20cc53b00ccb2f47faa5e771f79d4c03c0cf2840c29b338cd3904ec7cf",
+      "size_bytes": 506,
+      "line_count": 7,
+      "matches": [
+        {
+          "line": 3,
+          "text": "4ccEditor is a save file (EDIT00000000) editor for Konami's Pro Evolution Soccer series.  At present, it supports save files from PES 2016-PES 2021.  This project contains the source code needed to compile 4ccEditor as a Microsoft Visual C++ project."
+        }
+      ]
+    },
+    {
+      "repository": "the4chancup/pesXdecrypter",
+      "commit": "2214f035600eb317d089d93c0bcb5b078f8e9eb8",
+      "path": "README.md",
+      "raw_url": "https://raw.githubusercontent.com/the4chancup/pesXdecrypter/2214f035600eb317d089d93c0bcb5b078f8e9eb8/README.md",
+      "browser_url": "https://github.com/the4chancup/pesXdecrypter/blob/2214f035600eb317d089d93c0bcb5b078f8e9eb8/README.md",
+      "sha256": "417d6f063bc3d42d01f78c68eaf04a2e8a9094dc4f12e964209ab81cb74e9e04",
+      "size_bytes": 5513,
+      "line_count": 87,
+      "matches": [
+        {
+          "line": 26,
+          "text": "* The actual save game data. This contains the team data/system settings/other things. This is probably the main thing you want to edit."
+        }
+      ]
+    },
+    {
+      "repository": "the4chancup/pesXdecrypter",
+      "commit": "2214f035600eb317d089d93c0bcb5b078f8e9eb8",
+      "path": "src/masterkey.h",
+      "raw_url": "https://raw.githubusercontent.com/the4chancup/pesXdecrypter/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/masterkey.h",
+      "browser_url": "https://github.com/the4chancup/pesXdecrypter/blob/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/masterkey.h",
+      "sha256": "04a3080d9e68e2d9e4c99022bd77a54bb50f8e8e94a56cde343e2c30e98f4463",
+      "size_bytes": 2099,
+      "line_count": 53,
+      "matches": []
+    },
+    {
+      "repository": "the4chancup/pesXdecrypter",
+      "commit": "2214f035600eb317d089d93c0bcb5b078f8e9eb8",
+      "path": "src/decrypter.c",
+      "raw_url": "https://raw.githubusercontent.com/the4chancup/pesXdecrypter/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/decrypter.c",
+      "browser_url": "https://github.com/the4chancup/pesXdecrypter/blob/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/decrypter.c",
+      "sha256": "da06d00d391bdc77cf1613df42f343e959a8c9d7bd192064e660eb82667ac9a0",
+      "size_bytes": 1900,
+      "line_count": 56,
+      "matches": []
+    },
+    {
+      "repository": "the4chancup/pesXdecrypter",
+      "commit": "2214f035600eb317d089d93c0bcb5b078f8e9eb8",
+      "path": "src/crypt.h",
+      "raw_url": "https://raw.githubusercontent.com/the4chancup/pesXdecrypter/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/crypt.h",
+      "browser_url": "https://github.com/the4chancup/pesXdecrypter/blob/2214f035600eb317d089d93c0bcb5b078f8e9eb8/src/crypt.h",
+      "sha256": "fcda97c22fcdb9ac58b3a8b6826e2edeb904dfadf3accf5725a9efee5ccd6384",
+      "size_bytes": 3214,
+      "line_count": 99,
+      "matches": []
+    }
+  ]
+}
