@@ -6,21 +6,25 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import quote
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from backend.models import MissionView, MessageRequest, MessageAccepted, InputRequest, MessageView
+from backend.models import MissionView, MessageRequest, MessageAccepted, InputRequest, MessageView, ContinuationRequest, ContinuationAccepted
 from backend.service import MissionService
+from career_actions.models import RecommendationList, RecommendationEvent
 
 ROOT = Path(__file__).resolve().parent.parent
 
-def create_app(*, data_dir=None, demo=None, demo_delay=0.5):
+def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=None, player_context=None):
     @asynccontextmanager
     async def lifespan(app):
         demo_mode = demo if demo is not None else os.getenv('FAIT_DEMO', '0') == '1'
+        from player_data.repository import get_repository
+        app.state.player_repository = player_repository or get_repository()
+        app.state.player_context = player_context
         default_dir = ROOT / 'memory' / 'web' / ('demo' if demo_mode else 'live')
         app.state.service = MissionService(Path(data_dir or os.getenv('FAIT_DATA_DIR', str(default_dir))),
-            demo=demo_mode, demo_delay=demo_delay)
+            demo=demo_mode, demo_delay=demo_delay, player_repository=app.state.player_repository, player_context=player_context)
         yield
         app.state.service.close()
     app = FastAPI(title='FootballerAiTeam API', version='0.1.0', lifespan=lifespan)
@@ -37,22 +41,27 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5):
     def health():
         return {'status': 'ok', 'mode': 'demo' if service().demo else 'live', 'version': '0.1.0'}
 
-    def read_memory(name):
-        with (ROOT / 'memory' / name).open(encoding='utf-8') as file:
-            return json.load(file)
+    def player_snapshot():
+        from player_data.models import PlayerDataError
+        try:
+            return app.state.player_repository.read_snapshot(app.state.player_context)
+        except PlayerDataError as error:
+            raise HTTPException(404 if error.code.startswith('missing') else 503, '球员数据未初始化' if error.code.startswith('missing') else '球员数据无法读取')
 
     @app.get('/api/player')
     def player():
-        raw = read_memory('player.json')
-        return {key: raw.get(key) for key in ['name', 'age', 'height', 'weight', 'position', 'nationality', 'club', 'overall', 'attributes', 'injury', 'preferred_foot', 'last_updated', 'long_term_goals']}
+        snapshot = player_snapshot()
+        raw = snapshot.profile
+        return {**{key: raw.get(key) for key in ['name', 'age', 'height', 'weight', 'position', 'nationality', 'club', 'overall', 'attributes', 'injury', 'preferred_foot', 'last_updated', 'long_term_goals']},
+                'metadata': {**snapshot.metadata, 'context': snapshot.to_dict()['context']}}
 
     @app.get('/api/player/training-history')
     def training():
-        return read_memory('training_history.json')
+        return player_snapshot().training
 
     @app.get('/api/player/match-history')
     def matches():
-        return read_memory('match_history.json')
+        return player_snapshot().matches
 
     @app.post('/api/messages', response_model=MessageAccepted, status_code=202)
     def message(body: MessageRequest):
@@ -70,13 +79,33 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5):
     def messages(conversation_id: str):
         return service().store.messages(conversation_id)
 
+    @app.post('/api/mission-continuations', response_model=ContinuationAccepted, status_code=202)
+    def continuation(body: ContinuationRequest):
+        try:
+            message_id, mission_id, created = service().create_continuation(body)
+            return ContinuationAccepted(message_id=message_id, mission_id=mission_id, created=created)
+        except KeyError:
+            raise HTTPException(404, '来源任务不存在')
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
     @app.get('/api/missions', response_model=list[MissionView])
     def missions():
-        return service().store.missions()
+        return [service().view(item) for item in service().store.missions()]
 
     @app.get('/api/missions/{mission_id}', response_model=MissionView)
     def get_mission(mission_id: str):
-        return mission(mission_id)
+        return service().view(mission(mission_id))
+
+    @app.get('/api/missions/{mission_id}/recommendations', response_model=RecommendationList)
+    def recommendations(mission_id: str):
+        mission(mission_id)
+        return service().recommendations.list(mission_id)
+
+    @app.get('/api/missions/{mission_id}/recommendation-events', response_model=list[RecommendationEvent])
+    def recommendation_events(mission_id: str, after: int = Query(default=0, ge=0)):
+        mission(mission_id)
+        return service().recommendations.repository.events(mission_id, after)
 
     @app.post('/api/missions/{mission_id}/input', status_code=202)
     def submit_input(mission_id: str, body: InputRequest):
@@ -90,7 +119,7 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5):
     def report(mission_id: str):
         current = mission(mission_id)
         content = service().store.report(mission_id)
-        if content is None:
+        if content is None or current.status != 'COMPLETED' or current.report is None or current.delivery_status != 'PUBLISHABLE':
             raise HTTPException(404, '报告尚未生成')
         return {'title': current.title, 'markdown': content}
 

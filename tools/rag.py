@@ -253,12 +253,13 @@ def FootballKnowledgeRAG(query: str) -> str:
         最相关的 5 条知识片段及其来源。
     """
     try:
+        from tools.errors import ToolExecutionError
         docs = retrieve_docs(query, k=config.RAG_RETRIEVAL_K)
         docs = rerank_documents(query, docs, config.RAG_TOP_K)
         _set_last_citations(docs)
 
         if not docs:
-            return f"未找到与 '{query}' 相关的足球知识。请尝试更换搜索词。"
+            raise ToolExecutionError('NO_DATA')
 
         results = []
         for i, doc in enumerate(docs, 1):
@@ -270,8 +271,10 @@ def FootballKnowledgeRAG(query: str) -> str:
 
         return "\n".join(results)
 
-    except Exception as e:
-        return f"RAG 检索出错: {str(e)}"
+    except ToolExecutionError:
+        raise
+    except Exception:
+        raise ToolExecutionError('EXECUTION_ERROR')
 
 
 def reload_knowledge_base() -> str:

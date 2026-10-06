@@ -45,6 +45,14 @@ class Config:
     TRAINING_HISTORY_FILE: str = os.path.join(MEMORY_DIR, "training_history.json")
     MATCH_HISTORY_FILE: str = os.path.join(MEMORY_DIR, "match_history.json")
     CAREER_HISTORY_FILE: str = os.path.join(MEMORY_DIR, "career_history.json")
+    PLAYER_DATA_MODE: str = os.getenv('FAIT_PLAYER_DATA_MODE', 'demo')
+    PLAYER_DATA_ROOT: str = os.getenv('FAIT_PLAYER_DATA_ROOT', '')
+    CAREER_ID: str = os.getenv('FAIT_CAREER_ID', 'demo-career')
+    BRANCH_ID: str = os.getenv('FAIT_BRANCH_ID', 'main')
+    PLAYER_ID: str = os.getenv('FAIT_PLAYER_ID', 'demo-player')
+    CLI_DATA_DIR: str = os.getenv('FAIT_CLI_DATA_DIR', os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), 'local_data', 'cli',
+        'actual' if PLAYER_DATA_MODE == 'actual' else 'fixture'))
 
 
 config = Config()

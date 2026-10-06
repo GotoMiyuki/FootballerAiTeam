@@ -12,14 +12,14 @@ export function ReportViewer({ id, onClose }: { id: string; onClose: () => void 
     <Dialog title="任务报告" onClose={onClose} wide>
       <div className="report-toolbar">
         <span>完整报告 · Markdown</span>
-        <a
+        {query.isSuccess && <a
           className="secondary-button"
           href={apiUrl(`/missions/${encodeURIComponent(id)}/report/download`)}
           download
         >
           <Download size={16} />
           导出 .md
-        </a>
+        </a>}
       </div>
       {query.isPending ? (
         <Loading label="读取完整报告…" />

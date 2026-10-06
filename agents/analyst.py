@@ -8,10 +8,12 @@ P1 ReAct 升级：
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape
 from typing import Dict, Any, List
 from langchain_core.language_models import BaseChatModel
 
 from agents.base import BaseAgent
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import (
     ANALYST_DOMAIN_IDENTITY,
     ANALYST_GUIDE,
@@ -51,6 +53,7 @@ class AnalystAgent(BaseAgent):
     def system_prompt(self) -> str:
         return f"{ANALYST_DOMAIN_IDENTITY}\n\n{ANALYST_GUIDE}"
 
+    @guarded("Analyst")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Analyst", {})
@@ -69,6 +72,9 @@ class AnalystAgent(BaseAgent):
         weekly_loads = self._extract_weekly_loads(training_history)
         match_ratings = self._extract_match_ratings(match_history)
 
+        self._valid_observations = [
+            {'kind': 'observed_history', 'source': 'player_repository', 'training': training_history, 'matches': match_history,
+             'limitations': ['历史数据仅为观察；未形成完整分析建议']}]
         attributes = player.get("attributes", {})
         other = player.get("other_features", {})
         injury_resistance = other.get("injury_resistance", 3)
@@ -77,7 +83,7 @@ class AnalystAgent(BaseAgent):
         weakest = get_weakest_attributes(attributes, n=4)
         strongest = get_strongest_attributes(attributes, n=3)
 
-        cross_analysis = self._cross_category_analysis(attributes, player.get("position", "LW"))
+        cross_analysis = self._cross_category_analysis(attributes, player.get("position"))
         injury_risk_detail = self._assess_injury_risk(weekly_loads, match_ratings, injury_resistance, player)
         trend_analysis = self._analyze_trends(weekly_loads, match_ratings, player)
 
@@ -89,9 +95,9 @@ class AnalystAgent(BaseAgent):
 
 ## 球员档案
 - 姓名: {player.get('name', '球员')}
-- 位置: {player.get('position', 'LW')}
-- 年龄: {player.get('age', 20)}
-- 综合评分: {player.get('overall', 72)}
+- 位置: {player.get('position') or '未知'}
+- 年龄: {player.get('age') if player.get('age') is not None else '未知'}
+- 综合评分: {player.get('overall') if player.get('overall') is not None else '未知'}
 
 ## 四维属性
 {describe_player_attributes(attributes, other)}
@@ -140,6 +146,7 @@ class AnalystAgent(BaseAgent):
 
 ## 输出格式
 JSON，字段：
+- period（数据期）, data_sources（实际使用的来源列表）
 - trends（含 attribute/change/status/risk）
 - cross_category_findings（含 type/detail/severity）
 - injury_risk（含 level/score/factors/detail）
@@ -162,17 +169,9 @@ JSON，字段：
             content = content.split("```")[1].split("```")[0].strip()
 
         try:
-            result = json.loads(content)
-        except (json.JSONDecodeError, Exception):
-            result = {
-                "period": "近12周",
-                "trends": trend_analysis.get("trends", []),
-                "cross_category_findings": cross_analysis,
-                "injury_risk": injury_risk_detail,
-                "form_assessment": f"状态稳定性评分 {form_consistency}/8",
-                "recommendations": trend_analysis.get("recommendations", []),
-                "summary": "训练负荷整体呈上升趋势。建议关注属性间的不平衡关系。",
-            }
+            result = validate_specialist("performance_analysis", parse_json(content))
+        except Exception:
+            raise
 
         output = json.dumps(result, ensure_ascii=False, indent=2)
 
@@ -188,8 +187,8 @@ JSON，字段：
             loads.append({
                 "week": week.get("week", ""),
                 "focus": week.get("focus", ""),
-                "weekly_load": week.get("weekly_load", 0),
-                "avg_rpe": week.get("avg_rpe", 0),
+                "weekly_load": week.get("weekly_load"),
+                "avg_rpe": week.get("avg_rpe"),
                 "notes": week.get("notes", ""),
             })
         return loads
@@ -199,15 +198,19 @@ JSON，字段：
             {
                 "date": m.get("date", ""),
                 "opponent": m.get("opponent", ""),
-                "rating": m.get("rating", 0),
-                "goals": m.get("goals", 0),
-                "assists": m.get("assists", 0),
-                "minutes": m.get("minutes_played", 0),
+                "rating": m.get("rating"),
+                "goals": m.get("goals"),
+                "assists": m.get("assists"),
+                "minutes": m.get("minutes_played"),
             }
             for m in history[-6:]
         ]
 
     def _cross_category_analysis(self, attributes: Dict, position: str) -> list:
+        needed = {'offense': ['shooting', 'attacking_awareness', 'passing', 'ball_control'],
+                  'defense': ['defensive_awareness'], 'physical': ['speed', 'stamina', 'strength']}
+        if any((attributes.get(category) or {}).get(key) is None for category, keys in needed.items() for key in keys):
+            return []
         findings = []
         offense = attributes.get("offense", {})
         defense = attributes.get("defense", {})
@@ -256,6 +259,9 @@ JSON，字段：
         return findings
 
     def _assess_injury_risk(self, loads, ratings, injury_resistance, player) -> Dict[str, Any]:
+        if (player.get('injury') is None or (player.get('other_features') or {}).get('injury_resistance') is None
+                or len(loads) < 4 or any(w.get('weekly_load') is None or w.get('avg_rpe') is None for w in loads)):
+            return {'level': '未知', 'score': None, 'factors': [], 'detail': '观察不足，无法判断风险'}
         risk_score = 0
         factors = []
 
@@ -302,6 +308,8 @@ JSON，字段：
         return {"level": level, "score": risk_score, "factors": factors, "detail": risk_detail}
 
     def _analyze_trends(self, loads, ratings, player) -> Dict[str, Any]:
+        loads = [w for w in loads if w.get('weekly_load') is not None]
+        ratings = [r for r in ratings if r.get('rating') is not None]
         trends = []
 
         if len(loads) >= 4:

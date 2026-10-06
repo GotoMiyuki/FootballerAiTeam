@@ -8,6 +8,8 @@ const labels = {
   REVISION_REQUIRED: '需要修订',
   BLOCKED: '等待信息',
   SKIPPED: '已跳过',
+  FAILED: '未输出结果',
+  INVALIDATED: '结果已失效',
 }
 export function PlanProgress({
   plan,
@@ -96,6 +98,8 @@ function SubtaskItem({
             <span className="revision-count">修订 {task.revision_count} 次</span>
           )}
         </p>
+        {task.reason && <small>{task.reason}</small>}
+        {task.result_summary && <details><summary>查看已保留的专业结果</summary><p>{task.result_summary}</p></details>}
       </div>
     </li>
   )

@@ -16,16 +16,12 @@ def main():
     memory.mkdir(parents=True)
     for name in ['player.json', 'training_history.json', 'match_history.json', 'career_history.json']:
         shutil.copy2(root / 'memory' / name, memory / name)
-    from config import config
-    config.MEMORY_DIR = str(memory)
-    config.PLAYER_FILE = str(memory / 'player.json')
-    config.TRAINING_HISTORY_FILE = str(memory / 'training_history.json')
-    config.MATCH_HISTORY_FILE = str(memory / 'match_history.json')
-    config.CAREER_HISTORY_FILE = str(memory / 'career_history.json')
+    from player_data.repository import FixtureRepository
+    repository = FixtureRepository(memory)
     from backend.main import create_app
     objective = '请根据现有球员档案给出三条简短的技术特点总结；只分析，不制定训练计划，不修改球员档案，不联网。'
     with (data / 'runtime.log').open('w', encoding='utf-8') as log:
-        with contextlib.redirect_stdout(log), contextlib.redirect_stderr(log), TestClient(create_app(data_dir=data, demo=False)) as client:
+        with contextlib.redirect_stdout(log), contextlib.redirect_stderr(log), TestClient(create_app(data_dir=data, demo=False, player_repository=repository)) as client:
             response = client.post('/api/messages', json={'conversation_id': 'conv_live_smoke', 'content': objective})
             response.raise_for_status()
             mission_id = response.json()['mission_id']

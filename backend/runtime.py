@@ -1,6 +1,28 @@
 """Create an isolated graph using existing node factories and durable checkpoints."""
 import sqlite3
 
+def inspect_checkpoint(checkpoint_path, mission_id):
+    """Inspect with the current topology, without constructing or calling any model."""
+    from pathlib import Path
+    from graph import build_graph
+    from langgraph.checkpoint.sqlite import SqliteSaver
+    path = Path(checkpoint_path)
+    if not path.is_file():
+        return None
+    connection = sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True)
+    try:
+        saver = SqliteSaver(connection)
+        # A read must not initialize or migrate an absent/incompatible database.
+        saver.is_setup = True
+        def never_run(_state):
+            raise RuntimeError('Checkpoint inspection must not execute nodes')
+        nodes = {name: never_run for name in ('manager', 'intent_checkpoint', 'manager_assess',
+            'manager_revision', 'manager_replan', 'reviewer', 'coach', 'analyst', 'nutrition', 'career', 'document')}
+        graph = build_graph(nodes, checkpointer=saver, interrupt_before=['document'])
+        return graph.get_state({'configurable': {'thread_id': mission_id}})
+    finally:
+        connection.close()
+
 def create_runtime(checkpoint_path, on_start):
     from graph import build_graph
     from utils.helpers import create_llm

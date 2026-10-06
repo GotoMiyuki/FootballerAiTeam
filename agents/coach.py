@@ -8,18 +8,18 @@ P1 ReAct 升级：
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape
 from typing import Dict, Any
 from langchain_core.language_models import BaseChatModel
 
 from agents.base import BaseAgent
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import (
     COACH_DOMAIN_IDENTITY,
     COACH_GUIDE,
     build_mission_context,
 )
 from tools import COACH_TOOLS
-from tools.database import UpdatePlayerAttributeTool
-from tools.rag import get_last_citations
 from registry import get_active_subtask
 from utils.helpers import (
     get_weakest_attributes,
@@ -49,6 +49,7 @@ class CoachAgent(BaseAgent):
     def system_prompt(self) -> str:
         return f"{COACH_DOMAIN_IDENTITY}\n\n{COACH_GUIDE}"
 
+    @guarded("Coach")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Coach", {})
@@ -84,10 +85,10 @@ class CoachAgent(BaseAgent):
 
 ## 球员档案
 - 姓名: {player.get('name', '球员')}
-- 位置: {player.get('position', 'LW')}
-- 年龄: {player.get('age', 20)}
-- 综合评分: {player.get('overall', 72)}
-- 训练强度: {player.get('training_intensity', 'High')}
+- 位置: {player.get('position') or '未知'}
+- 年龄: {player.get('age') if player.get('age') is not None else '未知'}
+- 综合评分: {player.get('overall') if player.get('overall') is not None else '未知'}
+- 训练强度: {player.get('training_intensity') or '未知'}
 
 ## 能力值（offense/defense/physical/goalkeeping 四维）
 {describe_player_attributes(attributes, player.get('other_features', {}))}
@@ -105,7 +106,7 @@ class CoachAgent(BaseAgent):
 - **FootballKnowledgeRAG**: 检索足球专业知识库（训练方法、伤病预防、战术理论）。
   搜索示例: "边锋速度训练方法 soccer speed drills"、"FIFA 11+ 热身方案"
 - **SearchTool**: 联网搜索最新足球训练资讯。
-- **UpdatePlayerAttributeTool**: 训练后更新球员属性值（输入 JSON）。
+- 工具仅可读取资料。属性变化是预测，不更新实际档案。
 
 ## 任务
 {focus}
@@ -118,6 +119,7 @@ class CoachAgent(BaseAgent):
 ## 输出格式
 JSON，字段：focus_areas, weekly_schedule, drill_details（含 name/sets/frequency/description）,
 imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变化，如 {{"physical": {{"speed": 83}}}}）, notes。
+focus_areas 使用字符串列表；weekly_schedule 使用“日期/星期 → 活动文本或字符串列表”的对象，或 day/activities 的对象列表。sets 为正整数或明确的组数说明。
 只输出 JSON，不要其他文本。"""
 
         # ---- ReAct 循环 ----
@@ -134,19 +136,11 @@ imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变�
             content = content.split("```")[1].split("```")[0].strip()
 
         try:
-            result = json.loads(content)
-        except (json.JSONDecodeError, Exception):
-            result = self._generate_default_plan(weakest, strongest, imbalance_warnings)
+            result = validate_specialist("skill_training", parse_json(content))
+        except Exception:
+            raise
 
-        # ---- 自动应用属性更新建议 ----
-        attr_updates = result.get("attribute_update_suggestions", {})
-        if attr_updates and isinstance(attr_updates, dict):
-            try:
-                UpdatePlayerAttributeTool.invoke(json.dumps(attr_updates, ensure_ascii=False))
-            except Exception:
-                pass
-
-        citations = get_last_citations()
+        citations = [citation for call in tool_log if call.get('status') == 'SUCCESS' for citation in call.get('citations', [])]
         result["references"] = citations
 
         output = json.dumps(result, ensure_ascii=False, indent=2)
@@ -160,6 +154,12 @@ imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变�
 
     def _detect_imbalances(self, attributes: Dict[str, Any]) -> list:
         """检测属性间的不平衡关系。"""
+        needed = {'offense': ['shooting', 'attacking_awareness', 'ball_control', 'passing'],
+                  'physical': ['speed', 'stamina', 'strength'], 'defense': ['defensive_awareness']}
+        if any((attributes.get(category) or {}).get(key) is None for category, keys in needed.items() for key in keys):
+            return ['能力观察不足，无法完成属性间不平衡评估']
+        if any(v is None for category in attributes.values() if isinstance(category, dict) for v in category.values()):
+            return ['存在未知能力值，仅分析已记录信息']
         warnings = []
         offense = attributes.get("offense", {})
         defense = attributes.get("defense", {})
@@ -202,29 +202,6 @@ imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变�
 
         return warnings
 
-    def _generate_default_plan(self, weakest, strongest, imbalances) -> dict:
-        focus = [format_attr_entry(e) for e in weakest[:2]]
-        return {
-            "focus_areas": focus,
-            "weekly_schedule": {
-                "周一": {"上午": f"{focus[0]}专项训练 + 技术基础", "下午": "传球与控球组合练习"},
-                "周二": {"上午": "力量训练（深蹲/硬拉/卧推/核心）", "下午": "恢复拉伸 + 泡沫轴"},
-                "周三": {"上午": f"{focus[1]}专项训练", "下午": "敏捷绳梯 + 变向跑 + 射门"},
-                "周四": {"上午": "战术训练（位置感与跑位意识）", "下午": "恢复 + 冰浴"},
-                "周五": {"上午": f"{focus[0]}与{focus[1]}组合训练", "下午": "7v7 对抗赛"},
-                "周六": {"上午": "轻度技术保持 + 定位球", "下午": "完全休息"},
-                "周日": {"全天": "休息日"},
-            },
-            "drill_details": [
-                {"name": f"{focus[0]}提升训练", "sets": "6-8组", "frequency": "每周3次",
-                 "description": "根据 RAG 检索结果制定"},
-                {"name": f"{focus[1]}提升训练", "sets": "4-6组", "frequency": "每周2次",
-                 "description": "根据 RAG 检索结果制定"},
-            ],
-            "imbalance_notes": imbalances or ["各项属性发展相对均衡"],
-            "attribute_update_suggestions": {},
-            "notes": "训练前必做 FIFA 11+ 热身方案，训练后充分拉伸。每周总训练负荷不超过 280 单位。",
-        }
 
 
 def create_coach_node(llm: BaseChatModel):
