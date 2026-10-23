@@ -25,7 +25,7 @@ def check_config() -> bool:
         issues.append("OPENAI_API_KEY 未配置，请在 .env 中设置")
 
     if not config.TAVILY_API_KEY or "your-tavily" in config.TAVILY_API_KEY:
-        print("[WARN] TAVILY_API_KEY 未配置，联网搜索将使用本地回退")
+        print("[WARN] TAVILY_API_KEY 未配置，联网搜索工具不可用（可选工具）")
 
     if issues:
         print("[ERROR] 配置检查失败：")

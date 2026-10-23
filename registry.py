@@ -1,8 +1,8 @@
 """
 FootballAI Career Agent - Agent Registry
 
-集中管理所有 Agent 的注册信息。新增 Agent 只需在此文件添加一个条目，
-graph.py / manager.py 的路由逻辑会自动适配，无需手动修改。
+集中管理 Agent 元数据与 capability 路由。新增可执行能力还需同步运行时工厂、
+输出契约、上下文投影与相关测试；注册条目本身不会创建执行实现。
 """
 
 AGENT_REGISTRY = {

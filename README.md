@@ -1,6 +1,10 @@
 # FootballAI Career Agent
 
-基于 LangGraph 的足球运动员职业生涯多智能体协作系统。输入你的需求，多个 AI Agent 自动分工协作，生成专业的训练计划、营养方案、职业分析或公关声明。
+基于 LangGraph 的足球运动员职业生涯多智能体协作系统。输入需求后，系统根据球员快照和任务约束分工，生成训练、营养、表现与职业建议，或公关声明等报告。
+
+文档入口：[分类导航](docs/README.md)、[运行与验收](docs/guides/运行与验收.md)、[排障指南](docs/guides/排障指南.md)。
+
+2026-10-24：阶段二“获得可维护的游戏事实”已通过指定PES2021测试范围的M2验收；后续从E1.2开始，见[验收与新对话交接](docs/completed/M2_阶段二验收与交接.md)。
 
 ## 快速开始
 
@@ -19,9 +23,12 @@ TAVILY_API_KEY=your-searching-key   # 可选，用于联网搜索
 python app.py
 ```
 
+模型调用使用 `ChatOpenAI`：配置 OpenAI 兼容的模型、API 地址和密钥；专业 Agent 的工具循环还要求模型支持工具调用。默认地址为 `https://api.deepseek.com/v1`、默认模型为 `deepseek-chat`，均可用上述环境变量覆盖。Tavily 未配置或检索失败时返回工具不可用/失败；这是可选工具错误，不自动判定整个任务失败，也不生成替代搜索答案。
+
 ## 它能做什么
 
-包括但不限于
+以下是可提交的任务示例；具体分工由 Manager 生成的计划决定：
+
 | 场景 | 示例输入 | 涉及的 Agent |
 |------|---------|-------------|
 | 训练计划 | "三个月后参加大学联赛，想提升爆发力和减重" | Coach + Nutrition + Analyst |
@@ -56,25 +63,27 @@ Document（报告官）          ← 整合所有产出，生成最终报告
 
 ## 核心设计
 
-**ReAct 推理循环** — 每个 Agent 内置 Think → Act → Observe → Finish 循环，自主决定何时调用工具、何时输出结果。
+**有界工具循环** — Coach、Nutrition、Analyst、Career 使用 ReAct 循环，默认最多 5 次模型迭代；Manager、Reviewer、Document 通过各自的直接模型调用完成规划、审查和正文生成。工具消息本身不能代替有效专业结论。
 
-**两种记忆机制**：
-- 短期记忆：滑动窗口（默认5条），保持上下文连贯
-- 长期记忆：球员档案、训练/比赛/职业历史持久化到 JSON 文件，支持跨会话读取
+**任务状态与历史材料**：
+
+- 专业节点使用任务固定快照、显式依赖和选定历史构建输入。基类保留默认 5 条的滑动窗口辅助方法，当前主流程并未调用这些方法管理任务记忆。
+- 球员档案和训练/比赛/职业历史通过 Repository 跨会话读取；任务、报告、消息和暂停位置分别持久化在任务 SQLite 与 checkpoint 中。C2 的长期目标/决策记忆及相关性检索尚未实施。
 
 **四种工具**：
+
 - RAG 知识库检索（ChromaDB + 足球专业文献）
 - 联网搜索引擎（Tavily API）
 - 运动营养计算器（BMI / BMR / TDEE / 宏量营养素）
 - 球员快照只读访问（档案、训练史、比赛史）；事实更新使用独立的受控观察导入接口
 
-**质量保障闭环**：Reviewer 审查 → 不通过 → Manager 重新规划（最多3轮）→ Agent 重新执行 → 再次审查
+**审查与修订**：Reviewer 区分 PASS、局部修订、核心变化重规划和缺输入等待；技术失败按真实失败结束。默认每个子任务最多修订 1 次、每个 Mission 最多重规划 2 次，修订与重规划共用 4 次 Loop 预算；这些预算分别约束对应动作，不能相加为固定执行轮数。正文通过结构、明确要求、支持的球员数值标签及引用 URL 检查后才可发布，全文语义和建议科学质量仍未认证。
 
-**人工审核点**：生成最终报告前暂停，可查看中间结果并选择继续 / 重新规划 / 退出。
+**报告生成审批**：生成正文前暂停，用户可查看专业结果并明确批准继续，或保留暂停后退出。审批输入不能触发手工重规划；已完成任务根据新要求重评时创建关联新任务。
 
 **数据与交付边界（2026-10-01）**：预测只作为建议，不写入球员事实。API、Graph 和工具使用同一 Repository 快照；真实档案须显式配置 `FAIT_PLAYER_DATA_MODE=actual` 与独立的 `FAIT_PLAYER_DATA_ROOT`，缺数据时不回退样本。模型、工具、输出结构或审查失败均不生成固定答案。最终交付要求当前专业成果通过审查、正文通过确定性检查；正文尚未进行全文语义审查。
 
-已完成开发统一见 [路线图开发汇总](docs/completed/README.md)。PES2021 指定测试生涯的底层采集与受控导入见 [D1](docs/completed/D_D1_独立采集验证.md)、[D2](docs/completed/D_D2_映射与受控导入.md)；快速跳过按游戏机制仅提供个人进球、助攻、评分，正常比赛可后台采集动作明细。数据配置与导入见 [A 汇总](docs/completed/A_球员数据与事实边界.md)，执行与审查契约见 [B 汇总](docs/completed/B_执行协作与审查正确性.md)。
+已完成开发统一见 [路线图开发汇总](docs/completed/README.md)。PES2021 指定测试生涯的底层采集与受控导入见 [D阶段完整说明](docs/completed/D_游戏接入与采集适配.md#d-current)；快速跳过按游戏机制仅提供个人进球、助攻、评分，正常比赛可后台采集动作明细。数据配置与导入见 [A 汇总](docs/completed/A_球员数据与事实边界.md)，执行与审查契约见 [B 汇总](docs/completed/B_执行协作与审查正确性.md)。
 
 **历史与续跑边界（2026-10-02，C1）**：查看历史只读；解释旧报告沿用原任务材料与数据版本，解释失败不撤回报告。Web 与 CLI 的缺输入、报告审批从原 SQLite checkpoint 续跑；原快照或 checkpoint 缺失时拒绝恢复。重新评估或失败重试创建有关联的新任务，提交时冻结同一球员的最新快照与选定历史；请求去重与完整输入持久化，新任务失败不覆盖原报告。详情见 [C1 会话恢复与任务延续汇总](docs/completed/C_C1_会话恢复与任务延续.md)。
 
@@ -87,9 +96,9 @@ footballerAITeam/
 ├── app.py              # 主入口，CLI 交互
 ├── graph.py            # LangGraph 状态图定义与路由
 ├── config.py           # 配置（API Key、路径）
-├── registry.py         # Agent 注册中心（新增Agent只需在此添加）
+├── registry.py         # Agent 与 capability 注册表；新增能力还需执行工厂和契约支持
 ├── agents/
-│   ├── base.py         # Agent 基类（ReAct 循环 + 短期记忆）
+│   ├── base.py         # Agent 基类（有界 ReAct 循环及窗口辅助方法）
 │   ├── manager.py      # 总经理（Mission 创建 + 意图守护）
 │   ├── coach.py        # 技能教练（训练计划）
 │   ├── nutrition.py    # 运动营养师（饮食方案）
@@ -104,7 +113,11 @@ footballerAITeam/
 │   └── database.py     # 球员数据库
 ├── prompts/
 │   └── agent_prompts.py  # 三层 Prompt 架构
-├── memory/             # 持久化数据（球员档案、历史记录）
+├── memory/             # 默认样本、旧会话元数据及默认 Web 任务目录
+├── player_data/        # 统一快照、actual 聚合存储及受控观察导入
+├── game_adapters/      # 独立游戏读取、来源校验和受控映射
+├── backend/            # Mission 应用、API、任务存储及持久化运行时
+├── frontend/           # React + TypeScript 工作台
 ├── career_actions/     # 有来源建议、适用性读取与独立业务事件
 ├── knowledge/          # 足球专业文献（PDF/TXT）
 └── utils/
@@ -139,14 +152,14 @@ CLI 在等待输入/审批时输入 `q` 保存暂停并退出，稍后用 `--con
 - DeepSeek API（或 OpenAI 兼容接口）
 - ChromaDB（向量检索）
 - Tavily API（可选，联网搜索）
-# Web 工作台 V0.1
+## Web 工作台 V0.1
 
-根据 `docs/FootballerAiTeam_Frontend_V0.1_开发指南.md` 新增 React + TypeScript + Vite 前端及 FastAPI Application Layer。现有 CLI 继续独立运行。
+Web使用React + TypeScript + Vite前端及FastAPI应用层；CLI复用任务应用与存储格式。当前操作以[运行指南](docs/guides/运行与验收.md)为准，[前端初始设计](docs/guides/前端初始设计指南.md)保留设计背景。
 
 安装 Web 依赖：
 
 ```powershell
-& .\venv\Scripts\python.exe -m pip install -r requirements-web.txt
+& .\venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-web.txt
 cd frontend
 npm.cmd ci
 ```
@@ -164,6 +177,6 @@ cd frontend
 npm.cmd run dev
 ```
 
-访问 <http://127.0.0.1:5173/>。不调用模型的演示模式在启动后端前设置 `$env:FAIT_DEMO='1'`；真实与演示任务默认分开保存。
+访问 <http://127.0.0.1:5173/>。不调用模型的演示模式在启动后端前设置 `$env:FAIT_DEMO='1'`；真实与演示任务默认分开保存。球员数据源由 `FAIT_PLAYER_DATA_MODE/ROOT` 另行配置，默认仍为样本；真实模型运行不表示已经读取PES生涯。
 
-详细说明和验收命令见 [前端运行与验收](docs/Frontend_V0.1_运行与验收.md)。
+详细说明和验收命令见 [前端运行与验收](docs/guides/运行与验收.md)。
