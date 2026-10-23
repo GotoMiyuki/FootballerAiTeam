@@ -18,5 +18,5 @@ pypdf==6.16.2
 FlagEmbedding==1.4.2
 torch==2.13.0+cpu
 
-# Optional: live web search (the app falls back to local RAG when omitted)
+# Optional capability: live web search (unavailable without Tavily; no automatic RAG fallback)
 tavily-python==0.7.26

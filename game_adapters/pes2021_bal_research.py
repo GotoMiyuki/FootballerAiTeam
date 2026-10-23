@@ -21,6 +21,9 @@ from game_adapters.pes2021_save import RAW_ROOT, SaveError, parse_bal_snapshot, 
 TEAM_BASE, TEAM_SIZE, TEAM_COUNT = 0x50, 0x690, 700
 SCHEDULE_BASE, SCHEDULE_SIZE, SCHEDULE_CAPACITY = 0x329B00, 596, 13000
 CUMULATIVE_BASE, CUMULATIVE_SIZE, CUMULATIVE_CAPACITY = 0xC06264, 44, 60
+# Serialized local BAL layout, cross-checked against 58 native normal-match rows.
+# Native writer RVA 0x1349580 has its own expanded career-buffer offsets.
+RECENT_CACHE_BASE, RECENT_CACHE_SIDE_SIZE, RECENT_CACHE_CAPACITY = 0xBE6388, 0x3C4, 40
 
 
 def u32(data, offset):
@@ -104,6 +107,81 @@ def fixture_stat_fields(words, offset):
             "data_offsets": {"counts_word": offset + 8, "packed_word": offset + 12},
             "validation": "local_positive_goal_assist_and_selected_skip_comparison; broader_formats_unverified",
             "appearance_verified": False}
+
+
+def recent_cache_binding(body, snapshot, fixtures, candidates):
+    """Bind the typed cache by its own header, never by the newest fixture.
+
+    A local fixture anchor is not an event ID: re-simulation can reuse it.
+    Global same-ID/float search hits outside this table stay unclassified.
+    """
+    base = RECENT_CACHE_BASE
+    common = {"data_offset": base, "layout_profile": "local_bal_24b_cache_20261009",
+              "native_writer_rva": "0x1349580", "record_size_bytes": 24,
+              "side_capacity": RECENT_CACHE_CAPACITY, "side_stride_bytes": RECENT_CACHE_SIDE_SIZE,
+              "career_branch_verified": False, "event_identity_verified": False}
+    if len(body) < base + 12 + 2 * RECENT_CACHE_SIDE_SIZE:
+        return {**common, "status": "unavailable", "reason": "truncated_cache_area"}
+    sequence = struct.unpack_from("<H", body, base)[0]
+    teams = [u32(body, base + 12 + side * RECENT_CACHE_SIDE_SIZE) for side in range(2)]
+    slots, counts = [], [0, 0]
+    for side in range(2):
+        for slot in range(RECENT_CACHE_CAPACITY):
+            at = base + 16 + side * RECENT_CACHE_SIDE_SIZE + slot * 24
+            packed, native_id = struct.unpack_from("<II", body, at)
+            if native_id not in (0, 0xFFFFFFFF):
+                counts[side] += 1
+            if native_id == snapshot["native_player_id"]:
+                slots.append({"side_raw": side, "roster_slot_raw": slot, "data_offset": at,
+                              "packed_index_raw": packed})
+    common.update(header_hex=body[base:base + 16].hex(), fixture_sequence_raw=sequence,
+                  team_references_raw=teams, valid_native_id_counts_by_side=counts,
+                  target_slots_raw=slots, target_record_found=bool(slots))
+    if sequence == 0xFFFF and teams == [0xFFFFFFFF, 0xFFFFFFFF] and counts == [0, 0]:
+        return {**common, "status": "empty_native_cache",
+                "reason": "native_header_and_all_80_slot_ids_empty; no_appearance_inference"}
+    try:
+        cache_date = date(struct.unpack_from("<H", body, base + 4)[0], body[base + 6], body[base + 7]).isoformat()
+    except ValueError:
+        return {**common, "status": "unverified_cache_header", "reason": "invalid_cache_date"}
+    team_indices = [value & 0x3FFF for value in teams]
+    common.update(game_date_candidate=cache_date, team_indices_raw=team_indices)
+    if sequence >= SCHEDULE_CAPACITY or max(team_indices) >= TEAM_COUNT or team_indices[0] == team_indices[1]:
+        return {**common, "status": "unverified_cache_header", "reason": "invalid_sequence_or_teams"}
+    matches = [row for row in fixtures if row["sequence_raw"] == sequence]
+    if len(matches) != 1:
+        return {**common, "status": "unverified_cache_header",
+                "reason": "fixture_sequence_absent_or_ambiguous_in_current_club"}
+    fixture = matches[0]
+    if (fixture["game_date"] != cache_date or
+            [fixture["home"]["team_index_raw"], fixture["away"]["team_index_raw"]] != team_indices):
+        return {**common, "status": "conflicting_cache_header", "reason": "fixture_header_mismatch"}
+    if not fixture["bit30_completed_candidate"]:
+        return {**common, "status": "conflicting_cache_header", "reason": "cache_fixture_not_completed_candidate"}
+    anchor = [cache_date, *team_indices, sequence]
+    expected_packed = u32(body, snapshot["player_data_offset"] + 0x2C)
+    owner_side = 0 if fixture["target_club_side"] == "home" else 1
+    binding_ambiguous = len(slots) > 1
+    for candidate in candidates:
+        matching = [slot for slot in slots if slot["data_offset"] == candidate["data_offset"]
+                    and slot["packed_index_raw"] == expected_packed and slot["side_raw"] == owner_side]
+        if binding_ambiguous or len(matching) != 1:
+            continue
+        candidate["cache_membership_candidate"] = matching[0]
+        candidate["fixture_anchor_candidate"] = anchor
+        candidate["match_binding"] = "native_cache_header_fixture_candidate; career branch and event identity unverified"
+        candidate["word_classification"] = {
+            "offset_plus_12": "Native GK saves candidate; writer index 0x85 mode5 and 58-row real comparison",
+            "offset_plus_16": "Low-byte initial-first11 flag candidate; real substitution comparison pending"}
+        flag = body[candidate["data_offset"] + 16]
+        candidate["native_field_candidates"] = {
+            "gk_saves": {"value": candidate["unclassified_words"]["offset_plus_12"],
+                         "role_applicability_verified": False},
+            "started": {"value": bool(flag) if flag in (0, 1) else None, "raw_u8": flag,
+                        "participation_verified": False}}
+    return {**common, "status": "native_header_fixture_candidate", "fixture_anchor_candidate": anchor,
+            "target_binding_ambiguous": binding_ambiguous,
+            "reason": "explicit_cache_header_match; career_branch_and_event_identity_unverified"}
 
 
 def find_cumulative_binding_diagnostics(body, snapshot):
@@ -237,22 +315,24 @@ def research_bal(metadata, blocks):
                          "fixture_player_rows_raw": player_rows,
                          "validation": "upstream_layout_and_local_roster_comparison; experimental"})
     stats = find_stat_candidates(body, snapshot)
+    cache_binding = recent_cache_binding(body, snapshot, fixtures, stats)
     return {"status": "experimental_bal_research", "snapshot": snapshot,
             "club_binding": {"team_index_raw": club["index"], "native_player_id": player_id,
                              "method": "descriptor club name + exact roster native ID",
                              "career_branch": "unverified"},
             "club_fixtures": sorted(fixtures, key=lambda row: (row["game_date"], row["sequence_raw"], row["table_slot_raw"])),
             "personal_stat_candidates": stats,
+            "recent_cache_binding": cache_binding,
             "cumulative_stat_candidates": find_cumulative_candidates(body, snapshot),
             "cumulative_binding_diagnostics": find_cumulative_binding_diagnostics(body, snapshot),
             "missing_semantics": {
                 "fixture_target_row_missing": "No target record found; not a certified zero-minute appearance",
-                "personal_stat_candidates_empty": "No matching 24B candidate; does not imply no personal appearance or zero rating",
+                "personal_stat_candidates_empty": "No matching 24B candidate; inspect typed cache header separately; no personal-appearance or zero-rating inference",
                 "cumulative_stat_candidates_empty": "Target cumulative structure unavailable; no zero substitution",
                 "unplayed_fixture": "Score and stat field candidates are null even if raw bytes are nonzero"},
-            "unknown_fields": {"goals_assists": "Fixture +8 low bytes have local positive candidates; 24B +12/+16 are not direct counts; no zero substitution",
+            "unknown_fields": {"goals_assists": "Fixture +8 low bytes have local positive candidates; typed 24B +12 is native GK saves, not goals/assists",
                                "participation": "Fixture roster membership is not verified appearance",
-                               "stats_match_binding": "Fixture membership binds local raw fields; 24B cache match and cumulative bucket ownership remain unverified",
+                               "stats_match_binding": "24B header can supply a local fixture anchor; career/event identity and cumulative bucket ownership remain unverified",
                                "skipped_match_behavior": "Local selected active skip generates fixture/cumulative stats while 24B cache stays empty; one save does not identify execution path",
                                "stable_event_identity": "Table index/sequence not certified across reload or sorting"},
             "d1_complete": False, "match_records_verified": False, "skipped_match_collection_verified": False,

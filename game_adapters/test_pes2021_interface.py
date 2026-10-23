@@ -119,6 +119,20 @@ class InterfaceTests(unittest.TestCase):
         self.assertIsNone(historical["cumulative_stat_candidates"]["before"])
         self.assertIsNone(historical["cumulative_candidate_records_identical"])
 
+    def test_cache_header_evidence_is_exposed_without_promoting_legacy_reports(self):
+        before, after = fixture_report(), fixture_report("new")
+        after["recent_cache_binding"] = {"status": "empty_native_cache", "event_identity_verified": False}
+        diff = compare_reports(before, after)
+        self.assertIsNone(diff["recent_cache_binding"]["before"])
+        self.assertEqual(diff["recent_cache_binding"]["after"]["status"], "empty_native_cache")
+        # Compact stats still supports reports written before the typed cache.
+        before["club_fixtures"] = []
+        before["missing_semantics"] = {}
+        self.assertIsNone(stats_preview(before)["recent_24b_cache"]["header_binding_candidate"])
+        after["club_fixtures"] = []
+        after["missing_semantics"] = {}
+        self.assertFalse(stats_preview(after)["recent_24b_cache"]["header_binding_candidate"]["event_identity_verified"])
+
     def test_ambiguous_anchor_and_different_player_refused(self):
         after = fixture_report()
         after["club_fixtures"].append(copy.deepcopy(after["club_fixtures"][0]))

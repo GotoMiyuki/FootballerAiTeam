@@ -135,6 +135,8 @@ def compare_reports(before, after):
                                 "branch_verified": False, "save_hash_is_event_identity": False,
                                 "interpretation": "Review clues only; identical anchors can contain different replayed results, and no clue does not certify a branch"},
             "personal_stat_candidates": {"before": old_stats, "after": new_stats},
+            "recent_cache_binding": {"before": before.get("recent_cache_binding"),
+                                     "after": after.get("recent_cache_binding")},
             "personal_candidate_records_identical": sorted(row["record_sha256"] for row in old_stats) == sorted(row["record_sha256"] for row in new_stats),
             "cumulative_stat_candidates": {"before": old_cumulative, "after": new_cumulative},
             "cumulative_candidate_records_identical":
@@ -177,7 +179,8 @@ def stats_preview(report):
             "cumulative_stat_candidates": report.get("cumulative_stat_candidates"),
             "cumulative_binding_diagnostics": report.get("cumulative_binding_diagnostics"),
             "recent_24b_cache": {"candidates": cache, "availability": "candidate_found" if cache else "unavailable",
-                                 "match_binding": "unverified; not assigned to latest club fixture"},
+                                 "header_binding_candidate": report.get("recent_cache_binding"),
+                                 "match_binding": "inspect native cache header candidate; not assigned to latest club fixture; event identity unverified"},
             "unavailable_single_match_details": {field: None for field in
                 ("shots", "shots_on_target", "passes_attempted", "passes_completed", "tackles", "yellow_cards", "red_cards")},
             "missing_semantics": report["missing_semantics"],

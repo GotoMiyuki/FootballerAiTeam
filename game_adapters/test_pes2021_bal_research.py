@@ -4,7 +4,8 @@ import unittest
 
 from game_adapters import test_pes2021_save as fixtures
 from game_adapters.pes2021_bal_research import (research_bal, parse_teams, SCHEDULE_BASE, SCHEDULE_CAPACITY,
-                                              CUMULATIVE_BASE, CUMULATIVE_SIZE, CUMULATIVE_CAPACITY)
+                                              CUMULATIVE_BASE, CUMULATIVE_SIZE, CUMULATIVE_CAPACITY,
+                                              recent_cache_binding, RECENT_CACHE_BASE, RECENT_CACHE_SIDE_SIZE)
 from game_adapters.pes2021_save import SaveError
 
 
@@ -145,6 +146,84 @@ class BalResearchTests(unittest.TestCase):
         missing_stats = research_bal({}, {**self.blocks, "data": self.blocks["data"][:0xB7E494]})
         self.assertEqual(missing_stats["personal_stat_candidates"], [])
         self.assertFalse(missing_stats["match_records_verified"])
+
+
+class RecentCacheBindingTests(unittest.TestCase):
+    def fixture(self):
+        base = RECENT_CACHE_BASE
+        body = bytearray(base + 12 + 2 * RECENT_CACHE_SIDE_SIZE)
+        struct.pack_into("<HBBHBB", body, base, 7, 0, 0, 2020, 9, 23)
+        struct.pack_into("<I", body, base + 12, 1)
+        struct.pack_into("<I", body, base + 12 + RECENT_CACHE_SIDE_SIZE, 2)
+        struct.pack_into("<I", body, 0x20 + 0x2C, 42)
+        at = base + 16 + RECENT_CACHE_SIDE_SIZE + 24 * 3
+        struct.pack_into("<5If", body, at, 42, 123, 90 << 8, 2, 1, 5.5)
+        snapshot = {"native_player_id": 123, "player_data_offset": 0x20}
+        fixture = {"sequence_raw": 7, "game_date": "2020-09-23",
+                   "home": {"team_index_raw": 1}, "away": {"team_index_raw": 2},
+                   "target_club_side": "away", "bit30_completed_candidate": True}
+        candidate = {"data_offset": at, "unclassified_words": {"offset_plus_12": 2, "offset_plus_16": 1}}
+        return body, snapshot, fixture, candidate
+
+    def test_explicit_header_binds_older_fixture_and_classifies_only_typed_slot(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        newer = {**fixture, "sequence_raw": 8, "game_date": "2020-09-26"}
+        outside = {**candidate, "data_offset": candidate["data_offset"] - 1}
+        result = recent_cache_binding(body, snapshot, [fixture, newer], [candidate, outside])
+        self.assertEqual(result["fixture_anchor_candidate"], ["2020-09-23", 1, 2, 7])
+        self.assertEqual(candidate["native_field_candidates"]["gk_saves"]["value"], 2)
+        self.assertTrue(candidate["native_field_candidates"]["started"]["value"])
+        self.assertFalse(candidate["native_field_candidates"]["started"]["participation_verified"])
+        self.assertNotIn("native_field_candidates", outside)
+        self.assertFalse(result["event_identity_verified"])
+        self.assertFalse(result["career_branch_verified"])
+
+    def test_header_conflict_or_duplicate_sequence_never_silently_binds(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        result = recent_cache_binding(body, snapshot, [{**fixture, "game_date": "2020-09-24"}], [candidate])
+        self.assertEqual(result["status"], "conflicting_cache_header")
+        self.assertNotIn("native_field_candidates", candidate)
+        result = recent_cache_binding(body, snapshot, [fixture, fixture], [candidate])
+        self.assertEqual(result["status"], "unverified_cache_header")
+        self.assertNotIn("fixture_anchor_candidate", candidate)
+
+    def test_empty_cache_requires_both_header_sentinels_and_all_80_ids_empty(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        struct.pack_into("<H", body, RECENT_CACHE_BASE, 0xFFFF)
+        for side in range(2):
+            struct.pack_into("<I", body, RECENT_CACHE_BASE + 12 + side * RECENT_CACHE_SIDE_SIZE, 0xFFFFFFFF)
+        result = recent_cache_binding(body, snapshot, [fixture], [candidate])
+        self.assertNotEqual(result["status"], "empty_native_cache")
+        struct.pack_into("<I", body, candidate["data_offset"] + 4, 0)
+        result = recent_cache_binding(body, snapshot, [fixture], [])
+        self.assertEqual(result["status"], "empty_native_cache")
+        self.assertEqual(result["valid_native_id_counts_by_side"], [0, 0])
+        self.assertIn("no_appearance_inference", result["reason"])
+
+    def test_ambiguous_target_or_different_packed_reference_stays_unclassified(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        struct.pack_into("<II", body, candidate["data_offset"] + 24, 42, 123)
+        result = recent_cache_binding(body, snapshot, [fixture], [candidate])
+        self.assertTrue(result["target_binding_ambiguous"])
+        self.assertNotIn("native_field_candidates", candidate)
+        struct.pack_into("<I", body, candidate["data_offset"] + 24 + 4, 0)
+        struct.pack_into("<I", body, candidate["data_offset"], 99)
+        recent_cache_binding(body, snapshot, [fixture], [candidate])
+        self.assertNotIn("native_field_candidates", candidate)
+
+    def test_truncated_cache_is_unavailable_instead_of_empty(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        result = recent_cache_binding(body[:-1], snapshot, [fixture], [candidate])
+        self.assertEqual(result["status"], "unavailable")
+        self.assertNotIn("valid_native_id_counts_by_side", result)
+
+    def test_wrong_target_side_or_unplayed_fixture_does_not_classify_fields(self):
+        body, snapshot, fixture, candidate = self.fixture()
+        recent_cache_binding(body, snapshot, [{**fixture, "target_club_side": "home"}], [candidate])
+        self.assertNotIn("native_field_candidates", candidate)
+        result = recent_cache_binding(body, snapshot, [{**fixture, "bit30_completed_candidate": False}], [candidate])
+        self.assertEqual(result["status"], "conflicting_cache_header")
+        self.assertNotIn("native_field_candidates", candidate)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ MENU_KEYS = {
     "left": (0x25, 0x4B, True), "up": (0x26, 0x48, True),
     "right": (0x27, 0x4D, True), "down": (0x28, 0x50, True),
     "x": (0x58, 0x2D, False), "v": (0x56, 0x2F, False),
+    "a": (0x41, 0x1E, False),  # Keyboard preset X: inspect personal settings.
     "q": (0x51, 0x10, False), "e": (0x45, 0x12, False),  # Existing LB/RB mapping.
     "space": (0x20, 0x39, False),
 }

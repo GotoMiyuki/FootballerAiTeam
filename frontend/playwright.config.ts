@@ -12,6 +12,6 @@ export default defineConfig({
     // Optional installed Chromium browser; avoids downloading another runtime.
     channel: process.env.FAIT_TEST_BROWSER || undefined,
   },
-  // Start the demo API + Vite using docs/Frontend_V0.1_运行与验收.md first.
+  // Start the demo API + Vite using docs/guides/运行与验收.md first.
   projects: [{ name: 'chromium', use: { browserName: 'chromium' } }],
 })

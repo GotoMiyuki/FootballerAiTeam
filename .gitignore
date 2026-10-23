@@ -47,6 +47,7 @@ frontend/test-results/
 frontend/playwright-report/
 memory/web/
 local_data/cli/
+local_data/game_imports/
 .web-test-data/
 .npm-cache/
 
