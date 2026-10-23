@@ -8,7 +8,9 @@ Mission-driven v2: 以 Mission 为中心的 Intent Flow。
     python app.py                              # 新会话
     python app.py "帮我制定训练计划"             # 命令行直接输入
     python app.py --list                       # 列出历史会话
-    python app.py --continue <thread_id>        # 恢复历史会话
+    python app.py --show <mission_id>           # 只读原报告与任务引用
+    python app.py --continue <mission_id>       # 从持久化暂停恢复
+    python app.py --reevaluate <mission_id> "新要求" --reason "原因"
 """
 
 import sys
@@ -26,43 +28,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from config import config
-from utils.helpers import create_llm, check_config
-from utils.sessions import create_session, update_session, list_sessions, get_session
-from graph import build_graph, create_initial_state
+from utils.helpers import check_config
+from utils.sessions import SessionRepository, list_sessions, get_session
+from graph import create_initial_state
 from langgraph.types import Command
 
 
-def build_agent_graph():
-    """构建并返回编译后的 LangGraph 图。"""
-    llm = create_llm()
-
-    from agents.manager import create_manager_node, create_assess_node, create_manager_loop_nodes
-    from agents.nutrition import create_nutrition_node
-    from agents.coach import create_coach_node
-    from agents.analyst import create_analyst_node
-    from agents.career import create_career_node
-    from agents.document import create_document_node
-    from agents.reviewer import create_reviewer_node
-
-    manager_node, intent_checkpoint_node, manager = create_manager_node(llm)
-    assess_node = create_assess_node(manager)
-    revision_node, replan_node = create_manager_loop_nodes(manager)
-
-    agent_nodes = {
-        "manager": manager_node,
-        "manager_assess": assess_node,
-        "manager_revision": revision_node,
-        "manager_replan": replan_node,
-        "intent_checkpoint": intent_checkpoint_node,
-        "reviewer": create_reviewer_node(llm),
-        "nutrition": create_nutrition_node(llm),
-        "coach": create_coach_node(llm),
-        "analyst": create_analyst_node(llm),
-        "career": create_career_node(llm),
-        "document": create_document_node(llm),
-    }
-    # P3: 在 Document 生成最终报告前暂停，允许用户审核中间结果
-    return build_graph(agent_nodes, interrupt_before=["document"])
+def build_agent_graph(checkpoint_path, on_start=None):
+    """复用持久化运行时工厂；调用方负责关闭返回的连接。"""
+    from backend.runtime import create_runtime
+    return create_runtime(checkpoint_path, on_start or (lambda *_: None))
 
 
 def print_header():
@@ -95,7 +70,7 @@ def _process_events(graph, input_data, config_dict):
 
             elif node_name == "document":
                 report = node_output.get("final_report", "")
-                if report:
+                if report and node_output.get('delivery_status') == 'PUBLISHABLE':
                     final_report = report
                     print(f"\n[Document] 报告生成完成\n")
 
@@ -121,7 +96,7 @@ def _process_events(graph, input_data, config_dict):
 
             elif node_name == "human_input":
                 next_decision = node_output.get("review_v2", {}).get("decision", "")
-                print(f"[Human-in-the-loop] 已收到补充信息，重新判定为 {next_decision or 'PASS'}")
+                print(f"[Human-in-the-loop] 已收到补充信息，重新判定为 {next_decision or '未完成审查'}")
 
             elif node_name == "reviewer":
                 decision = node_output.get("review_v2", {}).get("decision", "")
@@ -137,7 +112,7 @@ def _process_events(graph, input_data, config_dict):
             else:
                 domain_outputs = node_output.get("domain_outputs", {})
                 for agent_name in domain_outputs:
-                    print(f"[{agent_name}] 完成")
+                    print(f"[{agent_name}] {'未输出结果' if node_output.get('execution_outcome') in {'FAILED', 'NO_RESULT'} else '本轮返回'}")
 
     state = graph.get_state(config_dict)
     interrupted = bool(getattr(state, 'next', ())) if state else False
@@ -146,7 +121,10 @@ def _process_events(graph, input_data, config_dict):
 
 def _show_interrupt_summary(graph, config_dict):
     """在 interrupt 点展示当前状态摘要，等待用户确认。"""
-    state = graph.get_state(config_dict)
+    _show_snapshot_summary(graph.get_state(config_dict))
+
+
+def _show_snapshot_summary(state):
     if not state or not state.values:
         return
 
@@ -159,7 +137,7 @@ def _show_interrupt_summary(graph, config_dict):
     next_nodes = tuple(getattr(state, "next", ()) or ())
 
     print("\n" + "-" * 40)
-    label = "补充信息" if "human_input" in next_nodes else "最终报告审核点"
+    label = "补充信息" if "human_input" in next_nodes else "报告生成前确认"
     print(f"  [Human-in-the-loop] {label}")
     print(f"  核心目标: {mission.get('primary_goal', '')[:60]}")
 
@@ -199,7 +177,7 @@ def run_stream(graph, initial_state, thread_id):
         if "human_input" in next_nodes:
             supplied = input("\n请补充上述关键信息（q=退出）: ").strip()
             if supplied.lower() == "q":
-                print("[中断] 本次运行已停在 BLOCKED；当前 checkpoint 仅在本进程内有效。")
+                print("[中断] 本次运行停在 BLOCKED；恢复能力取决于调用方的持久化 checkpoint 配置。")
                 break
             if not supplied:
                 print("[提示] 补充信息不能为空。")
@@ -224,6 +202,8 @@ def run_stream(graph, initial_state, thread_id):
 
 def print_result(final_report, final_state, config_dict, graph):
     """打印最终报告。"""
+    from execution_contracts import publishable
+    final_report = final_state.values.get("final_report", "") if final_state and publishable(final_state.values) else ""
     if final_report:
         print("\n" + "=" * 60)
         print("  最终报告")
@@ -231,19 +211,12 @@ def print_result(final_report, final_state, config_dict, graph):
         print(final_report)
     else:
         if final_state and final_state.values:
-            report = final_state.values.get("final_report", "")
-            if report:
-                print("\n" + "=" * 60)
-                print("  最终报告")
-                print("=" * 60 + "\n")
-                print(report)
+            control = final_state.values.get("loop_control", {})
+            if control.get("waiting_for_user"):
+                print("\n[提示] 流程停在 BLOCKED；需从原 checkpoint 补充信息才能继续，"
+                      "未触发 Agent 重试或 Replan。")
             else:
-                control = final_state.values.get("loop_control", {})
-                if control.get("waiting_for_user"):
-                    print("\n[提示] 流程停在 BLOCKED；需在本次运行的提示中补充信息才能继续，"
-                          "未触发 Agent 重试或 Replan。")
-                else:
-                    print("\n[提示] 未生成最终报告，请检查 Mission 配置。")
+                print("\n[提示] " + (final_state.values.get("failure_reason") or "未形成可发布报告"))
 
     if final_state and final_state.values:
         telemetry = final_state.values.get("telemetry", {}) or {}
@@ -262,117 +235,262 @@ def print_result(final_report, final_state, config_dict, graph):
     print("\n" + "=" * 60)
     waiting = bool(final_state and final_state.values
                    and final_state.values.get("loop_control", {}).get("waiting_for_user"))
-    print("  本次多智能体流程停在 BLOCKED" if waiting else "  多智能体协作流程完成！")
+    print("  本次多智能体流程停在 BLOCKED" if waiting else
+          "  多智能体协作流程完成！" if final_report else "  本次运行未交付报告")
     print("=" * 60)
 
 
 def cmd_list():
-    """列出历史会话。"""
-    sessions = list_sessions()
-    if not sessions:
+    """只读当前 CLI 任务索引及旧元数据，不构造运行时。"""
+    records = SessionRepository().list()
+    legacy = list_sessions()
+    if not records and not legacy:
         print("暂无历史会话。")
         return
-    print(f"\n{'Thread ID':<28} {'轮数':<6} {'时间':<22} 首次输入")
-    print("-" * 90)
-    for s in sessions:
-        tid = s["thread_id"]
-        rounds = s.get("rounds", 1)
-        updated = s.get("updated_at", s.get("created_at", ""))
-        first = s.get("first_input", "")[:40]
-        print(f"{tid:<28} {rounds:<6} {updated:<22} {first}")
+    for record in records:
+        print(f"{record['thread_id']}  {record['status']}  {record['created_at']}  {record['first_input'][:60]}")
+    for record in legacy:
+        print(f"{record['thread_id']}  UNVERIFIED（旧元数据）  {record.get('first_input', '')[:60]}")
+
+
+def _legacy_history(thread_id):
+    session = get_session(thread_id)
+    if not session:
+        raise ValueError(f"任务 {thread_id} 不存在。使用 --list 查看可用任务。")
+    print(f"[历史索引] {thread_id}")
+    print(f"  首次: {session.get('first_input', '')[:80]}")
+    print("  此旧索引不含持久化 checkpoint、原快照或完整报告，无法恢复原执行。")
+    print('  如需分析当前状态，请使用 python app.py "新的任务需求" 创建独立任务。')
+
+
+def _show_mission(repository, mission):
+    print(f"[任务] {mission.id} | {mission.status}")
+    print(f"  目标: {mission.objective}")
+    print(f"  原输入引用: {mission.input_reference.model_dump_json()}")
+    if mission.lineage:
+        print(f"  来源: {mission.lineage.parent_mission_id} | {mission.lineage.operation} | {mission.lineage.reason}")
+    report = repository.report(mission)
+    if report:
+        print("\n最终报告（原任务、原数据版本）\n" + report)
+    elif mission.error:
+        print("  " + mission.error)
+    elif mission.status == 'BLOCKED':
+        print("  已保存暂停；使用 --continue 后按原等待原因补信息或审批。")
+    else:
+        print("  尚无可发布报告。运行中断的任务不能自动恢复，请明确创建关联重试。")
+
+
+def cmd_show(thread_id):
+    repository = SessionRepository()
+    mission = repository.mission(thread_id)
+    if mission:
+        _show_mission(repository, mission)
+    else:
+        _legacy_history(thread_id)
+    return mission
+
+
+def _collect_input(blocked):
+    """将明确的 CLI 输入转换为现有表单字段；q 不提交。"""
+    if blocked.reason == 'report_approval':
+        choice = input("\n继续生成最终报告？[回车=批准 / q=保存退出]: ").strip().lower()
+        if choice == 'q':
+            return None
+        if choice not in {'', 'y', 'yes', '确认'}:
+            raise ValueError('请输入回车批准或 q 保存退出')
+        return {'approved': True}
+    if blocked.reason != 'missing_user_input':
+        raise ValueError('原任务等待原因不支持恢复')
+    print(blocked.message)
+    values = {}
+    for field in blocked.required_inputs:
+        hint = ', '.join(field.options)
+        raw = input(f"{field.label}（q=保存退出）{(' [' + hint + ']') if hint else ''}: ").strip()
+        if raw.lower() == 'q':
+            return None
+        if not raw and not field.required:
+            continue
+        if field.input_type in {'number', 'scale'}:
+            import math
+            try:
+                value = float(raw)
+            except ValueError as error:
+                raise ValueError(f'{field.label}必须为数值') from error
+            if not math.isfinite(value):
+                raise ValueError(f'{field.label}必须为有限数值')
+        elif field.input_type == 'boolean':
+            if raw.lower() not in {'yes', 'no', 'y', 'n', '是', '否'}:
+                raise ValueError(f'{field.label}请填写是或否')
+            value = raw.lower() in {'yes', 'y', '是'}
+        else:
+            value = raw
+        values[field.key] = value
+    return values
+
+
+def _drive_cli(service, mission_id):
+    """等待同一服务任务，暂停退出不更改原任务或 checkpoint。"""
+    from backend.runtime import inspect_checkpoint
+    while True:
+        service.wait()
+        mission = service.view(service.store.get(mission_id))
+        if mission.status != 'BLOCKED':
+            break
+        if mission.resume_error:
+            print('[无法恢复] ' + mission.resume_error)
+            break
+        snapshot = inspect_checkpoint(service.checkpoint_path, mission_id)
+        _show_snapshot_summary(snapshot)
+        try:
+            supplied = _collect_input(mission.blocked)
+        except (EOFError, KeyboardInterrupt):
+            supplied = None
+        except ValueError as error:
+            print('[输入无效] ' + str(error))
+            continue
+        if supplied is None:
+            print(f'[暂停已保存] {mission.id}；稍后使用 --continue {mission.id} 恢复。')
+            break
+        try:
+            service.input(mission.id, supplied)
+        except ValueError as error:
+            print('[输入无效] ' + str(error))
+    # Read the same configured workspace; no latest player access during display.
+    print(f"[任务] {mission.id} | {mission.status}")
+    report = service.store.report(mission.id) if mission.status == 'COMPLETED' and mission.delivery_status == 'PUBLISHABLE' else None
+    if report:
+        print("\n最终报告\n" + report)
+    elif mission.error:
+        print('[执行失败] ' + mission.error)
+    return mission
 
 
 def cmd_continue(thread_id):
-    """恢复历史会话。"""
-    session = get_session(thread_id)
-    if not session:
-        print(f"会话 {thread_id} 不存在。使用 --list 查看可用会话。")
+    """仅恢复支持的持久化暂停；完成历史只读，不重建初始状态。"""
+    from backend.runtime import inspect_checkpoint
+    from backend.task_context import validate_pause
+    from backend.cli import CLIMissionService
+    repository = SessionRepository()
+    mission = repository.mission(thread_id)
+    if not mission:
+        _legacy_history(thread_id)
         return
-
-    print(f"[恢复会话] {thread_id}")
-    print(f"  首次: {session.get('first_input', '')[:80]}")
-    print(f"  轮数: {session.get('rounds', 1)}")
-    user_input = input("\n请输入追问内容: ").strip()
-    if not user_input:
-        print("输入为空，退出。")
-        return
-
-    update_session(thread_id, user_input)
-    initial_state = create_initial_state(user_input)
-    config_dict = {"configurable": {"thread_id": thread_id}}
-
-    print(f"\n[User] {user_input}")
-    print("\n" + "=" * 60)
-    print("  继续多智能体协作流程...")
-    print("=" * 60 + "\n")
-
-    graph = build_agent_graph()
-    final_report, final_state = run_stream(graph, initial_state, thread_id)
-    print_result(final_report, final_state, config_dict, graph)
+    if mission.status != 'BLOCKED':
+        _show_mission(repository, mission)
+        if mission.status != 'COMPLETED':
+            print('[无法恢复] 任务没有停在支持的暂停位置。')
+        return mission
+    if not mission.blocked:
+        raise ValueError('原任务暂停信息缺失，无法恢复')
+    try:
+        snapshot = inspect_checkpoint(repository.checkpoint_path, mission.id)
+    except Exception as error:
+        raise ValueError('原 checkpoint 无法读取或不兼容，无法恢复') from error
+    validate_pause(mission, snapshot)
+    print(f"[恢复原任务] {mission.id} | 数据版本 {mission.input_reference.state_version}")
+    if not check_config():
+        raise ValueError('请配置模型 API Key；原暂停仍保留')
+    service = CLIMissionService(repository.root)
+    try:
+        return _drive_cli(service, mission.id)
+    finally:
+        service.close()
 
 
 def cmd_new(user_input=None):
-    """启动新会话。"""
+    from backend.cli import CLIMissionService
+    from backend.models import MessageRequest
+    from uuid import uuid4
     if not user_input:
-        print("\n" + "-" * 40)
-        print("示例需求：")
-        print("  1. 三个月后参加大学联赛，想提升爆发力和减重")
-        print("  2. 帮我分析最近的训练效果和比赛表现")
-        print("  3. 我想规划一下未来的职业发展路径")
-        print("  4. 为我制定一份完整的赛前准备方案")
-        print("  5. 请帮我回应媒体关于加盟曼城的传闻")
-        print("-" * 40)
-        user_input = input("\n请输入您的需求: ").strip()
-        if not user_input:
-            user_input = "三个月后参加大学联赛，目前体重偏重，想提升爆发力和速度"
+        user_input = input('\n请输入任务需求: ').strip()
+    if not user_input:
+        raise ValueError('任务需求不能为空')
+    service = CLIMissionService(SessionRepository().root)
+    try:
+        _, identity = service.submit(MessageRequest(conversation_id=f'cli_{uuid4().hex}', content=user_input))
+        print(f'[新任务] {identity}')
+        return _drive_cli(service, identity)
+    finally:
+        service.close()
 
-    thread_id = create_session(user_input)
-    initial_state = create_initial_state(user_input)
 
-    print(f"[Session] {thread_id}")
-    print(f"\n[User] {user_input}")
-    print("\n" + "=" * 60)
-    print("  开始多智能体协作流程...")
-    print("=" * 60 + "\n")
-
-    graph = build_agent_graph()
-    config_dict = {"configurable": {"thread_id": thread_id}}
-    final_report, final_state = run_stream(graph, initial_state, thread_id)
-    print_result(final_report, final_state, config_dict, graph)
+def cmd_related(thread_id, user_input, reason, request_id, *, operation):
+    from backend.cli import CLIMissionService
+    from backend.continuations import Continuation
+    from uuid import uuid4
+    repository = SessionRepository()
+    parent = repository.mission(thread_id)
+    if not parent:
+        raise ValueError('来源不是可验证的 CLI 任务，请新建普通任务')
+    if not user_input or not reason:
+        raise ValueError('关联任务需要新的要求和 --reason')
+    service = CLIMissionService(repository.root)
+    try:
+        request_id = request_id or f'request_{uuid4().hex}'
+        print(f'[创建请求] {request_id}')
+        _, identity, created = service.create_continuation(Continuation(
+            parent_mission_id=parent.id, conversation_id=parent.conversation_id,
+            request_id=request_id, reason=reason, content=user_input, operation=operation,
+            include_report=operation == 'reevaluate'))
+        print(f"[{'新建关联任务' if created else '已有创建结果'}] {identity} | 来源 {parent.id}")
+        if not created:
+            # Repeating a creation request never implicitly resumes a previously paused task.
+            mission = service.store.get(identity)
+            _show_mission(repository, mission)
+            return mission
+        return _drive_cli(service, identity)
+    finally:
+        service.close()
 
 
 def main():
+    import argparse
     print_header()
-
-    if not check_config():
-        print("\n请先在 .env 文件中配置 API Key 后重试。")
-        return
-
-    # ---- CLI 参数解析 ----
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--list":
-            cmd_list()
-            return
-        elif sys.argv[1] == "--continue" and len(sys.argv) > 2:
-            cmd_continue(sys.argv[2])
-            return
-        else:
-            # 命令行直接输入
-            user_input = " ".join(sys.argv[1:])
-            cmd_new(user_input)
-            return
-
-    # ---- 交互模式（默认：新会话） ----
+    parser = argparse.ArgumentParser(description='持久化 CLI 任务与原暂停恢复')
+    operations = parser.add_mutually_exclusive_group()
+    operations.add_argument('--list', action='store_true')
+    operations.add_argument('--show', metavar='MISSION_ID')
+    operations.add_argument('--continue', dest='continue_id', metavar='MISSION_ID')
+    operations.add_argument('--reevaluate', metavar='MISSION_ID')
+    operations.add_argument('--retry', metavar='MISSION_ID')
+    parser.add_argument('--reason')
+    parser.add_argument('--request-id')
+    parser.add_argument('content', nargs='*')
+    args = parser.parse_args()
+    if (args.list or args.show or args.continue_id) and (args.content or args.reason or args.request_id):
+        parser.error('历史/恢复命令不接受新要求；请使用 --reevaluate 创建关联评估')
+    if (args.reason or args.request_id) and not (args.reevaluate or args.retry):
+        parser.error('--reason/--request-id 只用于 --reevaluate/--retry')
     try:
-        cmd_new()
-    except KeyboardInterrupt:
-        print("\n\n[Interrupted] 用户中断执行")
-    except Exception as e:
-        print(f"\n[Error] 执行出错: {e}")
+        if args.list:
+            cmd_list()
+            return 0
+        if args.show:
+            cmd_show(args.show)
+            return 0
+        if args.continue_id:
+            mission = cmd_continue(args.continue_id)
+        else:
+            if not check_config():
+                print('请先在 .env 文件中配置 API Key 后重试。')
+                return 1
+            user_input = ' '.join(args.content)
+            if args.reevaluate or args.retry:
+                mission = cmd_related(args.reevaluate or args.retry, user_input, args.reason,
+                    args.request_id, operation='reevaluate' if args.reevaluate else 'retry')
+            else:
+                mission = cmd_new(user_input)
+        return 1 if mission and mission.status == 'FAILED' else 0
+    except (EOFError, KeyboardInterrupt):
+        print('\n[中断] 可恢复暂停保留；运行中的中断不承诺自动恢复。')
+        return 1
+    except Exception as error:
+        print(f'[Error] {error}')
         if config.DEBUG:
             import traceback
             traceback.print_exc()
+        return 1
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    raise SystemExit(main())

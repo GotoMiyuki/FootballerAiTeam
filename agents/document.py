@@ -12,6 +12,9 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from agents.base import BaseAgent
+from agents.base import model_text
+from report_validation import accept_document
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import (
     DOCUMENT_DOMAIN_IDENTITY,
     DOCUMENT_MODE_PROMPTS,
@@ -50,7 +53,14 @@ class DocumentAgent(BaseAgent):
         guide = DOCUMENT_MODE_PROMPTS.get(self._current_mode, DOCUMENT_MODE_PROMPTS["comprehensive_report"])
         return f"{DOCUMENT_DOMAIN_IDENTITY}\n\n{guide}"
 
+    @guarded("Document")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        from report_validation import current_review
+        if not current_review(state) or state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}:
+            raise OutputError('Current specialist review is required')
+        tasks = (state.get('plan') or {}).get('subtasks', [])
+        if any(str(t.get('status', '')).upper() != 'COMPLETED' for t in tasks):
+            raise OutputError('Required results are incomplete')
         mission = state.get("mission", {})
         synthesis_guide = state.get("synthesis_guide", {})
         domain_outputs = state.get("domain_outputs", {})
@@ -68,14 +78,15 @@ class DocumentAgent(BaseAgent):
         # New Missions describe the deliverable without embedding an executor.
         # domain_contributions is retained only for old persisted states.
         doc_contrib = mission.get("domain_contributions", {}).get(FINAL_AGENT, {})
+        if not doc_contrib.get('mode') and mission.get('output_type') not in OUTPUT_TYPE_MODE_MAP:
+            raise OutputError('Unknown deliverable type')
         mode = doc_contrib.get("mode") or OUTPUT_TYPE_MODE_MAP.get(mission.get("output_type"), "comprehensive_report")
         focus = doc_contrib.get("focus") or mission.get("required_deliverable", mission.get("primary_goal", "生成综合报告"))
 
         # mode 校验
         valid_modes = {"comprehensive_report", "pr_statement", "commercial_advisory", "media_response"}
         if mode not in valid_modes:
-            print(f"[Reporter Warn] 非法 mode '{mode}'，fallback 到 comprehensive_report")
-            mode = "comprehensive_report"
+            raise OutputError('Unsupported document mode')
 
         self._current_mode = mode
 
@@ -141,6 +152,8 @@ class DocumentAgent(BaseAgent):
         else:
             result = self._generate_comprehensive_report(player, mission, focus, primary_data, supporting_data, supplementary_data)
 
+        if not isinstance(result, str) or not result.strip():
+            raise OutputError('Empty document')
         # 修剪消息：只保留用户原始意图 + 本轮完成摘要，防止上下文污染
         output_type = mission.get("output_type", "报告")
         primary_goal = mission.get("primary_goal", "")
@@ -151,8 +164,7 @@ class DocumentAgent(BaseAgent):
 
         return {
             "domain_outputs": {"Document": result},
-            "final_report": result,
-            "final_result": result,
+            **accept_document(state, result, mode),
             "current_subtask": None,
             "iteration": state.get("iteration", 0) + 1,
             "messages": trimmed_messages,
@@ -207,16 +219,19 @@ class DocumentAgent(BaseAgent):
             if str(task.get("status", "")).strip().lower() != "completed":
                 continue
 
+            current = result_by_id.get(task_id, {})
+            if current.get('validated') is not True or current.get('validity') != 'CURRENT':
+                continue
+
             v2_item = cls._observation_from_subtask_result(task_id, result_by_id.get(task_id))
             legacy_item = cls._latest_legacy_observation(legacy_by_id.get(task_id, []))
 
             if v2_item and legacy_item:
                 # Equal versions prefer the structured V2 contract.  A legacy
                 # item only wins when it explicitly represents a newer run.
-                selected = (legacy_item if cls._source_version(legacy_item) >
-                            cls._source_version(v2_item) else v2_item)
+                selected = v2_item
             else:
-                selected = v2_item or legacy_item
+                selected = v2_item
             if selected:
                 projected.append(selected)
 
@@ -412,58 +427,10 @@ class DocumentAgent(BaseAgent):
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
-            return response.content
+            return model_text(response.content)
         except Exception:
-            return self._fallback_report(player, mission, primary_data, supporting_data)
+            raise
 
-    def _fallback_report(self, player, mission, primary_data, supporting_data) -> str:
-        """LLM 失败时的回退报告，根据 output_type 生成不同格式。"""
-        player_name = player.get("name", "球员")
-        player_info = f"{player_name} | {player.get('position', 'N/A')} | 年龄 {player.get('age', 'N/A')} | 评分 {player.get('overall', 'N/A')}"
-        output_type = mission.get("output_type", "report")
-
-        if output_type == "statement":
-            club = player.get("club", "当前俱乐部")
-            return (
-                f"【对外发布稿】\n\n"
-                f"关于近期媒体有关{player_name}的转会传闻，{club}特此声明："
-                f"球员目前专注于为俱乐部效力，俱乐部不对任何转会传闻予以评论。"
-            )
-
-        if output_type == "advisory":
-            return (
-                f"【商业评估报告】\n\n"
-                f"# {player_name} - 商业价值评估\n\n"
-                f"**基本信息**: {player_info}\n\n"
-                f"## 评估\n基于球员当前数据，商业价值处于成长阶段。"
-                f"建议优先建立社交媒体存在感。\n\n"
-                f"## 风险提示\n竞技状态波动可能影响商业价值。"
-            )
-
-        if output_type == "response":
-            club = player.get("club", "当前俱乐部")
-            return (
-                f"【媒体应答手册】\n\n"
-                f"# {player_name} - 媒体采访应答指南\n\n"
-                f"## 核心信息\n1. 专注于当前赛季目标\n"
-                f"2. 感谢俱乐部和教练组的支持\n3. 持续提升自身能力\n\n"
-                f"## 敏感话题回避策略\n"
-                f"- 转会话题: '我目前专注于为{club}效力'\n"
-                f"- 合同细节: '这是我和俱乐部之间的私事'\n"
-                f"\n## 建议语气\n真诚、职业、不卑不亢"
-            )
-
-        # 默认：综合报告
-        parts = [f"【报告】\n# {player_name} - 综合发展报告\n"]
-        parts.append(f"**球员信息**: {player_info}\n")
-        parts.append(f"**核心目标**: {mission.get('primary_goal', '未指定')}\n\n---\n")
-        if primary_data:
-            parts.append(f"## 核心分析\n{primary_data}\n")
-        if supporting_data:
-            parts.append(f"## 补充参考\n{supporting_data}\n")
-        parts.append("## 行动建议\n- [ ] 根据上述分析制定具体执行计划\n")
-        parts.append("\n---\n*本报告由 AI 运动科学团队自动生成*")
-        return "\n".join(parts)
 
     # ================================================================
     # Mode: pr_statement
@@ -501,13 +468,9 @@ class DocumentAgent(BaseAgent):
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
-            return response.content
+            return model_text(response.content)
         except Exception:
-            return (
-                f"【对外发布稿】\n\n"
-                f"关于近期媒体有关{player_name}的转会传闻，{club}特此声明："
-                f"球员目前专注于为俱乐部效力，俱乐部不对任何转会传闻予以评论。"
-            )
+            raise
 
     # ================================================================
     # Mode: commercial_advisory
@@ -547,16 +510,9 @@ class DocumentAgent(BaseAgent):
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
-            return response.content
+            return model_text(response.content)
         except Exception:
-            return (
-                f"【商业评估报告】\n\n"
-                f"# {player_name} - 商业价值评估\n\n"
-                f"**基本信息**: {age}岁，{position}，综合评分 {overall}\n\n"
-                f"## 评估\n基于球员当前数据，商业价值处于成长阶段。"
-                f"建议优先建立社交媒体存在感，与运动装备品牌建立初步合作。\n\n"
-                f"## 风险提示\n竞技状态波动可能影响商业价值，建议与竞技表现挂钩的合作模式。"
-            )
+            raise
 
     # ================================================================
     # Mode: media_response
@@ -595,17 +551,9 @@ Markdown 格式，开头标注 **【媒体应答手册】**。
                 SystemMessage(content=self.system_prompt),
                 HumanMessage(content=prompt),
             ])
-            return response.content
+            return model_text(response.content)
         except Exception:
-            return (
-                f"【媒体应答手册】\n\n"
-                f"# {player_name} - 媒体采访应答指南\n\n"
-                f"## 核心信息\n1. 专注于当前赛季目标\n2. 感谢俱乐部和教练组的支持\n"
-                f"3. 持续提升自身能力\n\n"
-                f"## 敏感话题回避策略\n- 转会话题: '我目前专注于为{club}效力'\n"
-                f"- 合同细节: '这是我和俱乐部之间的私事'\n\n"
-                f"## 建议语气\n真诚、职业、不卑不亢"
-            )
+            raise
 
     # ================================================================
     # 辅助：构建 Mission Brief（Prompt 头部）
@@ -619,6 +567,7 @@ Markdown 格式，开头标注 **【媒体应答手册】**。
         parts = [
             "## Mission（最高优先级）",
             f"**核心目标**: {mission.get('primary_goal', '')}",
+            '所有模式附带「依据与限制」说明，区分观察、预测与建议，不补造事实或引用。综合报告原文保留核心目标。',
             f"**产出类型**: {mission.get('output_type', 'report')}",
             f"**目标受众**: {mission.get('audience', '综合')}",
             f"**语气**: {mission.get('tone', '专业咨询')}",

@@ -44,25 +44,25 @@ export function PlayerPanel() {
               <span>
                 <Shield size={15} /> FOOTBALLER PROFILE
               </span>
-              <span className="position">{player.data.position}</span>
+              <span className="position">{player.data.position ?? '未知'}</span>
             </div>
             <div className="player-identity">
               <div className="avatar">
-                {player.data.name.slice(0, 1).toUpperCase()}
+                {(player.data.name ?? '?').slice(0, 1).toUpperCase()}
                 <span className="avatar-dot" />
               </div>
               <div>
-                <h1>{player.data.name}</h1>
-                <p>{player.data.club}</p>
+                <h1>{player.data.name ?? '未知'}</h1>
+                <p>{player.data.club ?? '未知'}</p>
               </div>
             </div>
             <div className="player-card-footer">
               <span>
                 <MapPin size={13} />
-                {player.data.nationality} · {player.data.age} 岁
+                {player.data.nationality ?? '未知'} · {player.data.age ?? '未知'} 岁
               </span>
               <span>
-                综合能力 <strong>{player.data.overall}</strong>
+                综合能力 <strong>{player.data.overall ?? '未知'}</strong>
               </span>
             </div>
           </div>
@@ -92,15 +92,15 @@ export function PlayerPanel() {
                   <Empty>暂无训练记录</Empty>
                 ) : (
                   [...training.data].reverse().map((record, index) => (
-                    <details className="record-card" key={`${record.week}-${index}`}>
+                    <details className="record-card" key={`${record.week ?? '未记录'}-${index}`}>
                       <summary>
                         <span className="record-icon">
                           <Footprints size={17} />
                         </span>
                         <span>
-                          <strong>{record.focus}</strong>
+                          <strong>{record.focus ?? '未记录'}</strong>
                           <small>
-                            {record.week} · {record.date_range}
+                            {record.week ?? '未记录'} · {record.date_range ?? '未记录'}
                           </small>
                         </span>
                         <ArrowUpRight size={16} />
@@ -108,10 +108,10 @@ export function PlayerPanel() {
                       <div className="record-body">
                         <div className="record-stats">
                           <span>
-                            周负荷 <b>{record.weekly_load}</b>
+                            周负荷 <b>{record.weekly_load ?? '未记录'}</b>
                           </span>
                           <span>
-                            RPE <b>{record.avg_rpe}</b>
+                            RPE <b>{record.avg_rpe ?? '未记录'}</b>
                           </span>
                         </div>
                         {record.training_sessions?.map((session, i) => (
@@ -139,32 +139,32 @@ export function PlayerPanel() {
                   <Empty>暂无比赛记录</Empty>
                 ) : (
                   [...matches.data].reverse().map((record, index) => (
-                    <details className="record-card" key={`${record.date}-${index}`}>
+                    <details className="record-card" key={`${record.date ?? '未记录'}-${index}`}>
                       <summary>
                         <span className="record-icon">
                           <CalendarDays size={17} />
                         </span>
                         <span>
-                          <strong>vs {record.opponent}</strong>
+                          <strong>vs {record.opponent ?? '未记录'}</strong>
                           <small>
-                            {record.date} · {record.competition}
+                            {record.date ?? '未记录'} · {record.competition ?? '未记录'}
                           </small>
                         </span>
-                        <span className="match-score">{record.result}</span>
+                        <span className="match-score">{record.result ?? '未记录'}</span>
                       </summary>
                       <div className="record-body">
                         <div className="record-stats">
                           <span>
-                            出场 <b>{record.minutes_played}′</b>
+                            出场 <b>{record.minutes_played ?? '未记录'}′</b>
                           </span>
                           <span>
-                            进球 <b>{record.goals}</b>
+                            进球 <b>{record.goals ?? '未记录'}</b>
                           </span>
                           <span>
-                            助攻 <b>{record.assists}</b>
+                            助攻 <b>{record.assists ?? '未记录'}</b>
                           </span>
                           <span>
-                            评分 <b>{record.rating}</b>
+                            评分 <b>{record.rating ?? '未记录'}</b>
                           </span>
                         </div>
                         <p>{record.notes}</p>
@@ -177,7 +177,7 @@ export function PlayerPanel() {
           </div>
           <div className="data-footnote">
             <span className="status-dot" />
-            来自球员长期记忆<span>更新于 {player.data.last_updated || '未记录'}</span>
+            {player.data.metadata?.source_type === 'demo_fixture' ? '演示测试样本' : player.data.metadata?.sources ? '已导入球员观察' : '来源未验证'}<span>更新于 {player.data.last_updated || '未记录'}</span>
           </div>
         </>
       )}
@@ -206,20 +206,20 @@ function ProfileView({ player }: { player: Player }) {
         <div>
           <span>身高</span>
           <strong>
-            {player.height}
+            {player.height ?? '未记录'}
             <small>cm</small>
           </strong>
         </div>
         <div>
           <span>体重</span>
           <strong>
-            {player.weight}
+            {player.weight ?? '未记录'}
             <small>kg</small>
           </strong>
         </div>
         <div>
           <span>惯用脚</span>
-          <strong className="text-value">{player.preferred_foot}</strong>
+          <strong className="text-value">{player.preferred_foot ?? '未记录'}</strong>
         </div>
       </div>
       <div className="subheading">
@@ -231,9 +231,9 @@ function ProfileView({ player }: { player: Player }) {
           <div className="attribute" key={label}>
             <span>{label}</span>
             <div className="attribute-track">
-              <i style={{ width: `${Math.max(0, Math.min(100, value || 0))}%` }} />
+              <i style={{ width: `${Math.max(0, Math.min(100, value ?? 0))}%` }} />
             </div>
-            <b>{value ?? '—'}</b>
+            <b>{value ?? '未知'}</b>
           </div>
         ))}
       </div>
@@ -241,7 +241,7 @@ function ProfileView({ player }: { player: Player }) {
         <Shield size={19} />
         <div>
           <strong>身体状态</strong>
-          <p>{player.injury === 'None' ? '档案中未记录当前伤病' : player.injury || '暂无记录'}</p>
+          <p>{player.injury === 'None' ? '明确记录无伤病' : player.injury || '暂无记录'}</p>
           <small>开始任务时，团队会按需确认当前反馈。</small>
         </div>
       </div>

@@ -34,7 +34,7 @@ def run_demo(service, mission, scenario, resume):
             RequiredInput(key='availability', label='今天可用时间', input_type='single_select', options=['30 分钟', '60 分钟', '暂不训练']),
             RequiredInput(key='notes', label='其他补充', input_type='text', required=False),
         ])
-        review = ReviewView(decision='BLOCKED', summary='当前恢复反馈缺失', affected_subtasks=['subtask_03'])
+        review = ReviewView(availability='COMPLETED', decision='BLOCKED', summary='当前恢复反馈缺失', affected_subtasks=['subtask_03'])
         mission.review = review
         mission.review_history.append(review)
         emit(mission, 'review.completed', **review.model_dump())
@@ -60,7 +60,7 @@ def run_demo(service, mission, scenario, resume):
         agent_event('Reviewer', True, '正在审查方案')
         emit(mission, 'review.started')
         decision = 'REVISE' if scenario == 'revision' else 'REPLAN'
-        review = ReviewView(decision=decision, summary='演示：执行安排存在时间冲突' if decision == 'REVISE' else '演示：可用训练时间与原计划假设不一致', affected_subtasks=['subtask_03'], severity='MEDIUM')
+        review = ReviewView(availability='COMPLETED', decision=decision, summary='演示：执行安排存在时间冲突' if decision == 'REVISE' else '演示：可用训练时间与原计划假设不一致', affected_subtasks=['subtask_03'], severity='MEDIUM')
         mission.review = review
         mission.review_history.append(review)
         emit(mission, 'review.completed', **review.model_dump())
@@ -90,7 +90,7 @@ def run_demo(service, mission, scenario, resume):
     agent_event('Reviewer', True, '正在审查完整计划')
     emit(mission, 'review.started')
     pause()
-    mission.review = ReviewView(decision='PASS', summary='演示方案已通过流程审查')
+    mission.review = ReviewView(availability='COMPLETED', decision='PASS', summary='演示方案已通过流程审查')
     mission.review_history.append(mission.review)
     emit(mission, 'review.completed', **mission.review.model_dump())
     agent_event('Reviewer', False, '方案已通过审查')

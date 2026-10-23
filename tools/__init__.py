@@ -7,7 +7,6 @@ FootballAI Career Agent - 工具聚合模块
 from tools.calculator import CALCULATOR_TOOLS
 from tools.database import (
     DATABASE_TOOLS,
-    UpdatePlayerAttributeTool,
     ReadTrainingHistoryTool,
     ReadMatchHistoryTool,
     ReadCareerHistoryTool,
@@ -22,6 +21,6 @@ ALL_TOOLS = CALCULATOR_TOOLS + DATABASE_TOOLS + SEARCH_TOOLS + RAG_TOOLS
 # 按 Agent 分组的工具（与实际 Agent 职责对齐）
 MANAGER_TOOLS = []
 NUTRITION_TOOLS = CALCULATOR_TOOLS
-COACH_TOOLS = RAG_TOOLS + SEARCH_TOOLS + [UpdatePlayerAttributeTool]
+COACH_TOOLS = RAG_TOOLS + SEARCH_TOOLS
 ANALYST_TOOLS = [ReadTrainingHistoryTool, ReadMatchHistoryTool] + SEARCH_TOOLS
 CAREER_TOOLS = SEARCH_TOOLS + [ReadCareerHistoryTool, ReadPlayerProfileTool]

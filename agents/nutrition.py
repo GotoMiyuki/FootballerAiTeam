@@ -8,10 +8,12 @@ P1 ReAct 升级：
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape
 from typing import Dict, Any
 from langchain_core.language_models import BaseChatModel
 
 from agents.base import BaseAgent
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import (
     NUTRITION_DOMAIN_IDENTITY,
     NUTRITION_GUIDE,
@@ -40,6 +42,7 @@ class NutritionAgent(BaseAgent):
     def system_prompt(self) -> str:
         return f"{NUTRITION_DOMAIN_IDENTITY}\n\n{NUTRITION_GUIDE}"
 
+    @guarded("Nutrition")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         mission = state.get("mission", {})
         domain_contrib = mission.get("domain_contributions", {}).get("Nutrition", {})
@@ -49,15 +52,17 @@ class NutritionAgent(BaseAgent):
             return {"iteration": state.get("iteration", 0) + 1}
 
         player = state.get("player_profile", {})
+        missing = [key for key in ('height', 'weight', 'age', 'training_intensity') if player.get(key) is None]
+        if missing:
+            raise MissingInput('营养计算缺少实际记录：' + '、'.join(missing))
         focus = subtask.get("goal") if subtask else domain_contrib.get("focus", mission.get("primary_goal", "制定营养方案"))
 
         # ---- 代码层预处理 ----
-        height = player.get("height", 175)
-        weight = player.get("weight", 70)
-        age = player.get("age", 22)
-        intensity = player.get("training_intensity", "High")
+        height, weight, age, intensity = (player[key] for key in ('height', 'weight', 'age', 'training_intensity'))
         intensity_map = {"Low": "light", "Medium": "moderate", "High": "high", "Very High": "very_high"}
-        activity_level = intensity_map.get(intensity, "moderate")
+        if intensity not in intensity_map:
+            raise MissingInput('营养计算需要明确的训练强度：Low、Medium、High 或 Very High')
+        activity_level = intensity_map[intensity]
         nutrition_goal = self._infer_nutrition_goal(mission, player, focus)
 
         # ---- Layer 2: Mission Context ----
@@ -70,7 +75,7 @@ class NutritionAgent(BaseAgent):
 - 身高: {height}cm
 - 体重: {weight}kg
 - 年龄: {age}岁
-- 位置: {player.get('position', 'LW')}
+- 位置: {player.get('position') or '未知'}
 - 训练强度: {intensity} (activity_level={activity_level})
 - 营养目标: {nutrition_goal}
 
@@ -81,6 +86,7 @@ class NutritionAgent(BaseAgent):
 - **NutritionCalculatorTool**: 运动营养计算器。输入 JSON 参数:
   height_cm={height}, weight_kg={weight}, age={age}, gender="male",
   activity_level="{activity_level}", goal="{nutrition_goal}"
+  gender="male" 是当前计算规则的假设，不是已观察球员事实；必须在方案限制中说明。
   返回 BMI, BMR, TDEE, 推荐热量和宏量营养素克数。
 
 ## 任务
@@ -109,9 +115,9 @@ meal_plan（含 meal/time/food）, supplements, hydration_plan。
             content = content.split("```")[1].split("```")[0].strip()
 
         try:
-            result = json.loads(content)
-        except (json.JSONDecodeError, Exception):
-            result = self._generate_default_nutrition_plan()
+            result = validate_specialist("nutrition_plan", parse_json(content))
+        except Exception:
+            raise
 
         output = json.dumps(result, ensure_ascii=False, indent=2)
 
@@ -133,29 +139,13 @@ meal_plan（含 meal/time/food）, supplements, hydration_plan。
         elif any(w in combined for w in ["增肌", "增重", "增肥", "壮"]):
             return "增肌"
 
-        bmi_val = player.get("weight", 70) / (player.get("height", 175) / 100) ** 2
+        bmi_val = player['weight'] / (player['height'] / 100) ** 2
         if bmi_val < 18.5:
             return "增肌"
         elif bmi_val >= 25:
             return "减脂"
         return "维持"
 
-    @staticmethod
-    def _generate_default_nutrition_plan() -> dict:
-        return {
-            "daily_calories": 2800,
-            "carbs_g": 350,
-            "protein_g": 140,
-            "fat_g": 85,
-            "meal_plan": [
-                {"meal": "早餐", "food": "燕麦粥、香蕉2根、水煮蛋3个", "time": "07:30"},
-                {"meal": "午餐", "food": "糙米饭、烤鸡胸肉200g、西兰花", "time": "12:00"},
-                {"meal": "训练后加餐", "food": "蛋白奶昔+全麦面包2片", "time": "16:30"},
-                {"meal": "晚餐", "food": "红薯、三文鱼150g、混合蔬菜沙拉", "time": "19:00"},
-            ],
-            "supplements": ["乳清蛋白粉", "维生素D3", "鱼油"],
-            "hydration_plan": "每日饮水3L，训练中每15分钟补水150-200ml",
-        }
 
 
 def create_nutrition_node(llm: BaseChatModel):

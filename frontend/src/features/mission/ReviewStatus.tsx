@@ -7,7 +7,7 @@ const icons = {
   BLOCKED: MessageCircleQuestion,
 }
 const titles = {
-  PASS: '方案已通过审查',
+  PASS: '专业输入已通过审查',
   REVISE: '审查要求局部修订',
   REPLAN: '团队正在重新规划',
   BLOCKED: '继续前，需要你的信息',
@@ -22,6 +22,9 @@ export function ReviewStatus({
   status: MissionStatus
 }) {
   if (!review) return null
+  if (review.availability !== 'COMPLETED' || !review.decision) return (
+    <section className="review-card"><strong>审查未完成</strong><p>{review.summary || '旧记录未验证'}</p></section>
+  )
   const Icon = icons[review.decision]
   const resumed = review.decision === 'BLOCKED' && status !== 'BLOCKED'
   return (
@@ -29,6 +32,7 @@ export function ReviewStatus({
       <Icon size={21} />
       <div>
         <strong>{resumed ? '已收到补充信息，团队继续处理中' : titles[review.decision]}</strong>
+        <small>审查范围：专业输入；正文另经确定性检查，未做全文语义审查。</small>
         <p>{resumed ? `上一轮审查：${review.summary}` : review.summary}</p>
         {review.affected_subtasks.length > 0 && (
           <small>受影响步骤：{review.affected_subtasks.join('、')}</small>

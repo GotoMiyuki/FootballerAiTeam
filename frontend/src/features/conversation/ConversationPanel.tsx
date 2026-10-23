@@ -14,11 +14,13 @@ export function ConversationPanel({
   conversationId,
   demo,
   onMission,
+  onNew,
 }: {
   mission?: Mission
   conversationId: string
   demo: boolean
   onMission: (id: string) => void
+  onNew: () => void
 }) {
   const [content, setContent] = useState('')
   const [scenario, setScenario] = useState<DemoScenario>('pass')
@@ -26,11 +28,14 @@ export function ConversationPanel({
   const messageList = useRef<HTMLDivElement>(null)
   const textarea = useRef<HTMLTextAreaElement>(null)
   const followup = !!mission
+  const explain = mission?.available_operations?.includes('explain') ?? false
+  const supplyText =
+    !!mission?.available_operations?.includes('supply_input') &&
+    mission.blocked?.required_inputs.length === 1 &&
+    mission.blocked.required_inputs[0].key === 'information' &&
+    mission.blocked.required_inputs[0].input_type === 'text'
   const disabled =
-    send.isPending ||
-    isActive(mission?.status) ||
-    mission?.status === 'FAILED' ||
-    mission?.blocked?.reason === 'report_approval'
+    send.isPending || isActive(mission?.status) || (!!mission && !explain && !supplyText)
   useEffect(() => {
     const list = messageList.current
     if (list) list.scrollTop = list.scrollHeight
@@ -42,7 +47,7 @@ export function ConversationPanel({
         conversation_id: conversationId,
         content: content.trim(),
         mission_id: mission?.id,
-        intent: followup ? 'followup' : 'new_mission',
+        intent: explain ? 'explain' : followup ? 'followup' : 'new_mission',
         demo_scenario: scenario,
       },
       { onSuccess: () => setContent('') },
@@ -53,9 +58,15 @@ export function ConversationPanel({
       <div className="conversation-heading">
         <h2>
           <MessageSquare size={18} />
-          {followup ? '任务对话' : '和团队说说你的目标'}
+          {explain ? '解释原报告' : followup ? '任务对话' : '和团队说说你的目标'}
         </h2>
-        <span>{followup ? '围绕当前任务继续交流' : '一个目标，一次团队协作'}</span>
+        <span>
+          {explain
+            ? '使用原任务材料与原数据版本'
+            : followup
+              ? '补充信息请使用任务表单'
+              : '一个目标，一次团队协作'}
+        </span>
       </div>
       {messages.isError && (
         <ErrorNotice message="对话加载失败" onRetry={() => void messages.refetch()} />
@@ -78,6 +89,9 @@ export function ConversationPanel({
                       : message.role === 'system'
                         ? '系统提示'
                         : 'FootballerAiTeam'}
+                    {message.kind === 'explanation' && (
+                      <span>{message.operation_status === 'FAILED' ? '解释失败' : '报告解释'}</span>
+                    )}
                     <time>
                       {new Date(message.created_at).toLocaleTimeString('zh-CN', {
                         hour: '2-digit',
@@ -111,6 +125,15 @@ export function ConversationPanel({
           ))}
         </div>
       )}
+      {mission && ['COMPLETED', 'FAILED'].includes(mission.status) && (
+        <div className="suggestions">
+          <span>新比赛或新约束需要新任务；原报告与审查结果保留。</span>
+          <button type="button" onClick={onNew}>
+            根据新情况新建任务
+            <ArrowUpRight size={14} />
+          </button>
+        </div>
+      )}
       <form
         className="composer"
         onSubmit={(event) => {
@@ -120,11 +143,13 @@ export function ConversationPanel({
       >
         <textarea
           ref={textarea}
-          aria-label={followup ? '追问或补充信息' : '任务需求'}
+          aria-label={explain ? '报告解释问题' : followup ? '补充任务信息' : '任务需求'}
           placeholder={
-            followup
-              ? '追问当前任务，或补充团队需要的信息…'
-              : '例如：新赛季还有一周，我该怎么准备？'
+            explain
+              ? '例如：请解释原报告中这样安排的依据…'
+              : followup
+                ? '请使用上方表单补充信息或确认生成报告…'
+                : '例如：新赛季还有一周，我该怎么准备？'
           }
           value={content}
           onChange={(event) => setContent(event.target.value)}
@@ -157,7 +182,13 @@ export function ConversationPanel({
             </select>
           )}
           <button type="submit" className="primary-button" disabled={disabled || !content.trim()}>
-            {send.isPending ? '正在发送…' : followup ? '发送' : '创建任务'}
+            {send.isPending
+              ? '正在发送…'
+              : explain
+                ? '解释报告'
+                : followup
+                  ? '补充信息'
+                  : '创建任务'}
             <Send size={15} />
           </button>
         </div>

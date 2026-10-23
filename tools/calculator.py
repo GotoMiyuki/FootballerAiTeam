@@ -9,6 +9,7 @@ FootballAI Career Agent - 计算器工具
 """
 
 import json
+import math
 from typing import Dict, Any
 from langchain_core.tools import tool
 
@@ -116,11 +117,23 @@ def NutritionCalculatorTool(input_json: str) -> str:
     try:
         data = json.loads(input_json)
     except json.JSONDecodeError:
-        return "错误：输入不是有效的 JSON 格式。"
+        from tools.errors import ToolExecutionError
+        raise ToolExecutionError('INVALID_ARGUMENTS')
 
-    height_cm = float(data.get("height_cm", 175))
-    weight_kg = float(data.get("weight_kg", 70))
-    age = int(data.get("age", 22))
+    from tools.errors import ToolExecutionError
+    if not isinstance(data, dict):
+        raise ToolExecutionError('INVALID_ARGUMENTS')
+    for key in ('height_cm', 'weight_kg', 'age'):
+        value = data.get(key)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+            raise ToolExecutionError('INVALID_ARGUMENTS')
+    if int(data['age']) != data['age']:
+        raise ToolExecutionError('INVALID_ARGUMENTS')
+    if data.get('gender') not in {'male', 'female'} or data.get('activity_level') not in {'sedentary', 'light', 'moderate', 'high', 'very_high'} or data.get('goal') not in {'减脂', '增肌', '维持'}:
+        raise ToolExecutionError('INVALID_ARGUMENTS')
+    height_cm = data['height_cm']
+    weight_kg = data['weight_kg']
+    age = data['age']
     gender = data.get("gender", "male")
     activity_level = data.get("activity_level", "moderate")
     goal = data.get("goal", "维持")

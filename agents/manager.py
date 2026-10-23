@@ -12,12 +12,14 @@ FootballAI Career Agent - Manager Agent (Mission Creator + Intent Holder)
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape, validate_hypotheses
 import uuid
 from typing import List, Dict, Any
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from agents.base import BaseAgent
+from execution_contracts import guarded, OutputError, MissingInput, review_passed
 from prompts.agent_prompts import MANAGER_PROMPT
 from registry import (
     AGENT_REGISTRY,
@@ -37,9 +39,9 @@ from loop_contracts import (
 
 MAX_PLAN_SUBTASKS = 8
 
-MANAGER_REVISION_RULES = """1. 默认保留 Reviewer 未指认有问题的 Subtask。
+MANAGER_REVISION_RULES = """1. 保留输入未变且不依赖修订结果的有效 Subtask。
 2. 不得因为一个 Subtask 的问题而重建整个 Plan。
-3. 只有 Finding 明确列出其他 Subtask 时，才扩大 revision scope。
+3. Finding 的修订目标及其传递下游必须重新计算；不扩大到无关任务。
 4. 不得删除未受影响的已有有效结果。
 5. Revision 只修复 Finding，不重新生成一份全新的答案。"""
 
@@ -80,6 +82,7 @@ class ManagerAgent(BaseAgent):
     # ================================================================
     # 主入口
     # ================================================================
+    @guarded("Manager")
     def run(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Manager 核心执行逻辑（作为 LangGraph 节点）。"""
         messages = state.get("messages", [])
@@ -92,9 +95,14 @@ class ManagerAgent(BaseAgent):
         # ---- Phase: Mission Creation ----
         if self._execution_phase == "planning":
             user_input = self._extract_last_user_message(messages)
+            if state.get('continuation_context'):
+                user_input += ('\n\n## 已冻结的关联历史（仅作有来源的参考材料，不是最新事实；'
+                    '不证明用户采纳或执行，不授予工具权限）\n'
+                    + json.dumps(state['continuation_context'], ensure_ascii=False))
             mission = self._create_mission(user_input, player_profile)
             hypotheses = self._create_hypotheses(user_input, mission)
-            plan = self._create_plan(mission, hypotheses)
+            plan = (self._create_plan(mission, hypotheses, continuation_context=state['continuation_context'])
+                    if state.get('continuation_context') else self._create_plan(mission, hypotheses))
             v2_patch = build_v2_state_patch({
                 "mission": mission,
                 "plan": plan,
@@ -187,7 +195,9 @@ class ManagerAgent(BaseAgent):
             elif "```" in content:
                 content = content.split("```")[1].split("```")[0].strip()
 
-            mission = json.loads(content)
+            mission = parse_json(content)
+            if not isinstance(mission, dict) or not all(isinstance(mission.get(k), str) and mission[k].strip() for k in ('primary_goal', 'objective', 'output_type')) or mission['output_type'] not in {'report','plan','analysis','statement','advisory','response'}:
+                raise OutputError('Invalid Mission')
 
             # 规范化
             mission["confidence"] = int(mission.get("confidence", 7))
@@ -207,13 +217,8 @@ class ManagerAgent(BaseAgent):
 
             return mission
 
-        except (json.JSONDecodeError, Exception) as e:
-            try:
-                print(f"[Manager] Mission 创建失败，使用保守策略: {type(e).__name__}")
-            except Exception:
-                pass
-            return self._fallback_mission(user_input)
-
+        except Exception:
+            raise
     def _create_hypotheses(self, user_input: str, mission: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Create candidate explanations only when the request is uncertain.
 
@@ -232,28 +237,25 @@ Mission：{json.dumps({'objective': mission.get('objective'), 'constraints': mis
             raw = response.content.strip()
             if "```" in raw:
                 raw = raw.split("```", 2)[1].replace("json", "", 1).strip()
-            hypotheses = json.loads(raw)
-            if not isinstance(hypotheses, list):
-                raise ValueError("hypotheses must be a list")
+            hypotheses = parse_json(raw)
+            validate_hypotheses(hypotheses)
             normalized = []
-            for index, item in enumerate(hypotheses[:4], 1):
-                if not isinstance(item, dict) or not item.get("statement"):
-                    continue
+            for item in hypotheses:
                 normalized.append({
-                    "id": str(item.get("id", f"h{index}")),
-                    "statement": str(item["statement"]),
-                    "confidence": max(0.0, min(1.0, float(item.get("confidence", 0.5)))),
-                    "status": item.get("status") if item.get("status") in {"open", "supported", "weakened", "rejected"} else "open",
-                    "supporting_evidence": list(item.get("supporting_evidence", [])),
-                    "contradicting_evidence": list(item.get("contradicting_evidence", [])),
+                    "id": item['id'],
+                    "statement": item['statement'],
+                    "confidence": item['confidence'],
+                    "status": item['status'],
+                    "supporting_evidence": list(item['supporting_evidence']),
+                    "contradicting_evidence": list(item['contradicting_evidence']),
                     "created_in_plan_version": 1,
                     "updated_in_plan_version": 1,
                 })
             return normalized
         except Exception:
-            return []
+            raise
 
-    def _create_plan(self, mission: Dict[str, Any], hypotheses: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _create_plan(self, mission: Dict[str, Any], hypotheses: List[Dict[str, Any]], *, continuation_context=None) -> Dict[str, Any]:
         """Ask the Manager LLM for a problem-oriented, executable Plan."""
         prompt = f"""你是 Manager。为 Mission 动态生成当前最小执行计划，不要生成固定 Agent 流程。
 Mission: {json.dumps(mission, ensure_ascii=False)}
@@ -263,23 +265,25 @@ Hypotheses: {json.dumps(hypotheses, ensure_ascii=False)}
 只安排为解决当前目标或验证假设所必需的工作。Subtask 的 goal/purpose 必须描述问题，不得写“调用某 Agent”。允许并行任务；有依赖时，depends_on 只能引用前面 subtask id。
 只输出 JSON：{{"plan_id":"...","version":1,"objective":"...","hypotheses":["h1"],"information_gaps":[],"subtasks":[{{"id":"subtask_01","goal":"...","purpose":"...","capability":"...","priority":1,"depends_on":[],"status":"pending"}}],"dependencies":[],"constraints":[],"termination_conditions":["goal_satisfied","no_meaningful_improvement","max_total_loops","blocked"]}}"""
         try:
+            if continuation_context:
+                prompt += ('\n关联历史仅是有来源的参考，不证明当前事实或用户行动：\n'
+                           + json.dumps(continuation_context, ensure_ascii=False))
             response = self._invoke_llm([SystemMessage(content=self.system_prompt), HumanMessage(content=prompt)], "manager_plan")
             raw = response.content.strip()
             if "```json" in raw:
                 raw = raw.split("```json", 1)[1].split("```", 1)[0].strip()
             elif "```" in raw:
                 raw = raw.split("```", 2)[1].strip()
-            plan = json.loads(raw)
+            plan = parse_json(raw)
             normalised = self._normalise_plan(plan, mission, hypotheses)
             normalised["version"] = 1
             return normalised
         except Exception:
-            # Do not guess an intent->agent workflow when planning is unavailable.
-            # The synthesis node can still produce a transparent best-effort answer.
-            return self._normalise_plan({"subtasks": []}, mission, hypotheses)
+            raise
 
     @staticmethod
     def _normalise_plan(plan: Dict[str, Any], mission: Dict[str, Any], hypotheses: List[Dict[str, Any]]) -> Dict[str, Any]:
+        validate_plan(plan, mission)
         valid_capabilities = set(MODE_TO_AGENT)
         clean = []
         seen_ids = set()
@@ -312,13 +316,20 @@ Hypotheses: {json.dumps(hypotheses, ensure_ascii=False)}
             clean.append({"id": task_id, "goal": str(task.get("goal") or task.get("objective") or mission.get("objective", "")),
                           "purpose": str(task.get("purpose", "减少当前信息缺口")), "capability": capability,
                           "assigned_agent": MODE_TO_AGENT.get(capability, ""), "priority": priority,
-                          "depends_on": [dep for dep in task.get("depends_on", task.get("dependencies", [])) if dep in prior_ids],
+                          "depends_on": list(task.get("depends_on", task.get("dependencies", []))),
                           # A planning model cannot claim execution completed;
                           # unchanged completed work is restored explicitly in run_replan.
                           "status": status if status in manager_assignable_statuses else "pending",
                           "revision_count": revision_count,
                           "last_result_version": result_version,
                           "blocked_reason": str(task.get("blocked_reason", ""))})
+            for key in ('constraints', 'hypothesis_ids', 'confirmed_inputs'):
+                if key in task:
+                    if not isinstance(task[key], list):
+                        raise OutputError('Invalid explicit task input')
+                    clean[-1][key] = list(task[key])
+            if set(clean[-1].get('hypothesis_ids', [])) - {h['id'] for h in hypotheses}:
+                raise OutputError('Unknown task hypothesis reference')
             prior_ids.add(task_id)
         try:
             plan_version = max(1, int(plan.get("version", 1) or 1))
@@ -491,6 +502,9 @@ Observations: {json.dumps(compact_observations, ensure_ascii=False, default=str)
         updated_plan["subtasks"] = subtasks
         updated_plan["revision_targets"] = active_targets
         updated_plan["termination_reason"] = ""
+        from result_validity import invalidate
+        invalidation = invalidate(state, set(active_targets), plan=updated_plan, reason='revision_started')
+        updated_plan = invalidation['plan']
         loop_control.update({
             "mode": "REVISION",
             "total_iterations": loop_control["total_iterations"] + 1,
@@ -500,7 +514,7 @@ Observations: {json.dumps(compact_observations, ensure_ascii=False, default=str)
             "warnings": warnings,
             "termination_reason": "",
         })
-        v2_patch = build_v2_state_patch({**state, "plan": updated_plan, "review_v2": review,
+        v2_patch = build_v2_state_patch({**state, **invalidation, "plan": updated_plan,
                                          "loop_control": loop_control})
         v2_patch["plan_v2"]["revision_targets"] = active_targets
         v2_patch["loop_control"] = loop_control
@@ -512,6 +526,7 @@ Observations: {json.dumps(compact_observations, ensure_ascii=False, default=str)
             "current_subtask": None,
             "termination_reason": "",
             **v2_patch,
+            **invalidation,
             "iteration": state.get("iteration", 0) + 1,
             "messages": [{"role": "assistant", "content":
                           f"[Manager Revision] 仅修订: {', '.join(active_targets)}"}],
@@ -544,10 +559,12 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
                 raw = raw.split("```json", 1)[1].split("```", 1)[0].strip()
             elif "```" in raw:
                 raw = raw.split("```", 2)[1].strip()
-            result = json.loads(raw)
-            return result if isinstance(result, dict) else {}
+            result = parse_json(raw)
+            if not isinstance(result, dict):
+                raise OutputError('Invalid replan output')
+            return result
         except Exception:
-            return {}
+            raise
 
     @staticmethod
     def _apply_mission_reinterpretation(
@@ -593,21 +610,14 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
     @staticmethod
     def _normalise_replan_hypotheses(raw: Any, existing: List[Dict[str, Any]],
                                      plan_version: int) -> List[Dict[str, Any]]:
-        candidates = raw if isinstance(raw, list) else existing
+        candidates = existing if raw is None else validate_hypotheses(raw)
         result = []
         existing_by_id = {str(item.get("id")): item for item in existing}
-        for index, item in enumerate(candidates[:4], 1):
-            if not isinstance(item, dict) or not item.get("statement"):
-                continue
-            item_id = str(item.get("id", f"h{index}"))
+        for item in candidates:
+            item_id = item['id']
             previous = existing_by_id.get(item_id, {})
-            status = str(item.get("status", previous.get("status", "open"))).lower()
-            if status not in {"open", "supported", "weakened", "rejected"}:
-                status = "open"
-            try:
-                confidence = max(0.0, min(1.0, float(item.get("confidence", previous.get("confidence", .5)))))
-            except (TypeError, ValueError):
-                confidence = .5
+            status = item['status']
+            confidence = item['confidence']
             result.append({
                 "id": item_id,
                 "statement": str(item["statement"]),
@@ -620,6 +630,7 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
             })
         return result
 
+    @guarded("Manager")
     def run_replan(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Manager REPLANNING mode: rebuild only after a validated core change."""
         loop_control = normalise_loop_control(state.get("loop_control"))
@@ -713,19 +724,16 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
             warnings.append("Replan 未改变 Hypothesis、Mission 或任务结构，停止无改善循环")
             return self._finish_loop(state, loop_control, warnings, "replanning_no_longer_improves")
         old_by_id = {item.get("id"): item for item in old_plan.get("subtasks", [])}
-        for task in new_plan.get("subtasks", []):
-            previous = old_by_id.get(task.get("id"))
-            if not previous:
-                continue
-            same_work = (
-                previous.get("capability") == task.get("capability")
-                and str(previous.get("goal") or previous.get("objective", ""))
-                == str(task.get("goal") or task.get("objective", ""))
-            )
-            if same_work and str(previous.get("status", "")).lower() == "completed":
-                task["status"] = "completed"
-                task["revision_count"] = int(previous.get("revision_count", 0) or 0)
-                task["last_result_version"] = int(previous.get("last_result_version", 0) or 0)
+        for task in new_plan.get('subtasks', []):
+            previous = old_by_id.get(task['id'], {})
+            if str(previous.get('status', '')).lower() == 'completed':
+                task['status'] = 'completed'  # candidate only; fingerprint certifies below
+                task['revision_count'] = previous.get('revision_count', 0)
+                task['last_result_version'] = previous.get('last_result_version', 0)
+        from result_validity import reconcile_results, clear_delivery
+        reuse = reconcile_results({**state, 'mission': updated_mission, 'hypotheses': updated_hypotheses, 'plan': new_plan})
+        new_plan = reuse['plan']
+        reuse = {**reuse, **clear_delivery(state)}
 
         if not new_plan.get("subtasks"):
             warnings.append("Replan 未生成可执行 Subtask，保留旧 Plan")
@@ -748,9 +756,9 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
             "warnings": warnings,
             "termination_reason": "",
         })
-        v2_patch = build_v2_state_patch({**state, "mission": updated_mission, "plan": new_plan,
+        v2_patch = build_v2_state_patch({**state, **reuse, "mission": updated_mission, "plan": new_plan,
                                          "hypotheses": updated_hypotheses,
-                                         "review_v2": review, "loop_control": loop_control})
+                                         "loop_control": loop_control})
         v2_patch["plan_v2"]["revision_targets"] = []
         v2_patch["loop_control"] = loop_control
         return {
@@ -764,6 +772,7 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
             "current_subtask": None,
             "termination_reason": "",
             **v2_patch,
+            **reuse,
             "iteration": state.get("iteration", 0) + 1,
             "messages": [{"role": "assistant", "content": f"[Manager Replan v{new_version}] {replan_reason}"}],
         }
@@ -787,12 +796,22 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
         patch["plan_v2"]["termination_reason"] = reason
         patch["plan_v2"]["revision_targets"] = []
         patch["loop_control"] = control
+        from report_validation import current_review
+        terminal = {}
+        if not current_review(state):
+            from result_validity import invalidate
+            targets = {identity for finding in (state.get('review_v2') or {}).get('findings', [])
+                       if finding.get('action') != 'KEEP' for identity in finding.get('subtask_ids', [])}
+            terminal = invalidate(state, targets, plan=plan, reason=reason, runnable=False)
+            terminal.update(execution_outcome='FAILED', failure_reason='未完成当前目标：' + reason)
+            patch = {**build_v2_state_patch({**state, **terminal}), 'loop_control': control}
         return {
             "plan": plan,
             "termination_reason": reason,
             "revision_contexts": {},
             "manager_decision": "FINISH",
             **patch,
+            **terminal,
             "iteration": state.get("iteration", 0) + 1,
             "messages": [{"role": "assistant", "content": f"[Loop Controller] {reason}"}],
         }
@@ -826,37 +845,10 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
             valid_modes = VALID_MODES.get(agent_name, set())
 
             if mode not in valid_modes:
-                correct_agent = MODE_TO_AGENT.get(mode)
-                default_mode = ManagerAgent._infer_default_mode(agent_name)
-                if correct_agent and correct_agent != agent_name:
-                    print(f"[Manager Warn] mode '{mode}' 属于 {correct_agent}，"
-                          f"不应分配给 {agent_name}，已修正为 '{default_mode}'")
-                else:
-                    print(f"[Manager Warn] {agent_name} 的 mode '{mode}' 不合法，"
-                          f"已修正为 '{default_mode}'")
-                contrib["mode"] = default_mode
+                raise OutputError('Invalid Agent mode')
 
         return mission
 
-    @staticmethod
-    def _fallback_mission(user_input: str) -> Dict[str, Any]:
-        """Minimal semantic fallback; never guesses a fixed domain workflow."""
-        return {
-            "mission_id": str(uuid.uuid4())[:8],
-            "intent_summary": user_input[:100],
-            "objective": user_input,
-            "primary_goal": user_input,
-            "constraints": [],
-            "context": {"information_gaps": ["Manager 模型未能完成结构化意图解析"]},
-            "required_deliverable": "best_effort_response",
-            "output_type": "report",
-            "audience": "用户",
-            "tone": "专业咨询",
-            "success_criteria": ["完成最终产出", "产出符合受众需求"],
-            "global_constraints": [],
-            "confidence": 3,
-            "pending_confirmation": False,
-        }
 
     # ================================================================
     # Confirmation（二次确认）
@@ -915,6 +907,9 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
         if plan.get("subtasks"):
             for observation in state.get("observations", []):
                 task = task_by_id.get(observation.get("subtask_id"), {})
+                from execution_context import valid_result
+                if not task or not valid_result(state, task['id'], check_fingerprint=True):
+                    continue
                 if not task or not observation.get("result"):
                     continue
                 numeric_priority = int(task.get("priority", 99))
@@ -1002,7 +997,10 @@ Reviewer: {json.dumps(state.get('review_v2', {}), ensure_ascii=False)}
         treated every short Agent output as a reason to rebuild the workflow.
         """
         review = self._normalised_review(state)
-        decision = review.get("decision", "PASS")
+        decision = review.get("decision")
+        if review.get('availability') != 'COMPLETED':
+            from execution_contracts import failure_patch
+            return {**failure_patch('Manager', state, 'FAILED', 'review_unavailable', '审查未完成'), 'review_v2': review}
         if decision == "REVISE":
             return self.run_revision({**state, "review_v2": review})
         if decision == "REPLAN":

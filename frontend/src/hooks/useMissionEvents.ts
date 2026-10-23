@@ -58,9 +58,13 @@ export function useMissionEvents(id?: string) {
           reduceMissionEvent(current, event),
         )
         if (
-          ['mission.completed', 'mission.failed', 'result.created', 'mission.blocked'].includes(
-            event.type,
-          )
+          [
+            'mission.completed',
+            'mission.failed',
+            'result.created',
+            'mission.blocked',
+            'message.created',
+          ].includes(event.type)
         ) {
           void cache.invalidateQueries({ queryKey: ['missions'] })
           void cache.invalidateQueries({

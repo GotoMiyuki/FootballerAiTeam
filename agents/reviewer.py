@@ -6,11 +6,13 @@ P3 新增：在 Document 生成报告之前审查各领域输出质量。
 """
 
 import json
+from output_validation import parse_json, validate_specialist, validate_plan, validate_review_shape
 from typing import Dict, Any, List
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from agents.base import BaseAgent
+from execution_contracts import unavailable_review
 from registry import SUB_AGENT_NAMES, FINAL_AGENT
 from loop_contracts import migrate_hypothesis, migrate_subtask, normalise_review_result
 
@@ -90,8 +92,8 @@ class ReviewerAgent(BaseAgent):
             for task in plan.get("subtasks", []):
                 task_id = task.get("id")
                 status = str(task.get("status", "pending")).lower()
-                if status == "skipped":
-                    continue
+                if status == 'skipped':
+                    return self._review_state_patch(unavailable_review('必需子任务未执行'), contributions, domain_outputs)
                 if status == "blocked":
                     reason = str(task.get("blocked_reason") or "缺少继续该 Subtask 所需的关键输入")
                     blocking_information.append(reason)
@@ -118,17 +120,9 @@ class ReviewerAgent(BaseAgent):
                     isinstance(legacy_observation, dict)
                     and str(legacy_observation.get("result", "")).strip()
                 )
-                if status != "completed" or not (has_v2_result or has_legacy_result):
-                    static_findings.append({
-                        "id": f"finding_{len(static_findings) + 1:02d}",
-                        "subtask_ids": [task_id],
-                        "severity": "HIGH" if status != "completed" else "MEDIUM",
-                        "category": "completeness",
-                        "description": f"子任务未形成可审查的结构化结果: {task_id}",
-                        "evidence": [f"status={status}"],
-                        "action": "REVISION",
-                        "reason": "缺少 SubtaskResult.status / observation / result 契约所需内容",
-                    })
+                from execution_context import valid_result
+                if not valid_result(state, task_id, check_fingerprint=True):
+                    return self._review_state_patch(unavailable_review('专业输入缺失或失效，未完成审查'), contributions, domain_outputs)
         else:
             # Compatibility path for checkpoints created before Plan existed.
             for display_name in SUB_AGENT_NAMES:
@@ -272,24 +266,12 @@ class ReviewerAgent(BaseAgent):
                 content = content.split("```json")[1].split("```")[0].strip()
             elif "```" in content:
                 content = content.split("```")[1].split("```")[0].strip()
-            llm_result = json.loads(content)
+            llm_result = parse_json(content)
         except Exception:
             # A Reviewer transport/schema failure is not missing user input.
             # Finish with an explicit uncertainty instead of retrying Agents or
             # pretending that Human-in-the-loop can repair an internal failure.
-            llm_result = {
-                "decision": "PASS",
-                "findings": [{
-                    "id": "finding_review_unavailable", "subtask_ids": [],
-                    "severity": "HIGH", "category": "review_unavailable",
-                    "description": "Reviewer 模型未返回有效的结构化审查结果",
-                    "evidence": [], "action": "KEEP",
-                    "reason": "保留当前结果，但最终内容必须标注未经完整审查的不确定性",
-                }],
-                "reviewed_subtasks": list(known_ids),
-                "blocking_information": [],
-                "summary": "审查未完成，最终结果必须明确保留不确定性。",
-            }
+            llm_result = unavailable_review('Reviewer 未返回有效审查结果')
 
         review_v2 = normalise_review_result(llm_result, subtasks)
         return self._review_state_patch(review_v2, contributions, domain_outputs)
@@ -425,8 +407,8 @@ class ReviewerAgent(BaseAgent):
                 "reason": finding.get("reason", ""),
             })
         return {
-            "status": status_map.get(review_v2.get("decision"), "passed"),
-            "decision": review_v2.get("decision", "PASS"),
+            "status": status_map.get(review_v2.get("decision"), "unavailable"),
+            "decision": review_v2.get("decision"),
             "findings": findings,
             "blocking_information": list(review_v2.get("blocking_information", []) or []),
             "summary": review_v2.get("summary", ""),
@@ -436,7 +418,7 @@ class ReviewerAgent(BaseAgent):
                             domain_outputs: Dict[str, Any]) -> Dict[str, Any]:
         """Return Reviewer-owned state only; Plan and results stay untouched."""
         legacy = self._legacy_review(review_v2)
-        passed = review_v2.get("decision") == "PASS"
+        passed = review_v2.get('availability') == 'COMPLETED' and review_v2.get("decision") == "PASS"
         reviewed_data = {}
         if passed:
             reviewed_data = {

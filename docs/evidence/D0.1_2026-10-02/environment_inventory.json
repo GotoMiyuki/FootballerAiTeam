@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "task": "D0.1",
+  "recorded_at": "2026-10-02T02:54:13.8138194+00:00",
+  "scope": "bounded_read_only_environment_inventory; no_save_parsing; no_game_launch; no_import",
+  "game_root": "%USERPROFILE%\\Desktop\\pes",
+  "save_root_display": "%USERPROFILE%\\Documents\\KONAMI\\eFootball PES 2021 SEASON UPDATE\\<account-directory>\\save",
+  "game_executable": {
+    "relative_path": "PES2021.exe",
+    "size_bytes": 458739200,
+    "file_version": "1.7.1.0",
+    "product_version": "1.7.1.0",
+    "product_name": "eFootball PES 2021 SEASON UPDATE",
+    "machine_hex": "0x8664",
+    "architecture": "x64"
+  },
+  "patch_marker": "smokepatch21\r\nv.21.4.5",
+  "sider_versions": {
+    "exe": "7.1.0.0",
+    "dll": "7.1.4.0"
+  },
+  "enabled_modules": [
+    {
+      "relative_path": "lib\\CommonLib.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "SP21StadiumServer.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "SP21Scoreboard.lua",
+      "exists": false
+    },
+    {
+      "relative_path": "SP21Ref.lua",
+      "exists": false
+    },
+    {
+      "relative_path": "SP21Entrance.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "SP21Clkits.lua",
+      "exists": false
+    },
+    {
+      "relative_path": "SP21SoundServer.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "env.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "etrace.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "camera.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "jittest.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "trophy.lua",
+      "exists": true
+    },
+    {
+      "relative_path": "matchset.lua",
+      "exists": true
+    }
+  ],
+  "save_inventory": [
+    {
+      "name": "BL00000000",
+      "size_bytes": 19577197,
+      "last_write_time_utc": "2026-09-05T05:59:20.9872445Z"
+    },
+    {
+      "name": "EDIT00000000",
+      "size_bytes": 11011037,
+      "last_write_time_utc": "2026-07-10T13:10:36.8153711Z"
+    },
+    {
+      "name": "FILELIST00000000",
+      "size_bytes": 217826,
+      "last_write_time_utc": "2026-07-24T19:29:53.9910811Z"
+    },
+    {
+      "name": "GRAPHICS000000",
+      "size_bytes": 19,
+      "last_write_time_utc": "2026-09-05T05:59:22.5213542Z"
+    },
+    {
+      "name": "SYSTEM00000000",
+      "size_bytes": 235982,
+      "last_write_time_utc": "2026-09-05T05:59:22.5203538Z"
+    },
+    {
+      "name": "TEMBLEM00000000",
+      "size_bytes": 275176,
+      "last_write_time_utc": "2026-07-24T19:29:46.6063535Z"
+    },
+    {
+      "name": "UNIFORM00000000",
+      "size_bytes": 2808471,
+      "last_write_time_utc": "2026-07-24T19:29:47.5069739Z"
+    },
+    {
+      "name": "UNIFORM00000001",
+      "size_bytes": 2807155,
+      "last_write_time_utc": "2026-07-24T19:29:48.3237397Z"
+    }
+  ],
+  "visible_matching_processes": [],
+  "files": [
+    {
+      "root": "game",
+      "relative_path": "download\\version.txt",
+      "role": "patch_version_marker",
+      "size_bytes": 22,
+      "last_write_time_utc": "2022-02-24T03:08:12.0000000Z",
+      "sha256": "8d746020a1a14857c36ebecab73768b5af53f512538618a4f9b1c312e8038a7c"
+    },
+    {
+      "root": "game",
+      "relative_path": "download\\DpFileList.bin",
+      "role": "patch_environment_fingerprint",
+      "size_bytes": 3224,
+      "last_write_time_utc": "2021-06-24T08:25:20.0000000Z",
+      "sha256": "798f04e4ec43df91cad80022b9fadcb526eba3fd9212be9a29310839040d4ca6"
+    },
+    {
+      "root": "game",
+      "relative_path": "download\\SMK_Extra16.cpk",
+      "role": "additional_patch_fingerprint",
+      "size_bytes": 83136,
+      "last_write_time_utc": "2022-02-17T15:08:26.0000000Z",
+      "sha256": "a1405fe4edb071b054e5d58d216c9e6a78a8b0d0c125ef1b043fc718ff5ad33a"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\sider.exe",
+      "role": "existing_host",
+      "size_bytes": 497152,
+      "last_write_time_utc": "2021-04-12T03:45:22.0000000Z",
+      "sha256": "3d98f0ec2ee953f9ff5085de3dcd405b67e606f49de24e0c25fb575dd28bb2cd"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\sider.dll",
+      "role": "existing_host_dll",
+      "size_bytes": 1760768,
+      "last_write_time_utc": "2021-06-15T09:16:18.0000000Z",
+      "sha256": "fcf8faae4e64a4dfed78f868fc000db46fb40389502d1bde72ab3a7b9f34c2db"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\sider.ini",
+      "role": "existing_host_configuration",
+      "size_bytes": 2141,
+      "last_write_time_utc": "2026-05-01T06:54:32.0000000Z",
+      "sha256": "aae2b4e7aef3d43a6b55ea350aecd813a3738040efec74fd7cbfee59e4fc26b0"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\sider.log",
+      "role": "historical_runtime_log",
+      "size_bytes": 573182,
+      "last_write_time_utc": "2026-07-10T18:55:22.9304536Z",
+      "sha256": "5b5803ed682f7acb463571c9c631266054a79a01a660b2f89e225fd9f1b7932e"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\modules\\mstats.lua",
+      "role": "existing_stats_example",
+      "size_bytes": 888,
+      "last_write_time_utc": "2020-01-29T15:22:28.0000000Z",
+      "sha256": "7436d9b3368b473fb201985a3ef2e2bceb141f28dcc4461e00bd3569ccd0f0eb"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\modules\\matchset.lua",
+      "role": "existing_settings_modifier",
+      "size_bytes": 777,
+      "last_write_time_utc": "2020-07-17T09:14:52.0000000Z",
+      "sha256": "eeda52fa8d84f5eaea81859fdfb2c24d370b17b6d79b5d384a29d71ffb54957b"
+    },
+    {
+      "root": "game",
+      "relative_path": "Sider SP21\\modules\\camera.lua",
+      "role": "existing_camera_modifier",
+      "size_bytes": 12959,
+      "last_write_time_utc": "2019-09-03T10:05:12.0000000Z",
+      "sha256": "5d94c680cca5e20368364a1161cb288236e758fd1f8c23c6faf9870117a77314"
+    },
+    {
+      "root": "game",
+      "relative_path": "存档EDIT文件 (D版)\\EDIT00000000",
+      "role": "bundled_edit_data",
+      "size_bytes": 11011037,
+      "last_write_time_utc": "2022-02-26T06:13:52.0000000Z",
+      "sha256": "16b1acc03c3967af3030405427b28f2a30b1536f5f2c0dfca5572a20bdcca76c"
+    },
+    {
+      "root": "save",
+      "relative_path": "BL00000000",
+      "role": "unconfirmed_personal_career_candidate",
+      "size_bytes": 19577197,
+      "last_write_time_utc": "2026-09-05T05:59:20.9872445Z",
+      "sha256": "a4839f6bc782640c3d2770a0f5adf2fa18cfcd68c2950502538d51feafa77ec3"
+    },
+    {
+      "root": "save",
+      "relative_path": "EDIT00000000",
+      "role": "user_edit_data",
+      "size_bytes": 11011037,
+      "last_write_time_utc": "2026-07-10T13:10:36.8153711Z",
+      "sha256": "6ce27269f9fcfe100315ee28746dc47b164f6c20e56399b542404c845a1844fb"
+    }
+  ],
+  "limitations": [
+    "BL00000000 mode/player/club/game_date not yet confirmed in game",
+    "File hashes prove content identity only, not mode or field semantics",
+    "Historical sider.log is not a current runtime verification",
+    "No automated personal career field verified"
+  ],
+  "publication_note": "User profile prefix is normalized for publication; file metadata and SHA-256 values are unchanged."
+}

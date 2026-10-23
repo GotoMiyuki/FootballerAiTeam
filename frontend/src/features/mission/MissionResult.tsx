@@ -2,7 +2,10 @@ import { FileText, ArrowUpRight, Download } from 'lucide-react'
 import { apiUrl } from '../../api/client'
 import type { Mission } from '../../types/mission'
 export function MissionResult({ mission, onView }: { mission: Mission; onView: () => void }) {
-  if (!mission.report) return null
+  if (!mission.report || mission.status !== 'COMPLETED') return null
+  if (mission.delivery_status !== 'PUBLISHABLE') return (
+    <section className="result-card"><p>旧记录未验证，暂无可发布报告。</p></section>
+  )
   return (
     <section className="result-card">
       <span className="result-icon">

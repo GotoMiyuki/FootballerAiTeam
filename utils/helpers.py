@@ -71,7 +71,8 @@ def flatten_attributes(attributes: Dict[str, Any]) -> List[AttrEntry]:
     for category, attrs in attributes.items():
         if isinstance(attrs, dict):
             for name, value in attrs.items():
-                result.append((category, name, int(value)))
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    result.append((category, name, value))
     return result
 
 

@@ -8,10 +8,11 @@ on V2 decisions.
 from __future__ import annotations
 
 from typing import Any, Dict, List, Literal, TypedDict
+from execution_contracts import unavailable_review
 
 
 SubtaskStatus = Literal[
-    "PENDING", "RUNNING", "COMPLETED", "REVISION_REQUIRED", "BLOCKED", "SKIPPED",
+    "PENDING", "RUNNING", "COMPLETED", "REVISION_REQUIRED", "BLOCKED", "SKIPPED", "FAILED", "INVALIDATED",
 ]
 HypothesisStatus = Literal["OPEN", "SUPPORTED", "WEAKENED", "REJECTED"]
 ReviewDecision = Literal["PASS", "REVISE", "REPLAN", "BLOCKED"]
@@ -122,7 +123,9 @@ _SUBTASK_STATUS_MAP = {
     "completed": "COMPLETED",
     "needs_revision": "REVISION_REQUIRED",
     "revision_required": "REVISION_REQUIRED",
-    "failed": "REVISION_REQUIRED",
+    "failed": "FAILED",
+    "no_result": "FAILED",
+    "invalidated": "INVALIDATED",
     "blocked": "BLOCKED",
     "skipped": "SKIPPED",
 }
@@ -137,7 +140,7 @@ _REVIEW_STATUS_MAP = {
     "needs_revision": "REVISE",
     # Legacy "failed" mixed internal Reviewer failure with safety failure. It
     # must not become missing-user-input BLOCKED without an explicit finding.
-    "failed": "PASS",
+    "failed": None,
 }
 _FINDING_ACTION_MAP = {
     "keep": "KEEP",
@@ -283,6 +286,19 @@ def normalise_review_result(raw_review: Any, plan_subtasks: List[Subtask]) -> Re
     stylistic preferences cannot create an infinite revision cycle.
     """
     review = raw_review if isinstance(raw_review, dict) else {}
+    declared = str(review.get('decision', '')).upper()
+    if review.get('availability') in {'UNAVAILABLE', 'NOT_RUN'}:
+        return unavailable_review(str(review.get('summary') or '审查未完成'), review['availability'])
+    if declared not in _REVIEW_DECISIONS and str(review.get('status', '')).lower() not in {'passed', 'needs_revision'}:
+        return unavailable_review('审查载荷无效或旧记录未验证')
+    if not declared:
+        return unavailable_review('旧审查记录未验证')
+    from output_validation import validate_review_shape
+    from execution_contracts import OutputError
+    try:
+        validate_review_shape(review, plan_subtasks)
+    except (OutputError, TypeError):
+        return unavailable_review('审查结构、范围或证据无效')
     known_ids = {task.get("id") for task in plan_subtasks}
     known_ids.discard(None)
     raw_findings = review.get("findings") or []
@@ -360,12 +376,10 @@ def normalise_review_result(raw_review: Any, plan_subtasks: List[Subtask]) -> Re
         str(item) for item in _list_value(review.get("reviewed_subtasks"))
         if str(item) in known_ids
     ]
-    if not reviewed_subtasks:
-        reviewed_subtasks = [
-            str(task["id"]) for task in plan_subtasks
-            if task.get("status") == "COMPLETED" and task.get("id")
-        ]
     return {
+        "availability": "COMPLETED",
+        "scope": "specialist_inputs",
+        "reviewed_versions": dict(review.get('reviewed_versions') or {}),
         "decision": decision,
         "findings": findings,
         "reviewed_subtasks": list(dict.fromkeys(reviewed_subtasks)),

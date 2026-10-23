@@ -8,6 +8,11 @@ export const eventTypes = [
   'mission.failed',
   'plan.created',
   'plan.updated',
+  'subtask.failed',
+  'subtask.invalidated',
+  'agent.failed',
+  'review.unavailable',
+  'review.invalidated',
   'subtask.started',
   'subtask.completed',
   'subtask.revision_required',
@@ -21,6 +26,7 @@ export const eventTypes = [
   'replan.completed',
   'result.created',
   'report.created',
+  'message.created',
 ] as const
 export interface MissionEvent {
   event_id: string

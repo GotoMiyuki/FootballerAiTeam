@@ -61,7 +61,7 @@ export default function App() {
       </header>
       {health.data?.mode === 'demo' && (
         <div className="demo-banner">
-          <span>DEMO</span>当前为演示模式 · 任务流程使用示例数据，球员资料来自仓库
+          <span>DEMO</span>当前为演示模式 · 任务流程使用示例数据，球员资料来自配置的数据源
         </div>
       )}
       {health.isError && (

@@ -122,6 +122,8 @@ def get_active_subtask(state, allowed_capabilities=None):
         if allowed_capabilities and task.get("capability") not in allowed_capabilities:
             return None
         active = dict(task)
+        from execution_context import build_execution_context
+        active['execution_context'] = build_execution_context(state, task)
         revision_context = (state.get("revision_contexts") or {}).get(current_id)
         if isinstance(revision_context, dict):
             active["revision_context"] = dict(revision_context)
