@@ -269,6 +269,7 @@ class AgentState(TypedDict):
     player_profile: Dict[str, Any]
     player_snapshot: Dict[str, Any]
     continuation_context: Dict[str, Any]
+    career_memory_context: Dict[str, Any]
     mission_id: str
     execution_context: Dict[str, Any]
     result_history: Annotated[List[Dict[str, Any]], merge_lists]
@@ -1064,7 +1065,7 @@ def load_player_profile() -> Dict[str, Any]:
     return read_snapshot().profile
 
 
-def create_initial_state(user_input: str, *, repository=None, context=None, snapshot=None, continuation_context=None) -> AgentState:
+def create_initial_state(user_input: str, *, repository=None, context=None, snapshot=None, continuation_context=None, career_memory_context=None) -> AgentState:
     """创建初始状态。
 
     Args:
@@ -1082,6 +1083,7 @@ def create_initial_state(user_input: str, *, repository=None, context=None, snap
         "player_profile": profile,
         "player_snapshot": snapshot.to_dict(),
         "continuation_context": deepcopy(continuation_context or {}),
+        "career_memory_context": deepcopy(career_memory_context or {}),
         "mission_id": "",
         "result_history": [],
         "user_context": {"request": user_input, "player_profile": profile},

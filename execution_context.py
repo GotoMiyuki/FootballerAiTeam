@@ -76,6 +76,11 @@ def input_material(state, task, *, _visiting=None):
             'player_snapshot_id': metadata.get('snapshot_id'), 'dependency_versions': versions}
     if state.get('continuation_context'):
         material['continuation_context'] = deepcopy(state['continuation_context'])
+    from career_memory.context import task_items
+    memories = task_items(state, task)
+    if memories:
+        material['career_memory_references'] = [{key: item[key] for key in ('memory_id', 'revision', 'content_hash')}
+            for item in memories]
     return material
 
 
@@ -107,6 +112,9 @@ def build_execution_context(state, task):
                'dependencies': dependencies, 'phase': 'revision' if task['id'] in (state.get('revision_contexts') or {}) else 'initial'}
     if material.get('continuation_context'):
         context['continuation_context'] = deepcopy(material['continuation_context'])
+    if material.get('career_memory_references'):
+        from career_memory.context import task_items
+        context['career_memory'] = task_items(state, task)
     if len(json.dumps(context, ensure_ascii=False)) > 64000:
         # Fail explicitly rather than silently truncating the decisive evidence.
         raise OutputError('Dependency context exceeds the supported evidence budget')

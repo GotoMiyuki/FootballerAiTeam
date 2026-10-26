@@ -49,6 +49,13 @@ class MissionResultReader:
                     or not digest or content_hash(inputs) != digest
                     or inputs.get('player_snapshot') != state.get('player_snapshot')):
                 raise SourceUnavailable('来源完整固定输入缺失或与专业成果不一致')
+            if (inputs.get('career_memory_context') or {}) != (state.get('career_memory_context') or {}):
+                raise SourceUnavailable('来源固定记忆与成果输入不一致')
+            if (inputs.get('continuation_context') or {}) != (state.get('continuation_context') or {}):
+                raise SourceUnavailable('来源固定历史反馈与成果输入不一致')
+            self.service.frozen_feedback(mission.id)
+            if inputs.get('career_memory_context'):
+                self.service.frozen_memory(mission.id)
             fixed = PlayerSnapshot.from_dict(inputs['player_snapshot'])
             if input_reference(fixed) != mission.input_reference:
                 raise SourceUnavailable('来源球员身份或快照版本不一致')

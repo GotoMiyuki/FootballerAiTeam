@@ -17,9 +17,13 @@ class Continuation:
     operation: str = 'reevaluate'
     player_context: dict | None = None
     include_report: bool = True
+    use_career_memory: bool = True
     selected_results: list[dict] = field(default_factory=list)
     recommendation_id: str | None = None
     assessment_id: str | None = None
+    recommendation_revision: int | None = None
+    assessment_revision: int | None = None
+    execution_ids: list[str] = field(default_factory=list)
 
     def validated(self):
         from backend.models import ContinuationRequest
@@ -34,8 +38,6 @@ def select_history(service, parent, request):
     context = PlayerContext(**reference.context)
     if request.player_context and request.player_context.model_dump() != context.to_dict():
         raise ValueError('关联评估不能切换生涯、分支或球员，请新建普通任务')
-    if request.recommendation_id or request.assessment_id:
-        raise ValueError('建议/评估记录解析尚未接通，不能把未验证引用作为历史材料')
     projection = {'parent_mission_id': parent.id, 'operation': request.operation, 'reason': request.reason.strip(),
         'original_objective': parent.objective, 'new_requirements': request.content.strip(),
         'parent_input_reference': reference.model_dump(mode='json'), 'results': []}

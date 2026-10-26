@@ -11,6 +11,9 @@ import { MissionResult } from './MissionResult'
 import { ReportViewer } from '../report/ReportViewer'
 import { ReevaluationPanel } from './ReevaluationPanel'
 import { RecommendationsPanel } from './RecommendationsPanel'
+import { CareerMemoryPanel } from './CareerMemoryPanel'
+import { MissionMemoryPanel } from './MissionMemoryPanel'
+import { FeedbackInputPanel } from './FeedbackInputPanel'
 const sourceLabels: Record<string, string> = {
   demo_fixture: '测试样本',
   game_observation: '游戏观察',
@@ -178,7 +181,16 @@ export function MissionWorkspace({
         <BlockedInputPanel key={`${mission.id}-${mission.blocked.reason}`} mission={mission} />
       )}
       {mission && <MissionResult mission={mission} onView={() => setReport(true)} />}
-      {mission && <RecommendationsPanel mission={mission} onReport={() => setReport(true)} />}
+      {mission && (
+        <RecommendationsPanel
+          mission={mission}
+          onReport={() => setReport(true)}
+          onMission={onMission}
+        />
+      )}
+      {mission && <CareerMemoryPanel key={`memory-${mission.id}`} mission={mission} />}
+      {mission && <MissionMemoryPanel key={`memory-input-${mission.id}`} mission={mission} />}
+      {mission && <FeedbackInputPanel key={`feedback-input-${mission.id}`} mission={mission} />}
       {mission && <ReevaluationPanel key={mission.id} mission={mission} onMission={onMission} />}
       <ConversationPanel
         key={mission?.conversation_id || draftConversationId}

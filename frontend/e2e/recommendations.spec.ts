@@ -1,6 +1,15 @@
 import { test, expect } from '@playwright/test'
 import type { Mission } from '../src/types/mission'
-import type { Recommendation, RecommendationList } from '../src/types/recommendation'
+import type {
+  Recommendation,
+  RecommendationList,
+  RecommendationActivity,
+  DecisionRequest,
+  ExecutionRequest,
+  DecisionRecord,
+  ExecutionRecord,
+} from '../src/types/recommendation'
+import type { Page } from '@playwright/test'
 
 const reference = {
   verification: 'VERIFIED' as const,
@@ -147,9 +156,11 @@ for (const scenario of ['current', 'withdrawn', 'superseded'] as const) {
                 ? mission
                 : path.endsWith('/recommendations')
                   ? result
-                  : path.endsWith('/report')
-                    ? { title: '原报告', markdown: '# 原报告 v1\n原数据与结论仍然保留' }
-                    : []
+                  : path.endsWith('/activity')
+                    ? emptyActivity()
+                    : path.endsWith('/report')
+                      ? { title: '原报告', markdown: '# 原报告 v1\n原数据与结论仍然保留' }
+                      : []
         return route.fulfill({ json: data })
       },
     )
@@ -184,3 +195,221 @@ for (const scenario of ['current', 'withdrawn', 'superseded'] as const) {
     expect(errors).toEqual([])
   })
 }
+
+function emptyActivity(): RecommendationActivity {
+  return {
+    recommendation_id: recommendation.recommendation_id,
+    recommendation_revision: 1,
+    context: reference.context,
+    current_decision_id: null,
+    current_execution_ids: [],
+    decisions: [],
+    executions: [],
+  }
+}
+
+async function actionApi(page: Page, loseResponse?: 'decisions' | 'executions') {
+  const activity = emptyActivity()
+  const requests: { path: string; body: DecisionRequest | ExecutionRequest }[] = []
+  const saved = new Map<string, { record: DecisionRecord | ExecutionRecord; body: string }>()
+  let lost = false
+  let validity: Recommendation['validity'] = 'current'
+  await page.addInitScript(() => localStorage.setItem('fait.mission', 'recommendation-mission'))
+  await page.route(
+    (url) => url.pathname.startsWith('/api/'),
+    async (route) => {
+      const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/events'))
+        return route.fulfill({ contentType: 'text/event-stream', body: '' })
+      if (route.request().method() === 'POST') {
+        const body = route.request().postDataJSON() as DecisionRequest | ExecutionRequest
+        requests.push({ path, body })
+        const duplicate = saved.get(body.request_id)
+        if (duplicate) {
+          if (duplicate.body !== JSON.stringify(body))
+            return route.fulfill({ status: 409, json: { detail: 'request conflict' } })
+          return route.fulfill({ json: { record: duplicate.record, created: false } })
+        }
+        const common = {
+          schema_version: 1,
+          recommendation_id: recommendation.recommendation_id,
+          source: recommendation.source,
+          recommendation_validity: validity,
+          checked_state_version: reference.state_version,
+          created_at: '2026-10-24T10:00:00+08:00',
+        }
+        let record: DecisionRecord | ExecutionRecord
+        if (path.endsWith('/decisions')) {
+          const choice = body as DecisionRequest
+          if (choice.status === 'ADOPTED' && validity !== 'current')
+            return route.fulfill({ status: 409, json: { detail: '需重新评估' } })
+          if (choice.previous_decision_id !== activity.current_decision_id)
+            return route.fulfill({ status: 409, json: { detail: '选择已变化，请刷新' } })
+          record = {
+            ...common,
+            ...choice,
+            decision_id: `decision-${activity.decisions.length + 1}`,
+            revision: activity.decisions.length + 1,
+          }
+          activity.decisions.push(record)
+          activity.current_decision_id = record.decision_id
+        } else {
+          const feedback = body as ExecutionRequest
+          const previous = activity.executions.find(
+            (item) => item.execution_id === feedback.corrects_execution_id,
+          )
+          record = {
+            ...common,
+            ...feedback,
+            execution_id: `execution-${activity.executions.length + 1}`,
+            revision: previous ? previous.revision + 1 : 1,
+            source_type: 'user_reported',
+          }
+          activity.executions.push(record)
+          activity.current_execution_ids = activity.current_execution_ids.filter(
+            (id) => id !== feedback.corrects_execution_id,
+          )
+          activity.current_execution_ids.push(record.execution_id)
+        }
+        saved.set(body.request_id, { record, body: JSON.stringify(body) })
+        if (!lost && loseResponse && path.endsWith(`/${loseResponse}`)) {
+          lost = true
+          return route.abort('failed')
+        }
+        return route.fulfill({ json: { record, created: true } })
+      }
+      const data =
+        path === '/api/health'
+          ? { status: 'ok', mode: 'live' }
+          : path === '/api/player'
+            ? { name: 'Test Player', attributes: {}, long_term_goals: [] }
+            : path === `/api/missions/${mission.id}`
+              ? mission
+              : path.endsWith('/recommendations')
+                ? {
+                    mission_id: mission.id,
+                    availability: 'AVAILABLE',
+                    reason: '',
+                    items: [{ ...recommendation, validity }],
+                  }
+                : path.endsWith('/activity')
+                  ? activity
+                  : []
+      return route.fulfill({ json: data })
+    },
+  )
+  return {
+    activity,
+    requests,
+    setValidity: (value: Recommendation['validity']) => {
+      validity = value
+    },
+  }
+}
+
+test('E1.2 choices, independent feedback, correction, withdrawal and reload retain history', async ({
+  page,
+}) => {
+  const api = await actionApi(page)
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  await page.goto('/')
+  const panel = page.getByRole('region', { name: '训练焦点建议' })
+  await expect(panel).toContainText('未知 · 尚无执行反馈')
+  await panel.getByText('记录选择与执行反馈', { exact: true }).click()
+  await panel.getByRole('combobox', { name: '玩家选择', exact: true }).selectOption('ADOPTED')
+  await panel.getByRole('button', { name: '保存选择', exact: true }).click()
+  await expect(panel).toContainText('选择已保存')
+  await expect(panel).toContainText('未知 · 尚无执行反馈')
+  await panel.getByRole('combobox', { name: '执行情况', exact: true }).selectOption('PARTIAL')
+  await panel.getByRole('textbox', { name: '实际行动或未知说明' }).fill('尝试了10分钟，自报速度99')
+  await panel.getByRole('combobox', { name: '执行时间域' }).selectOption('game')
+  await panel.getByRole('textbox', { name: '实际时间或比赛范围' }).fill('游戏第3周')
+  await panel.screenshot({ path: 'test-results/e1-2-action-forms.png' })
+  await panel.getByRole('button', { name: '保存执行反馈', exact: true }).click()
+  await expect(panel).toContainText('自报部分执行（游戏时间：游戏第3周）')
+  await panel.getByRole('combobox', { name: '玩家选择', exact: true }).selectOption('REJECTED')
+  await panel.getByRole('textbox', { name: '选择理由' }).fill('撤回采纳')
+  await panel.getByRole('button', { name: '保存选择', exact: true }).click()
+  await expect.poll(() => api.activity.decisions.length).toBe(2)
+  await expect(panel).toContainText('自报部分执行（游戏时间：游戏第3周）')
+  await panel.getByRole('combobox', { name: '执行记录方式' }).selectOption('execution-1')
+  await panel.getByRole('textbox', { name: '实际行动或未知说明' }).fill('撤回未经核实的执行反馈')
+  await panel.getByRole('textbox', { name: '更正原因' }).fill('记忆不清，维持未知')
+  await panel.getByRole('button', { name: '保存执行反馈', exact: true }).click()
+  await expect.poll(() => api.activity.executions.length).toBe(2)
+  await page.reload()
+  await expect(panel).toContainText('选择：拒绝')
+  await expect(panel).toContainText('执行：未知（未知窗口）')
+  await panel.getByText('查看选择与执行历史（4）', { exact: true }).click()
+  await expect(panel).toContainText('前次选择 decision-1')
+  await expect(panel).toContainText('更正 execution-1：记忆不清，维持未知')
+  await expect(panel).toContainText('自报速度99')
+  await expect(panel).toContainText('执行支持：待验证')
+  await expect(panel).toContainText('等待观察：尚未关联后续观察')
+  await page.screenshot({ path: 'test-results/e1-2-actions.png', fullPage: true })
+  expect(api.activity.current_execution_ids).toEqual(['execution-2'])
+  expect(errors).toEqual([])
+})
+
+for (const kind of ['decisions', 'executions'] as const) {
+  test(`E1.2 lost ${kind} response retries the same request after reload`, async ({ page }) => {
+    const api = await actionApi(page, kind)
+    await page.goto('/')
+    const panel = page.getByRole('region', { name: '训练焦点建议' })
+    await panel.getByText('记录选择与执行反馈', { exact: true }).click()
+    const label = kind === 'decisions' ? '选择' : '执行反馈'
+    if (kind === 'executions')
+      await panel.getByRole('textbox', { name: '实际行动或未知说明' }).fill('未知，稍后确认')
+    await panel.getByRole('button', { name: `保存${label}`, exact: true }).click()
+    await expect(panel.getByRole('button', { name: `重试保存${label}`, exact: true })).toBeVisible()
+    await page.reload()
+    await panel.getByText('记录选择与执行反馈', { exact: true }).click()
+    await panel.getByRole('button', { name: `重试保存${label}`, exact: true }).click()
+    await expect.poll(() => api.requests.length).toBe(2)
+    expect(api.requests[0].body).toEqual(api.requests[1].body)
+    expect(api.activity.decisions.length + api.activity.executions.length).toBe(1)
+    await expect(panel.getByRole('button', { name: `保存${label}`, exact: true })).toBeVisible()
+  })
+}
+
+test('E1.2 stale applicability disables adoption while allowing historical feedback', async ({
+  page,
+}) => {
+  const api = await actionApi(page)
+  api.setValidity('needs_reassessment')
+  await page.goto('/')
+  const panel = page.getByRole('region', { name: '训练焦点建议' })
+  await panel.getByText('记录选择与执行反馈', { exact: true }).click()
+  await expect(panel.getByRole('option', { name: '采纳', exact: true })).toHaveAttribute(
+    'disabled',
+    '',
+  )
+  await panel.getByRole('button', { name: '保存选择', exact: true }).click()
+  await expect.poll(() => api.activity.decisions.length).toBe(1)
+  expect(api.activity.decisions[0].status).toBe('DEFERRED')
+  await panel.getByRole('combobox', { name: '执行情况', exact: true }).selectOption('CONFIRMED')
+  await panel.getByRole('textbox', { name: '实际行动或未知说明' }).fill('虽未采纳但尝试了')
+  await panel.getByRole('button', { name: '保存执行反馈', exact: true }).click()
+  await expect(panel).toContainText('自报已执行（未知窗口）')
+  expect(api.activity.executions[0].source_type).toBe('user_reported')
+})
+
+test('E1.2 a conflicting choice can be refreshed and submitted with a new request', async ({
+  page,
+}) => {
+  const api = await actionApi(page)
+  await page.goto('/')
+  const panel = page.getByRole('region', { name: '训练焦点建议' })
+  await panel.getByText('记录选择与执行反馈', { exact: true }).click()
+  // Another view saves a choice after this page loaded its empty history.
+  api.activity.current_decision_id = 'other-view-choice'
+  await panel.getByRole('button', { name: '保存选择', exact: true }).click()
+  await expect(panel).toContainText('选择已变化，请刷新')
+  await panel.getByRole('button', { name: '刷新并重新填写选择' }).click()
+  await panel.getByRole('button', { name: '保存选择', exact: true }).click()
+  await expect(panel).toContainText('选择已保存')
+  expect(api.requests).toHaveLength(2)
+  expect(api.requests[0].body.request_id).not.toBe(api.requests[1].body.request_id)
+  expect((api.requests[1].body as DecisionRequest).previous_decision_id).toBe('other-view-choice')
+})

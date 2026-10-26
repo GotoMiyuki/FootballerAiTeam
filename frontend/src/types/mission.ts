@@ -91,18 +91,32 @@ export interface Mission {
     'view' | 'explain' | 'supply_input' | 'approve_report' | 'reevaluate' | 'retry'
   )[]
   resume_error?: string | null
+  memory_reference?: {
+    verification: 'FROZEN' | 'DISABLED' | 'LEGACY_NONE'
+    content_hash: string | null
+    items: { memory_id: string; revision: number; kind: string; content_hash: string }[]
+  }
   lineage?: {
     parent_mission_id: string
     operation: 'reevaluate' | 'retry'
     reason: string
     request_id: string
     history_references: {
-      kind: 'report' | 'result'
+      kind: 'report' | 'result' | 'recommendation' | 'assessment' | 'decision' | 'execution'
       mission_id: string
       subtask_id: string | null
       version: number
       content_hash: string
+      object_id?: string | null
     }[]
+    feedback_reference?: {
+      content_hash: string
+      recommendation_id: string
+      recommendation_revision: number
+      assessment_id: string | null
+      assessment_revision: number | null
+      execution_ids: string[]
+    } | null
   } | null
 }
 export const statusLabels: Record<MissionStatus, string> = {

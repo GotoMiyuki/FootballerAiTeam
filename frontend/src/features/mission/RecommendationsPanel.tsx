@@ -1,9 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ListChecks, RefreshCw } from 'lucide-react'
 import { getRecommendations } from '../../api/missions'
 import { ErrorNotice, Loading } from '../../components/ui'
 import type { Mission } from '../../types/mission'
 import type { Recommendation } from '../../types/recommendation'
+import { RecommendationActivity } from './RecommendationActivity'
+import { AssessmentPanel } from './AssessmentPanel'
+import { RecommendationFollowups } from './RecommendationFollowups'
 
 const validityLabels: Record<Recommendation['validity'], string> = {
   current: '来源有效 · 数据一致',
@@ -15,10 +18,13 @@ const validityLabels: Record<Recommendation['validity'], string> = {
 export function RecommendationsPanel({
   mission,
   onReport,
+  onMission,
 }: {
   mission: Mission
   onReport: () => void
+  onMission?: (id: string) => void
 }) {
+  const cache = useQueryClient()
   const query = useQuery({
     queryKey: ['recommendations', mission.id, mission.sequence],
     queryFn: () => getRecommendations(mission.id),
@@ -36,7 +42,10 @@ export function RecommendationsPanel({
         </h2>
         <button
           className="secondary-button"
-          onClick={() => void query.refetch()}
+          onClick={() => {
+            void query.refetch()
+            void cache.invalidateQueries({ queryKey: ['recommendation-activity', mission.id] })
+          }}
           disabled={query.isFetching}
         >
           <RefreshCw size={13} />
@@ -70,6 +79,9 @@ export function RecommendationsPanel({
           <p>
             <strong>执行支持：</strong>待验证。{item.execution_support.reason}
           </p>
+          <RecommendationActivity item={item} />
+          <AssessmentPanel item={item} mission={mission} onMission={onMission} />
+          {onMission && <RecommendationFollowups item={item} onMission={onMission} />}
           <details>
             <summary>查看来源与适用范围</summary>
             <dl>

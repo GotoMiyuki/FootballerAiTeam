@@ -771,6 +771,118 @@ small {
   gap: 16px;
   padding: 24px;
 }
+
+.recommendation-activity {
+  margin: 14px 0;
+  padding: 12px;
+  background: var(--bg-panel, #f7f9fb);
+  border: 1px solid var(--border, #dce3e9);
+  border-radius: 8px;
+}
+.action-form fieldset {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--border, #dce3e9);
+  border-radius: 6px;
+}
+.action-form label {
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+}
+.action-form input,
+.action-form select,
+.action-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border, #dce3e9);
+  border-radius: 5px;
+  background: white;
+  color: #253441;
+  font: inherit;
+}
+.action-form textarea {
+  min-height: 65px;
+  resize: vertical;
+}
+.action-form button {
+  justify-self: start;
+}
+.action-history {
+  padding-left: 20px;
+}
+.action-history li {
+  margin: 10px 0 16px;
+}
+.action-history small {
+  overflow-wrap: anywhere;
+  color: #596978;
+}
+.memory-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.assessment-panel {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.assessment-panel summary {
+  color: var(--green);
+  cursor: pointer;
+}
+.assessment-panel table {
+  width: 100%;
+  margin: 12px 0;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.assessment-panel th,
+.assessment-panel td {
+  padding: 7px;
+  text-align: left;
+  border: 1px solid var(--line);
+}
+.assessment-panel details {
+  margin: 10px 0;
+}
+.assessment-controls {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+.assessment-controls select {
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+.assessment-controls button {
+  justify-self: start;
+}
+.career-memory-panel p {
+  margin: 8px 0;
+  font-size: 12px;
+  color: #607469;
+  overflow-wrap: anywhere;
+}
+.career-memory-panel details {
+  margin-top: 14px;
+}
+.career-memory-panel summary {
+  cursor: pointer;
+  color: var(--green);
+}
+.career-memory-panel small {
+  overflow-wrap: anywhere;
+}
 .reevaluation-form label {
   display: grid;
   gap: 8px;

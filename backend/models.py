@@ -61,12 +61,22 @@ class PlayerInputReference(BaseModel):
     snapshot_id: str | None = None
     source_types: list[str] = Field(default_factory=list)
 
+
+class MemoryInputReference(BaseModel):
+    verification: Literal['FROZEN', 'DISABLED', 'LEGACY_NONE'] = 'LEGACY_NONE'
+    policy_version: str | None = None
+    content_hash: str | None = None
+    context: dict[str, str] | None = None
+    items: list[dict] = Field(default_factory=list)
+    omitted: list[dict] = Field(default_factory=list)
+
 class HistoryReference(BaseModel):
-    kind: Literal['report', 'result']
+    kind: Literal['report', 'result', 'recommendation', 'assessment', 'decision', 'execution']
     mission_id: str
     subtask_id: str | None = None
     version: int
     content_hash: str
+    object_id: str | None = None
 
 class MissionLineage(BaseModel):
     parent_mission_id: str
@@ -74,6 +84,7 @@ class MissionLineage(BaseModel):
     reason: str
     request_id: str
     history_references: list[HistoryReference] = Field(default_factory=list)
+    feedback_reference: dict | None = None
 
 class MissionView(BaseModel):
     id: str
@@ -95,6 +106,7 @@ class MissionView(BaseModel):
     delivery_status: str = 'NOT_GENERATED'
     body_validation: dict[str, Any] = Field(default_factory=dict)
     input_reference: PlayerInputReference = Field(default_factory=PlayerInputReference)
+    memory_reference: MemoryInputReference = Field(default_factory=MemoryInputReference)
     resume_error: str | None = None
     lineage: MissionLineage | None = None
 
@@ -130,6 +142,7 @@ class MessageRequest(BaseModel):
     content: str = Field(min_length=1, max_length=8000)
     mission_id: str | None = None
     intent: Literal['new_mission', 'followup', 'explain'] = 'new_mission'
+    use_career_memory: bool = True
     demo_scenario: Literal['pass', 'revision', 'blocked', 'replan'] = 'pass'
 
 class MessageView(BaseModel):
@@ -148,6 +161,11 @@ class MessageAccepted(BaseModel):
 
 class InputRequest(BaseModel):
     values: dict[str, str | float | bool]
+
+
+class MemoryPreviewRequest(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    content: str = Field(min_length=1, max_length=8000)
 
 class PlayerContextRequest(BaseModel):
     career_id: str = Field(min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$')
@@ -168,9 +186,13 @@ class ContinuationRequest(BaseModel):
     content: str = Field(min_length=1, max_length=8000)
     player_context: PlayerContextRequest | None = None
     include_report: bool = True
+    use_career_memory: bool = True
     selected_results: list[ResultSelection] = Field(default_factory=list, max_length=8)
     recommendation_id: str | None = Field(default=None, min_length=1, max_length=100)
     assessment_id: str | None = Field(default=None, min_length=1, max_length=100)
+    recommendation_revision: int | None = Field(default=None, ge=1, strict=True)
+    assessment_revision: int | None = Field(default=None, ge=1, strict=True)
+    execution_ids: list[str] = Field(default_factory=list, max_length=8)
 
 class ContinuationAccepted(MessageAccepted):
     created: bool

@@ -31,3 +31,16 @@ def validate_pause(mission, snapshot, *, reason=None):
             or metadata.get('state_version') != reference.state_version
             or metadata.get('snapshot_id') != reference.snapshot_id):
         raise ValueError('原球员快照缺失或版本不兼容，无法恢复。请新建任务。')
+    memory = snapshot.values.get('career_memory_context') or {}
+    if memory or mission.memory_reference.verification != 'LEGACY_NONE':
+        from career_memory.context import validate
+        validate(memory, reference.context)
+        if mission.memory_reference.verification == 'LEGACY_NONE' or not memory or memory.get('content_hash') != mission.memory_reference.content_hash:
+            raise ValueError('原checkpoint固定记忆缺失或与原任务不一致，不能读取最新记忆恢复')
+    feedback = (snapshot.values.get('continuation_context') or {}).get('career_feedback')
+    public = mission.lineage.feedback_reference if mission.lineage else None
+    if feedback or public:
+        from career_actions.followups import validate, summary
+        validate(feedback, reference.context, reference.snapshot_id)
+        if not public or summary(feedback) != public:
+            raise ValueError('原checkpoint固定关联反馈与原任务不一致')

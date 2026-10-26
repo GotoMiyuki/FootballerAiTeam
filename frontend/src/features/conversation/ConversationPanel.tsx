@@ -24,6 +24,7 @@ export function ConversationPanel({
 }) {
   const [content, setContent] = useState('')
   const [scenario, setScenario] = useState<DemoScenario>('pass')
+  const [useMemory, setUseMemory] = useState(true)
   const { messages, send } = useConversation(conversationId, onMission)
   const messageList = useRef<HTMLDivElement>(null)
   const textarea = useRef<HTMLTextAreaElement>(null)
@@ -49,6 +50,7 @@ export function ConversationPanel({
         mission_id: mission?.id,
         intent: explain ? 'explain' : followup ? 'followup' : 'new_mission',
         demo_scenario: scenario,
+        use_career_memory: useMemory,
       },
       { onSuccess: () => setContent('') },
     )
@@ -164,6 +166,17 @@ export function ConversationPanel({
           }}
         />
         <div className="composer-footer">
+          {!followup && (
+            <label className="history-choice">
+              <input
+                type="checkbox"
+                checked={useMemory}
+                onChange={(event) => setUseMemory(event.target.checked)}
+                disabled={disabled}
+              />
+              引用相关生涯记忆（提交时固定）
+            </label>
+          )}
           <span>
             {isActive(mission?.status)
               ? '团队正在工作，任务暂停或完成后可继续对话'
