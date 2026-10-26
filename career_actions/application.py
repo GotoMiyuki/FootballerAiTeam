@@ -1,7 +1,9 @@
 """E1.1 deterministic training-focus mapping and read-time source/applicability checks."""
 import json
+from uuid import uuid4
 from backend.events import now
-from career_actions.models import Recommendation, RecommendationList, RecommendationView
+from career_actions.models import (Recommendation, RecommendationList, RecommendationView,
+                                  DecisionRequest, ExecutionRequest, DecisionRecord, ExecutionRecord)
 from career_actions.repository import RecommendationRepository
 from career_actions.sources import MissionResultReader, SourceUnavailable
 from execution_context import relevant_constraints
@@ -59,7 +61,7 @@ class RecommendationApplication:
         """Writer-side replay/backfill. GET consumers never call this method."""
         self._project(self.reader.read(mission_id))
 
-    def list(self, mission_id):
+    def list(self, mission_id, *, snapshot=None):
         self.service.store.get(mission_id)
         availability, reason = self.repository.batch(mission_id)
         rows = self.repository.records(mission_id)
@@ -76,7 +78,7 @@ class RecommendationApplication:
         if source:
             try:
                 context = PlayerContext(**source['snapshot'].to_dict()['context'])
-                latest = self.service._read_submission_snapshot(context)
+                latest = snapshot if snapshot is not None else self.service._read_submission_snapshot(context)
                 if not isinstance(latest, PlayerSnapshot) or latest.to_dict()['context'] != context.to_dict():
                     raise ValueError('最新快照身份不一致')
             except Exception:
@@ -111,11 +113,13 @@ class RecommendationApplication:
                     or latest.metadata.get('snapshot_id') != record.applicability.input_reference.snapshot_id):
                 validity, why = 'needs_reassessment', '球员数据已变化，原建议仅适用于原快照；需重新评估当前适用性'
             items.append(RecommendationView(**record.model_dump(), validity=validity,
-                validity_reason=why, checked_state_version=latest.metadata.get('state_version') if latest else None))
+                validity_reason=why, checked_state_version=latest.metadata.get('state_version') if latest else None,
+                origin_feedback=self.service.store.get(mission_id).lineage.feedback_reference
+                    if self.service.store.get(mission_id).lineage else None))
         return RecommendationList(mission_id=mission_id, availability='AVAILABLE' if source else 'UNAVAILABLE',
             reason=source_error or reason, items=items)
 
-    def get(self, recommendation_id, context):
+    def get(self, recommendation_id, context, *, snapshot=None):
         with self.service.store.lock:
             row = self.service.store.db.execute('SELECT mission_id,payload FROM recommendations WHERE id=?', (recommendation_id,)).fetchone()
         if not row:
@@ -123,4 +127,70 @@ class RecommendationApplication:
         record = Recommendation.model_validate_json(row[1])
         if record.context.model_dump() != context.to_dict():
             raise ValueError('建议不属于请求的生涯、分支或球员')
-        return next(item for item in self.list(row[0]).items if item.recommendation_id == recommendation_id)
+        return next(item for item in self.list(row[0], snapshot=snapshot).items if item.recommendation_id == recommendation_id)
+
+    def _action_recommendation(self, mission_id, recommendation_id, context, revision=None, *, snapshot=None):
+        self.service.store.get(mission_id)
+        record = self.get(recommendation_id, context, snapshot=snapshot)
+        if record.source.mission_id != mission_id:
+            raise ValueError('建议不属于请求的来源任务')
+        if revision is not None and record.revision != revision:
+            raise ValueError('建议修订版本不一致，请刷新后重试')
+        return record
+
+    def activity(self, mission_id, recommendation_id, context):
+        with self.service.store.lock:
+            record = self._action_recommendation(mission_id, recommendation_id, context)
+            return self.repository.activity(record)
+
+    def followups(self, mission_id, recommendation_id, context):
+        """Read C-owned lineage instead of maintaining a second creation ledger in E."""
+        self._action_recommendation(mission_id, recommendation_id, context)
+        items = []
+        for mission in self.service.store.missions():
+            lineage = mission.lineage
+            if (not lineage or lineage.parent_mission_id != mission_id or not lineage.feedback_reference
+                    or lineage.feedback_reference.get('recommendation_id') != recommendation_id
+                    or mission.input_reference.context != context.to_dict()):
+                continue
+            items.append(dict(mission_id=mission.id, status=mission.status, reason=lineage.reason,
+                created_at=mission.created_at, feedback_reference=lineage.feedback_reference,
+                input_reference=mission.input_reference.model_dump(),
+                recommendation_ids=[record.recommendation_id for record, _ in self.repository.records(mission.id)]))
+        return {'items': items}
+
+    def record_decision(self, mission_id, recommendation_id, request: DecisionRequest):
+        return self._record_action(mission_id, recommendation_id, request, 'decision')
+
+    def record_execution(self, mission_id, recommendation_id, request: ExecutionRequest):
+        return self._record_action(mission_id, recommendation_id, request, 'execution')
+
+    def _record_action(self, mission_id, recommendation_id, request, kind):
+        """Local single writer. Feedback is never an ObservationImporter input."""
+        fingerprint = content_hash([mission_id, recommendation_id, kind, request.model_dump()])
+        with self.service.store.lock:
+            record = self._action_recommendation(mission_id, recommendation_id,
+                PlayerContext(**request.context.model_dump()), request.recommendation_revision)
+            duplicate = self.repository.action_result(request.request_id, fingerprint, kind)
+            if duplicate:
+                return duplicate, False
+            if kind == 'decision' and request.status == 'ADOPTED' and record.validity != 'current':
+                raise ValueError('当前建议不可采纳：' + record.validity_reason)
+            activity = self.repository.activity(record)
+            common = dict(recommendation_id=record.recommendation_id, recommendation_revision=record.revision,
+                context=request.context, source=record.source, request_id=request.request_id, created_at=now(),
+                recommendation_validity=record.validity, checked_state_version=record.checked_state_version)
+            if kind == 'decision':
+                previous = next((item for item in activity.decisions
+                    if item.decision_id == request.previous_decision_id), None)
+                action = DecisionRecord(**common, decision_id=f'dec_{uuid4().hex}',
+                    revision=previous.revision + 1 if previous else 1,
+                    status=request.status, reason=request.reason, previous_decision_id=request.previous_decision_id)
+            else:
+                previous = next((item for item in activity.executions
+                    if item.execution_id == request.corrects_execution_id), None)
+                action = ExecutionRecord(**common, execution_id=f'exec_{uuid4().hex}',
+                    revision=previous.revision + 1 if previous else 1, status=request.status,
+                    actual_action=request.actual_action, window=request.window,
+                    corrects_execution_id=request.corrects_execution_id, correction_reason=request.correction_reason)
+            return self.repository.save_action(record, action, kind, fingerprint)

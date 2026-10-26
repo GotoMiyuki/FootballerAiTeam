@@ -97,6 +97,18 @@ class ExecutionOutcomeTests(unittest.TestCase):
             result = DocumentAgent(Model(text)).run(reviewed_state())
             self.assertFalse(result['final_report'])
 
+    def test_report_keeps_literal_objective_gate_for_feedback_reports(self):
+        state = reviewed_state()
+        state['mission']['primary_goal'] = '根据有来源反馈选择下一步训练关注点，并说明观察边界'
+        brief = DocumentAgent._build_mission_brief(state['mission'])
+        self.assertIn('**本次目标**：' + state['mission']['primary_goal'], brief)
+        for text, accepted in [
+            ('# 训练报告\n依据与限制：观察不代表训练效果。', False),
+            ('# 训练报告\n**本次目标**：' + state['mission']['primary_goal'] + '\n依据与限制：观察不代表训练效果。', True),
+        ]:
+            result = DocumentAgent(Model(text)).run(state)
+            self.assertEqual(result.get('delivery_status') == 'PUBLISHABLE', accepted)
+
     def test_planning_failure_never_becomes_document_only_success(self):
         result = ManagerAgent(Model('invalid')).run(state_for([]))
         self.assertEqual(result['execution_outcome'], 'NO_RESULT')

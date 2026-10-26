@@ -572,6 +572,13 @@ Markdown 格式，开头标注 **【媒体应答手册】**。
             f"**目标受众**: {mission.get('audience', '综合')}",
             f"**语气**: {mission.get('tone', '专业咨询')}",
         ]
+        if mission.get('output_type') in {'report', 'plan', 'analysis'}:
+            objective = mission.get('primary_goal') or mission.get('objective', '')
+            parts.extend([
+                '最终正文先写Markdown标题，随后单独逐字保留下面这一行目标，不概括、不删节：',
+                f'**本次目标**：{objective}',
+                '专业成果的JSON是内部输入。除非用户要求原始结构，正文用自然语言说明建议、依据与限制，不整段复制JSON。',
+            ])
 
         criteria = mission.get("success_criteria", [])
         if criteria:

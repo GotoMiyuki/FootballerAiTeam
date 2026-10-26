@@ -9,9 +9,13 @@ from urllib.parse import quote
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import Response, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from backend.models import MissionView, MessageRequest, MessageAccepted, InputRequest, MessageView, ContinuationRequest, ContinuationAccepted
+from backend.models import MissionView, MessageRequest, MessageAccepted, InputRequest, MessageView, ContinuationRequest, ContinuationAccepted, MemoryPreviewRequest
 from backend.service import MissionService
-from career_actions.models import RecommendationList, RecommendationEvent
+from career_actions.models import (RecommendationList, RecommendationEvent, DecisionRequest, ExecutionRequest,
+                                  DecisionAccepted, ExecutionAccepted, RecommendationActivity)
+from career_memory.models import MemoryList, MemoryWriteRequest, MemoryAccepted, MemorySyncResult
+from career_actions.assessment_models import (ComparisonRequest, AssessmentRequest, ComparisonView,
+                                             PlanAccepted, AssessmentAccepted)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -97,6 +101,49 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
     def get_mission(mission_id: str):
         return service().view(mission(mission_id))
 
+    @app.get('/api/missions/{mission_id}/memory-input')
+    def memory_input(mission_id: str):
+        mission(mission_id)
+        try:
+            return service().frozen_memory(mission_id)
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
+    @app.get('/api/missions/{mission_id}/feedback-input')
+    def feedback_input(mission_id: str):
+        mission(mission_id)
+        try:
+            return service().frozen_feedback(mission_id)
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
+    @app.get('/api/missions/{mission_id}/recommendations/{recommendation_id}/followups')
+    def recommendation_followups(mission_id: str, recommendation_id: str, career_id: str, branch_id: str, player_id: str):
+        mission(mission_id)
+        try:
+            from player_data.models import PlayerContext
+            return service().recommendations.followups(mission_id, recommendation_id, PlayerContext(career_id, branch_id, player_id))
+        except KeyError:
+            raise HTTPException(404, '来源建议不存在')
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
+    @app.post('/api/missions/{mission_id}/career-memory/retrieval-preview')
+    def memory_preview(mission_id: str, body: MemoryPreviewRequest):
+        mission(mission_id)
+        try:
+            from career_memory.retrieval import MemoryRetriever
+            from player_data.models import PlayerContext
+            parent = service().store.get(mission_id)
+            context = PlayerContext(**service().career_memory.context(mission_id).model_dump())
+            snapshot = service()._read_submission_snapshot(context)
+            if snapshot is None:
+                raise ValueError('当前球员快照不可用')
+            with service().store.lock:
+                return MemoryRetriever(service()).freeze(snapshot, body.content, parent_mission_id=parent.id)
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
     @app.get('/api/missions/{mission_id}/recommendations', response_model=RecommendationList)
     def recommendations(mission_id: str):
         mission(mission_id)
@@ -106,6 +153,60 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
     def recommendation_events(mission_id: str, after: int = Query(default=0, ge=0)):
         mission(mission_id)
         return service().recommendations.repository.events(mission_id, after)
+
+    def action_call(operation):
+        try:
+            return operation()
+        except KeyError:
+            raise HTTPException(404, '任务或建议不存在')
+        except ValueError as error:
+            raise HTTPException(409, str(error))
+
+    @app.get('/api/missions/{mission_id}/career-memory', response_model=MemoryList)
+    def career_memory(mission_id: str):
+        return action_call(lambda: service().career_memory.list(mission_id))
+
+    @app.post('/api/missions/{mission_id}/career-memory/sync', response_model=MemorySyncResult)
+    def sync_career_memory(mission_id: str):
+        return action_call(lambda: service().career_memory.sync(mission_id))
+
+    @app.post('/api/missions/{mission_id}/career-memory/user-records', response_model=MemoryAccepted)
+    def write_career_memory(mission_id: str, body: MemoryWriteRequest):
+        record, created = action_call(lambda: service().career_memory.write(mission_id, body))
+        return MemoryAccepted(record=record, created=created)
+
+    @app.get('/api/missions/{mission_id}/recommendations/{recommendation_id}/comparison', response_model=ComparisonView)
+    def comparison(mission_id: str, recommendation_id: str):
+        return action_call(lambda: service().assessments.view(mission_id, recommendation_id))
+
+    @app.post('/api/missions/{mission_id}/recommendations/{recommendation_id}/comparison-plans', response_model=PlanAccepted)
+    def comparison_plan(mission_id: str, recommendation_id: str, body: ComparisonRequest):
+        record, created = action_call(lambda: service().assessments.create_plan(mission_id, recommendation_id, body))
+        return PlanAccepted(record=record, created=created)
+
+    @app.post('/api/missions/{mission_id}/recommendations/{recommendation_id}/comparison-plans/{plan_id}/assessments', response_model=AssessmentAccepted)
+    def assess(mission_id: str, recommendation_id: str, plan_id: str, body: AssessmentRequest):
+        record, created = action_call(lambda: service().assessments.evaluate(mission_id, recommendation_id, plan_id, body))
+        return AssessmentAccepted(record=record, created=created)
+
+    @app.get('/api/missions/{mission_id}/recommendations/{recommendation_id}/activity', response_model=RecommendationActivity)
+    def recommendation_activity(mission_id: str, recommendation_id: str,
+            career_id: str = Query(min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$'),
+            branch_id: str = Query(min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$'),
+            player_id: str = Query(min_length=1, max_length=64, pattern=r'^[a-zA-Z0-9_-]+$')):
+        from player_data.models import PlayerContext
+        return action_call(lambda: service().recommendations.activity(mission_id, recommendation_id,
+            PlayerContext(career_id, branch_id, player_id)))
+
+    @app.post('/api/missions/{mission_id}/recommendations/{recommendation_id}/decisions', response_model=DecisionAccepted)
+    def record_decision(mission_id: str, recommendation_id: str, body: DecisionRequest):
+        record, created = action_call(lambda: service().recommendations.record_decision(mission_id, recommendation_id, body))
+        return DecisionAccepted(record=record, created=created)
+
+    @app.post('/api/missions/{mission_id}/recommendations/{recommendation_id}/executions', response_model=ExecutionAccepted)
+    def record_execution(mission_id: str, recommendation_id: str, body: ExecutionRequest):
+        record, created = action_call(lambda: service().recommendations.record_execution(mission_id, recommendation_id, body))
+        return ExecutionAccepted(record=record, created=created)
 
     @app.post('/api/missions/{mission_id}/input', status_code=202)
     def submit_input(mission_id: str, body: InputRequest):

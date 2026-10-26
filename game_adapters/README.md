@@ -2,6 +2,8 @@
 
 当前支持本机指定 PES2021 1.07.01 / Data Pack 7.00 / SmokePatch V4 专用BAL测试范围。D0/D1/D2的当前接口、映射规则和全部历史记录统一见[D阶段完整文档](../docs/completed/D_游戏接入与采集适配.md#d-current)。旧版长README保留在该文档[历史附录](../docs/completed/D_游戏接入与采集适配.md#history-adapter-readme)。
 
+实际操控游戏前先读[Codex玩PES](../docs/guides/Codex玩PES.md)：普通界面按键无效时，复用已验证的独立100ms单键输入，重新取得当前窗口并逐步确认画面，不复用历史句柄。
+
 ## 入口
 
 | 模块 | 用途 |

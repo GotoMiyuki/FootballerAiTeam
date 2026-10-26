@@ -4,6 +4,8 @@ import { ArrowUpRight } from 'lucide-react'
 import { createContinuation, type ContinuationRequest } from '../../api/missions'
 import { Dialog } from '../../components/Dialog'
 import { ErrorNotice } from '../../components/ui'
+import { previewMemory } from '../../api/career-memory'
+import { MemorySelection } from './MissionMemoryPanel'
 import type { Mission } from '../../types/mission'
 
 export function ReevaluationPanel({
@@ -40,6 +42,7 @@ export function ReevaluationPanel({
       content: '',
       include_report: operation === 'reevaluate',
       selected_results: [],
+      use_career_memory: true,
     }
   })
   const cache = useQueryClient()
@@ -55,6 +58,9 @@ export function ReevaluationPanel({
     },
   })
   const [submitted, setSubmitted] = useState<ContinuationRequest | null>(null)
+  const preview = useMutation({
+    mutationFn: (content: string) => previewMemory(mission.id, content),
+  })
   function change(fields: Partial<ContinuationRequest>) {
     // An edited submission is a different request; network retries keep the previous id/body.
     const next = {
@@ -66,6 +72,7 @@ export function ReevaluationPanel({
     setDraft(next)
     localStorage.setItem(draftKey, JSON.stringify(next))
     create.reset()
+    preview.reset()
   }
   const results =
     mission.input_reference?.verification === 'VERIFIED'
@@ -137,6 +144,31 @@ export function ReevaluationPanel({
                 />
                 引用原报告（用于历史参考）
               </label>
+            )}
+            <label className="history-choice">
+              <input
+                type="checkbox"
+                checked={draft.use_career_memory !== false}
+                disabled={create.isPending}
+                onChange={(event) => change({ use_career_memory: event.target.checked })}
+              />
+              引用相关生涯记忆（提交时固定）
+            </label>
+            {draft.use_career_memory !== false && (
+              <>
+                <button
+                  type="button"
+                  disabled={preview.isPending || create.isPending || !draft.content.trim()}
+                  onClick={() => preview.mutate(draft.content.trim())}
+                >
+                  预览相关记忆
+                </button>
+                <p>预览只读当前来源；正式提交会重新核验并保存当时的选中集合。</p>
+                {preview.isError && <ErrorNotice message={preview.error.message} />}
+                {preview.data && preview.variables === draft.content.trim() && (
+                  <MemorySelection packet={preview.data} />
+                )}
+              </>
             )}
             {results.length > 0 && (
               <fieldset>

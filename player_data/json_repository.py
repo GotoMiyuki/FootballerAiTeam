@@ -66,6 +66,11 @@ class JsonPlayerRepository:
     def read_raw(self, context=None):
         return self.read_state(context or self.context)
 
+    def read_observations(self, context=None):
+        """One integrity-checked aggregate read for snapshot and stable observation references."""
+        from player_data.observations import from_state
+        return from_state(self.read_state(context or self.context))
+
     def read_snapshot(self, context=None):
         context = context or self.context
         state = self.read_state(context)

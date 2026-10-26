@@ -2,6 +2,8 @@ import { defineConfig } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
+  // These files share one demo API with a serial mission executor.
+  workers: 1,
   timeout: 30000,
   expect: { timeout: 10000 },
   use: {

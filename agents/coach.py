@@ -112,14 +112,15 @@ class CoachAgent(BaseAgent):
 {focus}
 
 ## 执行流程
-1. 使用 FootballKnowledgeRAG 检索短板对应的专项训练方法（至少检索 2-3 个方向）
-2. 使用 SearchTool 补充搜索最新训练理念
+1. 按本次任务需要使用 FootballKnowledgeRAG；检索资料不证明游戏支持相应训练动作。
+2. 仅在本次任务允许联网且需要最新资料时使用 SearchTool。
 3. 综合分析后输出 JSON 训练计划
 
 ## 输出格式
 JSON，字段：focus_areas, weekly_schedule, drill_details（含 name/sets/frequency/description）,
 imbalance_notes, attribute_update_suggestions（训练4周后的预期属性变化，如 {{"physical": {{"speed": 83}}}}）, notes。
 focus_areas 使用字符串列表；weekly_schedule 使用“日期/星期 → 活动文本或字符串列表”的对象，或 day/activities 的对象列表。sets 为正整数或明确的组数说明。
+全部字段均须保留，局部修订也返回完整对象，不只返回改动片段。仅分析游戏关注点或观察安排时，weekly_schedule可用观察阶段作为键；drill_details填写观察步骤，sets写“不适用（仅观察，无训练组数）”，frequency写实际已知的观察频率或“待确认”。不得为填满结构编造现实训练负荷、日程或增长预测；无可靠增长依据时attribute_update_suggestions使用空对象。
 只输出 JSON，不要其他文本。"""
 
         # ---- ReAct 循环 ----
