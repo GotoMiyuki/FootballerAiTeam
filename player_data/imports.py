@@ -152,6 +152,16 @@ class ObservationImporter:
             self._validate(observation)
         except PlayerDataError as exc:
             return ImportResult('REJECTED', '', identity, exc.code)
+        from player_data.writer_lock import actual_writer, ActualWriterBusy
+        try:
+            with actual_writer(self.repository.root):
+                return self._import_locked(observation)
+        except ActualWriterBusy:
+            # No state read/commit occurred, so a current version cannot be claimed.
+            return ImportResult('CONFLICT', '', identity, 'writer_busy')
+
+    def _import_locked(self, observation):
+        identity = observation.observation_id
         path = self.repository.state_path(observation.context)
         lock_key = os.path.normcase(str(path))
         with _locks_guard:

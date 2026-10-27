@@ -8,6 +8,7 @@ from langchain_core.tools import tool
 
 from config import config
 from tools.errors import ToolExecutionError
+from backend.call_limits import current_policy, remaining_seconds
 
 
 @tool
@@ -33,6 +34,7 @@ def SearchTool(query: str) -> str:
             search_depth="basic",
             max_results=5,
             include_answer=True,
+            timeout=max(.001, min(current_policy().tool_seconds, remaining_seconds())),
         )
 
         results = []

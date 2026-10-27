@@ -3,6 +3,9 @@ import json
 import os
 from pathlib import Path
 from unittest.mock import patch
+from unittest.mock import Mock
+from types import SimpleNamespace
+from functools import partial
 
 from evaluation import test_session_semantics as semantics
 from player_data.repository import FixtureRepository
@@ -10,6 +13,8 @@ from player_data.repository import FixtureRepository
 
 def main():
     import app
+    from backend.cli import CLIMissionService
+    from evaluation.runtime_fixture import InlineRunner
     harness = semantics.SessionSemanticsTests()
     harness.calls = []
     harness.require_input = os.getenv('FAIT_TEST_REQUIRE_INPUT') == '1'
@@ -31,11 +36,22 @@ def main():
             raise AssertionError('History must not require model configuration')
         return True
 
+    def model():
+        if os.getenv('FAIT_TEST_EXPLANATION') != '1':
+            raise AssertionError('No live model allowed')
+        def invoke(_messages):
+            harness.calls.append(('explanation', 'fixed-report'))
+            if os.getenv('FAIT_TEST_EXPLANATION_FAILURE') == '1':
+                raise RuntimeError('injected explanation failure')
+            return SimpleNamespace(content='这是隔离的原报告解释')
+        return Mock(invoke=Mock(side_effect=invoke))
+
     try:
         with patch('backend.runtime.create_runtime', side_effect=runtime), patch.object(app, 'check_config', side_effect=check), \
                 patch('player_data.repository.get_repository', return_value=repository), \
                 patch.object(repository, 'read_snapshot', side_effect=read), \
-                patch('utils.helpers.create_llm', side_effect=AssertionError('No live model allowed')):
+                patch('utils.helpers.create_llm', side_effect=model), \
+                patch('backend.cli.CLIMissionService', partial(CLIMissionService, runner=InlineRunner())):
             return app.main()
     finally:
         with Path(os.environ['FAIT_TEST_CALLS']).open('a', encoding='utf-8') as output:

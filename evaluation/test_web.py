@@ -6,8 +6,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from evaluation.request_fixtures import message_body, input_body
 from fastapi.testclient import TestClient
 from backend.main import create_app
+from evaluation.runtime_fixture import InlineRunner
 from backend.models import MissionEvent
 
 class WebTests(unittest.TestCase):
@@ -20,7 +22,7 @@ class WebTests(unittest.TestCase):
         self.repository = FixtureRepository(self.path / 'fixture')
 
     def app(self, **kwargs):
-        return create_app(player_repository=self.repository, **kwargs)
+        return create_app(player_repository=self.repository, runner=InlineRunner(), **kwargs)
 
     def tearDown(self):
         self.temp.cleanup()
@@ -38,7 +40,7 @@ class WebTests(unittest.TestCase):
         self.fail(f'Mission did not reach {status}: {response}')
 
     def start(self, client, scenario='pass'):
-        response = client.post('/api/messages', json={'conversation_id': 'conv_test', 'content': '分析训练效果', 'demo_scenario': scenario})
+        response = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_test', 'content': '分析训练效果', 'demo_scenario': scenario}))
         self.assertEqual(response.status_code, 202, response.text)
         return response.json()['mission_id']
 
@@ -54,7 +56,7 @@ class WebTests(unittest.TestCase):
             download = client.get(f'/api/missions/{mission_id}/report/download')
             self.assertIn('filename*=UTF-8', download.headers['content-disposition'])
             self.assertEqual(download.status_code, 200)
-            followup = client.post('/api/messages', json={'conversation_id': 'conv_test', 'content': '为什么这样安排？', 'intent': 'followup', 'mission_id': mission_id})
+            followup = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_test', 'content': '为什么这样安排？', 'intent': 'followup', 'mission_id': mission_id}))
             self.assertEqual(followup.json()['mission_id'], mission_id)
             self.wait(client, mission_id, 'COMPLETED')
             self.assertEqual(len(client.get('/api/missions').json()), 1)
@@ -81,14 +83,14 @@ class WebTests(unittest.TestCase):
             self.assertEqual(len(snapshot['blocked']['required_inputs']), 6)
         with TestClient(self.app(data_dir=self.path, demo=True, demo_delay=0)) as client:
             endpoint = f'/api/missions/{mission_id}/input'
-            self.assertEqual(client.post(endpoint, json={'values': {}}).status_code, 422)
+            self.assertEqual(client.post(endpoint, json=input_body(client, endpoint, {'values': {}})).status_code, 422)
             values = {'doms': 3, 'sleep_hours': 7.5, 'fatigue': 4, 'pain': False, 'availability': '30 分钟'}
-            self.assertEqual(client.post(endpoint, json={'values': {**values, 'doms': 99}}).status_code, 422)
-            self.assertEqual(client.post(endpoint, json={'values': {**values, 'pain': 'unknown'}}).status_code, 422)
-            self.assertEqual(client.post(endpoint, json={'values': values}).status_code, 202)
+            self.assertEqual(client.post(endpoint, json=input_body(client, endpoint, {'values': {**values, 'doms': 99}})).status_code, 422)
+            self.assertEqual(client.post(endpoint, json=input_body(client, endpoint, {'values': {**values, 'pain': 'unknown'}})).status_code, 422)
+            self.assertEqual(client.post(endpoint, json=input_body(client, endpoint, {'values': values})).status_code, 202)
             snapshot = self.wait(client, mission_id, 'COMPLETED')
             self.assertIsNone(snapshot['blocked'])
-            self.assertEqual(client.post(endpoint, json={'values': values}).status_code, 422)
+            self.assertEqual(client.post(endpoint, json=input_body(client, endpoint, {'values': values})).status_code, 422)
 
     def test_revision_and_replan_are_distinct(self):
         with TestClient(self.app(data_dir=self.path, demo=True, demo_delay=0)) as client:
@@ -105,10 +107,10 @@ class WebTests(unittest.TestCase):
     def test_unknown_mission_and_cross_conversation_rejected(self):
         with TestClient(self.app(data_dir=self.path, demo=True, demo_delay=0)) as client:
             self.assertEqual(client.get('/api/missions/missing').status_code, 404)
-            self.assertEqual(client.post('/api/messages', json={'conversation_id': 'c', 'content': '  '}).status_code, 422)
+            self.assertEqual(client.post('/api/messages', json=message_body(client, {'conversation_id': 'c', 'content': '  '})).status_code, 422)
             mission_id = self.start(client)
             self.wait(client, mission_id, 'COMPLETED')
-            self.assertEqual(client.post('/api/messages', json={'conversation_id': 'other', 'content': '追问', 'intent': 'followup', 'mission_id': mission_id}).status_code, 409)
+            self.assertEqual(client.post('/api/messages', json=message_body(client, {'conversation_id': 'other', 'content': '追问', 'intent': 'followup', 'mission_id': mission_id})).status_code, 409)
 
     def test_real_agents_fail_consistently_in_api_events_and_saved_state(self):
         from graph import build_graph
@@ -209,13 +211,13 @@ class WebTests(unittest.TestCase):
                 blocked = self.wait(client, mission_id, 'BLOCKED')
                 self.assertEqual(blocked['blocked']['reason'], 'missing_user_input')
             with TestClient(self.app(data_dir=self.path, demo=False)) as client:
-                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json={'values': {'information': '酸痛3/10，无疼痛，睡眠8小时'}}).status_code, 202)
+                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json=input_body(client, f'/api/missions/{mission_id}/input', {'values': {'information': '酸痛3/10，无疼痛，睡眠8小时'}})).status_code, 202)
                 approved = self.wait(client, mission_id, 'BLOCKED')
                 self.assertEqual(approved['blocked']['reason'], 'report_approval')
                 self.assertEqual(approved['plan']['subtasks'][0]['revision_count'], 0)
                 self.assertEqual(approved['plan']['subtasks'][1]['revision_count'], 1)
-                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json={'values': {'approved': False}}).status_code, 422)
-                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json={'values': {'approved': True}}).status_code, 202)
+                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json=input_body(client, f'/api/missions/{mission_id}/input', {'values': {'approved': False}})).status_code, 422)
+                self.assertEqual(client.post(f'/api/missions/{mission_id}/input', json=input_body(client, f'/api/missions/{mission_id}/input', {'values': {'approved': True}})).status_code, 202)
                 completed = self.wait(client, mission_id, 'COMPLETED')
                 self.assertEqual(completed['review']['decision'], 'PASS')
                 self.assertTrue(all(task['status'] == 'COMPLETED' for task in completed['plan']['subtasks']))

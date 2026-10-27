@@ -1,0 +1,4 @@
+{
+  "docs/guides/M4_运行可靠性审计_Codex任务书.md": "用户已有的本机任务书，未纳入本次发布；正式审计、计划与验收记录已在Git内保存。",
+  "local_data/game_imports/m4-implementation/20261027-m48-acceptance-01": "M4.8本机运行目录，含SQLite和原始故障材料；正式矩阵和机器摘要在Git内保存，原件不随Git分发。"
+}

@@ -1,3 +1,4 @@
+from evaluation.runtime_fixture import run_pending
 """C1.2 application/API persistence, provenance, idempotency and actual prompt tests."""
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
@@ -70,7 +71,7 @@ class ReevaluationTests(unittest.TestCase):
                     self.assertFalse(duplicate['created'])
                     self.assertEqual(duplicate['mission_id'], child)
                     self.assertEqual(duplicate['message_id'], accepted['message_id'])
-                    service._execute(child)
+                    run_pending(service, child)
                     complete = self.harness.complete(client, child)
                 self.assertEqual(complete['input_reference']['state_version'], v2)
                 self.assertIn('原球员速度：73', service.store.report(child))

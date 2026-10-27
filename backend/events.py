@@ -28,7 +28,7 @@ class MissionEventEmitter:
 
     def emit(self, mission, event_type, **data):
         # Snapshot and sequence commit together; clients can always recover by HTTP.
-        with self.store.lock:
+        with self.store.transaction():
             event = self.prepare(mission, event_type, **data)
             self.store.save(mission, event)
         return event
@@ -109,7 +109,7 @@ class MissionEventEmitter:
             mission.report = None
             mission.result = None
         raw_telemetry = state.get('telemetry') or {}
-        mission.telemetry = {key: value for key, value in raw_telemetry.items() if isinstance(value, (int, float))}
+        mission.telemetry = {key: value for key, value in raw_telemetry.items() if isinstance(value, (int, float)) or value is None}
         for agent in mission.agents:
             if agent.status == 'RUNNING':
                 failed = (state.get('execution_outcome') in {'FAILED', 'NO_RESULT'}
@@ -121,6 +121,7 @@ class MissionEventEmitter:
     def blocked(self, mission, information, *, approval=False):
         inputs = [RequiredInput(key='approved', label='我已查看计划，继续生成报告', input_type='boolean')] if approval else [RequiredInput(key='information', label='请补充以上信息', input_type='text')]
         mission.blocked = BlockedView(reason='report_approval' if approval else 'missing_user_input',
-            message='计划已完成审查，请确认是否继续生成报告。' if approval else '\n'.join(str(item) for item in information) or '请补充任务所需的当前情况。', required_inputs=inputs)
+            message='计划已完成审查，请确认是否继续生成报告。' if approval else '\n'.join(str(item) for item in information) or '请补充任务所需的当前情况。', required_inputs=inputs,
+            pause_id=f'pause_{uuid4().hex}')
         self.status(mission, 'BLOCKED')
         self.emit(mission, 'mission.blocked', **mission.blocked.model_dump())

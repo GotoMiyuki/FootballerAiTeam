@@ -4,10 +4,10 @@ from pathlib import Path
 
 
 class WorkspaceWriterLock:
-    def __init__(self, root):
+    def __init__(self, root, *, name='.writer.lock'):
         root = Path(root)
         root.mkdir(parents=True, exist_ok=True)
-        self.file = (root / '.writer.lock').open('a+b')
+        self.file = (root / name).open('a+b')
         if self.file.seek(0, os.SEEK_END) == 0:
             self.file.write(b'0')
             self.file.flush()

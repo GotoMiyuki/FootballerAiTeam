@@ -2103,3 +2103,8 @@ small {
     scroll-behavior: auto !important;
   }
 }
+
+.operation-controls { margin: 12px 0; }
+.operation-control { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 8px 0; color: var(--muted); }
+.operation-control button { border: 1px solid currentColor; border-radius: 8px; padding: 7px 12px; }
+.status-cancelled { color: #716e68; background: #f0eeea; }

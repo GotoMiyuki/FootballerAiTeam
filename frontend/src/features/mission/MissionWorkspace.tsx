@@ -14,6 +14,8 @@ import { RecommendationsPanel } from './RecommendationsPanel'
 import { CareerMemoryPanel } from './CareerMemoryPanel'
 import { MissionMemoryPanel } from './MissionMemoryPanel'
 import { FeedbackInputPanel } from './FeedbackInputPanel'
+import { OperationControls } from './OperationControls'
+import { RuntimePanel } from './RuntimePanel'
 const sourceLabels: Record<string, string> = {
   demo_fixture: '测试样本',
   game_observation: '游戏观察',
@@ -165,6 +167,7 @@ export function MissionWorkspace({
         </div>
       )}
       {mission?.error && <ErrorNotice message={mission.error} />}
+      {mission && <OperationControls key={`operations-${mission.id}`} mission={mission} />}
       {mission?.resume_error && <ErrorNotice message={mission.resume_error} />}
       <div className="workflow-grid">
         <PlanProgress plan={mission?.plan || null} missionStatus={mission?.status} />
@@ -178,7 +181,7 @@ export function MissionWorkspace({
         />
       )}
       {mission?.blocked && mission.status === 'BLOCKED' && (
-        <BlockedInputPanel key={`${mission.id}-${mission.blocked.reason}`} mission={mission} />
+        <BlockedInputPanel key={`${mission.id}-${mission.blocked.pause_id}`} mission={mission} />
       )}
       {mission && <MissionResult mission={mission} onView={() => setReport(true)} />}
       {mission && (
@@ -191,7 +194,7 @@ export function MissionWorkspace({
       {mission && <CareerMemoryPanel key={`memory-${mission.id}`} mission={mission} />}
       {mission && <MissionMemoryPanel key={`memory-input-${mission.id}`} mission={mission} />}
       {mission && <FeedbackInputPanel key={`feedback-input-${mission.id}`} mission={mission} />}
-      {mission && <ReevaluationPanel key={mission.id} mission={mission} onMission={onMission} />}
+      {mission && <ReevaluationPanel key={`reevaluation-${mission.id}-${['FAILED', 'CANCELLED'].includes(mission.status) ? 'retry' : 'reevaluate'}`} mission={mission} onMission={onMission} />}
       <ConversationPanel
         key={mission?.conversation_id || draftConversationId}
         mission={mission}
@@ -200,25 +203,7 @@ export function MissionWorkspace({
         onMission={onMission}
         onNew={onNew}
       />
-      {mission && (
-        <details className="telemetry">
-          <summary>
-            任务运行信息
-            <span>
-              {mission.id.slice(-8)} · 事件序号 {mission.sequence}
-            </span>
-          </summary>
-          <dl>
-            {Object.entries(mission.telemetry).map(([key, value]) => (
-              <div key={key}>
-                <dt>{key}</dt>
-                <dd>{Number.isInteger(value) ? value : value.toFixed(1)}</dd>
-              </div>
-            ))}
-          </dl>
-          {Object.keys(mission.telemetry).length === 0 && <p>本任务暂无模型调用统计。</p>}
-        </details>
-      )}
+      {mission && <RuntimePanel key={`runtime-${mission.id}`} id={mission.id} />}
       <footer className="workspace-footer">
         <span>FOOTBALLER AI TEAM</span>
         <span>以球员为中心 · 以任务为单位</span>

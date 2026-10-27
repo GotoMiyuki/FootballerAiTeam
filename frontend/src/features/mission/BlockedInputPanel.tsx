@@ -4,24 +4,39 @@ import { ArrowRight, MessageCircleQuestion } from 'lucide-react'
 import { submitInput } from '../../api/missions'
 import { ErrorNotice } from '../../components/ui'
 import type { Mission } from '../../types/mission'
+import {
+  inputRequestKey,
+  readPending,
+  pendingRequest,
+  clearPending,
+} from '../../api/pendingRequests'
 export function BlockedInputPanel({ mission }: { mission: Mission }) {
   const blocked = mission.blocked!
+  const key = inputRequestKey(mission.id, blocked.pause_id || '')
   const canResume =
-    mission.available_operations?.includes(
+    !!blocked.pause_id &&
+    (mission.available_operations?.includes(
       blocked.reason === 'report_approval' ? 'approve_report' : 'supply_input',
-    ) ?? false
-  const [values, setValues] = useState<Record<string, string | number | boolean>>(() =>
-    Object.fromEntries(
-      blocked.required_inputs
-        .filter((field) => field.input_type === 'scale')
-        .map((field) => [field.key, field.min ?? 0]),
-    ),
+    ) ??
+      false)
+  const [values, setValues] = useState<Record<string, string | number | boolean>>(
+    () =>
+      readPending<{ values: Record<string, string | number | boolean> }>(key)?.values ||
+      Object.fromEntries(
+        blocked.required_inputs
+          .filter((field) => field.input_type === 'scale')
+          .map((field) => [field.key, field.min ?? 0]),
+      ),
   )
   const cache = useQueryClient()
   const mutation = useMutation({
-    mutationFn: () => submitInput(mission.id, values),
+    mutationFn: () =>
+      submitInput(mission.id, pendingRequest(key, { pause_id: blocked.pause_id!, values })),
     onSuccess: () => {
+      clearPending(key)
       void cache.invalidateQueries({ queryKey: ['mission', mission.id] })
+      void cache.invalidateQueries({ queryKey: ['operations', mission.id] })
+      void cache.invalidateQueries({ queryKey: ['runtime', mission.id] })
       void cache.invalidateQueries({ queryKey: ['messages', mission.conversation_id] })
     },
   })

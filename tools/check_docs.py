@@ -1,7 +1,9 @@
 """Check local Markdown links/anchors without network or application side effects.
 
 Run from any directory: python tools/check_docs.py
-Fenced examples and remote URLs are excluded; docs .txt sources are checked too.
+Fenced examples and remote URLs are excluded; docs .txt sources, CHANGELOG and
+AGENTS are checked too. --portable checks Git-tracked documents and reports exact
+local-only references from docs/local_references.json separately.
 """
 from __future__ import annotations
 
@@ -9,6 +11,9 @@ import re
 import sys
 import unicodedata
 import hashlib
+import argparse
+import json
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import unquote
@@ -52,9 +57,45 @@ def anchors(text):
     return result
 
 
+def check_link(dest, fragment, *, root, tracked=None, local_references=(), anchor_cache=None):
+    """A local-only declaration cannot exempt a tracked file or a typo."""
+    if tracked is not None:
+        if not dest.is_relative_to(root):
+            return 'target outside repository', False
+        relative = dest.relative_to(root).as_posix()
+        in_git = relative == '.' and bool(tracked) or relative in tracked or any(
+            p.startswith(relative.rstrip('/') + '/') for p in tracked)
+        if not in_git:
+            if relative in local_references:
+                return None, True
+            return 'target is not tracked or declared local-only', False
+    if not dest.exists():
+        return 'missing target', False
+    if fragment and dest.is_file() and dest.suffix in {'.md', '.txt'}:
+        cache = anchor_cache if anchor_cache is not None else {}
+        if dest not in cache:
+            cache[dest] = anchors(dest.read_text(encoding='utf-8-sig'))
+        if unquote(fragment) not in cache[dest]:
+            return 'missing anchor', False
+    return None, False
+
+
 def main():
-    documents = sorted([*ROOT.joinpath('docs').rglob('*.md'), *ROOT.joinpath('docs').rglob('*.txt'), ROOT / 'README.md', ROOT / 'game_adapters/README.md'])
-    anchor_cache, errors, checked, preserved = {}, [], 0, 0
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--portable', action='store_true', help='Check tracked documents without private local materials')
+    args = parser.parse_args()
+    tracked = None
+    local_references = {}
+    roots = {'README.md', 'game_adapters/README.md', 'CHANGELOG.md', 'AGENTS.md'}
+    if args.portable:
+        tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode('utf-8').split('\0'))
+        documents = sorted(ROOT / p for p in tracked if p in roots or
+                           p.startswith('docs/') and Path(p).suffix in {'.md', '.txt'})
+        local_references = json.loads((ROOT / 'docs/local_references.json').read_text(encoding='utf-8'))
+    else:
+        documents = sorted([*ROOT.joinpath('docs').rglob('*.md'), *ROOT.joinpath('docs').rglob('*.txt'),
+                            *[ROOT / p for p in roots]])
+    anchor_cache, errors, checked, preserved, local_only = {}, [], 0, 0, 0
     for doc in documents:
         text = doc.read_text(encoding='utf-8-sig')
         blocks = list(PRESERVED.finditer(text))
@@ -76,19 +117,16 @@ def main():
                 path, _, fragment = target.partition('#')
                 dest = (doc.parent / unquote(path)).resolve() if path else doc
                 checked += 1
-                error = None
-                if not dest.exists():
-                    error = 'missing target'
-                elif fragment and dest.is_file() and dest.suffix in {'.md', '.txt'}:
-                    if dest not in anchor_cache:
-                        anchor_cache[dest] = anchors(dest.read_text(encoding='utf-8-sig'))
-                    if unquote(fragment) not in anchor_cache[dest]:
-                        error = 'missing anchor'
+                error, excluded = check_link(dest, fragment, root=ROOT, tracked=tracked,
+                    local_references=local_references, anchor_cache=anchor_cache)
+                if excluded:
+                    local_only += 1
+                    print(f'LOCAL-ONLY: {doc.relative_to(ROOT).as_posix()}:{number}: {target} ({local_references[dest.relative_to(ROOT).as_posix()]})')
                 if error:
                     errors.append(f'{doc.relative_to(ROOT).as_posix()}:{number}: {error}: {target}')
     for error in errors:
         print(error)
-    print(f'{len(documents)} documents, {checked} local links, {preserved} preserved sources, {len(errors)} errors')
+    print(f'{len(documents)} documents, {checked} local links, {preserved} preserved sources, {local_only} declared local-only links, {len(errors)} errors')
     return int(bool(errors))
 
 

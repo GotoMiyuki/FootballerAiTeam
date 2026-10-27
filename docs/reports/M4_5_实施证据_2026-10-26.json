@@ -1,0 +1,2392 @@
+{
+  "date": "2026-10-26",
+  "completed_task": "M4.5",
+  "milestone_m4_passed": false,
+  "next": "M4.6",
+  "full_backend": {
+    "root": "local_data/game_imports/m4-implementation/20261026-m45-full-02",
+    "scope": "M4.5 operation metering, transport attempts and time accounting; M4 overall not passed",
+    "full": true,
+    "tests": 205,
+    "passed_gate": true,
+    "seconds": 671.3639791000023,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "cases": [
+      {
+        "test": "evaluation.test_m45_metering.HttpReplayTests.test_real_http_sse_replay_does_not_charge_calls_again",
+        "seconds": 1.707575699998415
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_legacy_and_crash_do_not_become_zero_usage",
+        "seconds": 0.5937810999967041
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_logs_correlate_identity_without_provider_error_or_prompt",
+        "seconds": 0.521382300001278
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_pause_wait_is_separate_persistent_and_request_replay_does_not_add_it_again",
+        "seconds": 0.8870040999972844
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_publication_rollback_keeps_already_observed_response_usage",
+        "seconds": 0.3985809000005247
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_queue_cancel_records_wait_and_known_zero_model_calls",
+        "seconds": 0.21833390000392683
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_timeout_and_cancel_keep_inflight_usage_unknown",
+        "seconds": 18.514578499998606
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_two_explanations_are_independent_and_do_not_rewrite_report_generation",
+        "seconds": 19.041215999997803
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringUnitTests.test_sdk_retry_success_failure_400_missing_and_explicit_zero",
+        "seconds": 1.6286810000019614
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringUnitTests.test_unknown_partial_zero_and_legacy_graph_usage_are_distinct",
+        "seconds": 0.0001038999980664812
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_both_pauses_cancel_without_runtime_or_latest_read_and_survive_restart",
+        "seconds": 0.49312620000273455
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_cancel_after_candidate_then_late_result_cannot_publish_or_project",
+        "seconds": 0.3471328999949037
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_cancel_receipt_failure_rolls_back_revocation_and_does_not_signal_runner",
+        "seconds": 0.34693310000147903
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_complete_and_cancel_race_has_one_consistent_winner",
+        "seconds": 2.3392377000054694
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_completed_first_cancel_is_terminal_receipt_without_withdrawing_delivery",
+        "seconds": 0.38298309999663616
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_explanation_cancel_keeps_original_delivery_and_its_ec_records",
+        "seconds": 0.4008802999960608
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_explanation_commit_failure_never_leaves_an_answer_with_failed_operation",
+        "seconds": 0.41259509999508737
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_publication_failure_rolls_back_report_message_events_and_operation_together",
+        "seconds": 0.38407330000336515
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_queued_cancel_frees_capacity_and_never_invokes_worker",
+        "seconds": 0.16804579999734415
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_real_owned_worker_is_killed_before_cleanup_complete_and_next_task_runs",
+        "seconds": 0.4744167999961064
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_repeated_cancel_and_stale_generation_do_not_target_a_new_run",
+        "seconds": 0.45753310000145575
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_target_validation_cross_entry_identity_and_cancelled_parent_retry",
+        "seconds": 0.46970799999689916
+      },
+      {
+        "test": "evaluation.test_m44_cli.CancellationCLITests.test_cli_cancels_running_http_owner_without_acquiring_its_writer_lock",
+        "seconds": 18.223078499999247
+      },
+      {
+        "test": "evaluation.test_m44_cli.CancellationCLITests.test_local_pause_cancel_replay_and_continue_never_invoke_models",
+        "seconds": 35.64342849999957
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_application_retry_is_a_new_task_and_binds_parent_context",
+        "seconds": 0.6011956999936956
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_concurrent_duplicate_submissions_create_and_enqueue_once",
+        "seconds": 0.5585865999964881
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_create_transaction_rolls_back_every_record_on_failure",
+        "seconds": 0.4796210999993491
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_creation_request_survives_restart_and_conflicting_content_is_rejected",
+        "seconds": 0.6709867000026861
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_invalid_context_history_and_external_references_create_nothing",
+        "seconds": 0.619823399996676
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_latest_read_failure_and_failed_child_preserve_parent_report",
+        "seconds": 0.5341765000048326
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_new_identity_freezes_v2_even_if_v3_arrives_before_execution",
+        "seconds": 0.9258957000056398
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_selected_history_and_new_requirements_enter_real_manager_and_coach_prompts",
+        "seconds": 0.6838514999981271
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_cross_process_pauses_keep_frozen_input_and_document_runs_once",
+        "seconds": 26.542663299995183
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_cumulative_budget_survives_pause_and_limits_resume",
+        "seconds": 9.001162400003523
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_model_and_tool_hangs_are_killed_and_second_execution_runs",
+        "seconds": 1.9575904000012088
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_owner_crash_kills_real_service_worker_and_restart_does_not_replay",
+        "seconds": 0.8113698000015575
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_protocol_failures_kill_the_owned_worker",
+        "seconds": 1.2514949000033084
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_queue_expiry_does_not_wait_for_the_running_hang",
+        "seconds": 0.5588265999977011
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_queue_full_has_no_writes_and_replay_bypasses_admission",
+        "seconds": 0.32609339999908116
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_shutdown_stops_admission_cleans_workers_and_releases_writer",
+        "seconds": 0.3688659000035841
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_startup_and_whole_execution_timeouts_are_distinct",
+        "seconds": 1.7173486000028788
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_all_seven_roles_and_explanation_emit_the_same_model_span",
+        "seconds": 0.0006308999945758842
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_sdk_timeouts_and_attempts_use_policy_for_all_shared_model_clients",
+        "seconds": 1.011530000003404
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_search_transport_timeout_is_clipped_to_remaining_execution",
+        "seconds": 0.014493499998934567
+      },
+      {
+        "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_terminal_and_stale_generation_have_no_commit_authority",
+        "seconds": 6.699999357806519e-05
+      },
+      {
+        "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_unknown_or_unbounded_configuration_fails_closed",
+        "seconds": 0.00025910000113071874
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_checkpoint_survives_kill_and_new_process_resumes",
+        "seconds": 17.76365600000281
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_failed_job_assignment_never_admits_child",
+        "seconds": 0.00970460000098683
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_normal_existing_graph_finishes_and_closes",
+        "seconds": 9.240051000000676
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_owner_kill_removes_its_checkpoint_child",
+        "seconds": 8.886358799994923
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_permanent_block_is_bounded_and_next_worker_can_run",
+        "seconds": 9.58272769999894
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_worker_without_bootstrap_admission_does_no_writes",
+        "seconds": 0.1883910999968066
+      },
+      {
+        "test": "evaluation.test_m43_admission.AdmissionAndHistoryTests.test_full_queue_rejects_create_explain_continuation_and_input_without_writes",
+        "seconds": 0.3074572999976226
+      },
+      {
+        "test": "evaluation.test_m43_admission.AdmissionAndHistoryTests.test_restart_does_not_label_unrecorded_running_time_complete",
+        "seconds": 0.22695389999717008
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_explanation_replay_retains_original_report_and_runs_model_once",
+        "seconds": 36.20943850000185
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_failed_explanation_returns_failure_code_and_replay_does_not_call_model",
+        "seconds": 35.942123699998774
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_input_receipt_replay_does_not_approve_the_next_pause",
+        "seconds": 26.07896809999511
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_new_request_replays_across_processes_without_config_latest_or_runtime",
+        "seconds": 16.587084999999206
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_acceptance_transaction_rolls_back_receipt_message_event_and_operation",
+        "seconds": 0.42435419999674195
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_concurrent_creation_and_restart_replay_never_read_latest_or_enqueue_twice",
+        "seconds": 0.15948489999573212
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_duplicate_approval_returns_same_receipt_and_document_once",
+        "seconds": 0.5302379999993718
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_accepted_before_restart_stays_failed_without_harming_report",
+        "seconds": 0.5759462999994867
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_has_independent_identity_and_once_only_model_effect",
+        "seconds": 0.4803246000010404
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_future_workspace_version_is_refused_without_rewriting_database",
+        "seconds": 0.021820599999045953
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_later_pause_with_identical_fields_rejects_old_form",
+        "seconds": 0.763301799997862
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_legacy_pause_adoption_is_explicit_and_does_not_rewrite_fixed_input",
+        "seconds": 0.41170140000031097
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_old_write_client_is_rejected_instead_of_receiving_a_generated_identity",
+        "seconds": 0.09529819999443134
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_metadata_only_history_is_read_only_and_needs_no_model_config",
+        "seconds": 0.021822000002430286
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_same_process_approval_delivers_only_publishable_report",
+        "seconds": 0.12863249999645632
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_failed_or_empty_explanation_does_not_damage_report_and_followup_is_compatible",
+        "seconds": 0.6232136999969953
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_history_and_explanation_keep_original_version_and_never_run_graph",
+        "seconds": 0.5131551000013133
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_missing_or_incompatible_checkpoint_rejected_before_mutation",
+        "seconds": 2.6999594000008074
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_restart_missing_input_and_report_approval_resume_same_snapshot",
+        "seconds": 0.9770738000006531
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_blocked_validation_and_resume_across_restart",
+        "seconds": 0.2921448999986751
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_live_application_adapter_with_real_graph_and_durable_hitl",
+        "seconds": 0.9532467999961227
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_pass_report_history_restart_and_followup",
+        "seconds": 0.25919949999661185
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_real_agents_fail_consistently_in_api_events_and_saved_state",
+        "seconds": 0.79581060000055
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_revision_and_replan_are_distinct",
+        "seconds": 0.43474520000017947
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_unknown_mission_and_cross_conversation_rejected",
+        "seconds": 0.2454855999967549
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.AssessmentMemoryTests.test_e_assessment_versions_currentness_and_read_only_projection",
+        "seconds": 1.6168445000002976
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_context_mode_retractions_budgets_and_disabled_no_source_read",
+        "seconds": 0.655773099999351
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_continuation_default_hash_retry_and_explicit_opt_out",
+        "seconds": 0.7062232999960543
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_missing_or_corrupt_packet_and_checkpoint_rejected_without_latest_fallback",
+        "seconds": 0.7968621000036364
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_old_task_executes_and_explains_saved_revision_new_task_uses_correction",
+        "seconds": 0.9662246999941999
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_real_manager_and_coach_prompts_share_saved_source_and_replan_keeps_it",
+        "seconds": 0.5375877999977092
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_relevance_before_recency_candidates_and_time_filters_read_only",
+        "seconds": 1.0993651999961003
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_task_scope_changes_only_consumed_fingerprints_and_reconciliation",
+        "seconds": 0.5141179999991436
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_unsynced_e_records_are_checked_and_freeze_historical_not_execution_authority",
+        "seconds": 0.6483242000031169
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_approval_resumes_in_second_process_only_document_with_original_input",
+        "seconds": 18.45319589999417
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_completed_history_is_read_only_without_configuration_or_latest_access",
+        "seconds": 44.459134599994286
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_failed_cli_task_retry_creates_child_and_never_resumes_original",
+        "seconds": 18.76278760000423
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_index_empty_read_does_not_initialize_directory_and_legacy_is_unchanged",
+        "seconds": 0.01978930000041146
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_invalid_missing_checkpoint_or_snapshot_refuses_before_any_mutation",
+        "seconds": 69.13292540000111
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_missing_input_then_approval_survive_three_distinct_processes",
+        "seconds": 27.611412799997197
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_one_writer_guard_blocks_other_process_but_allows_read_only_history",
+        "seconds": 34.28071020000061
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_related_cli_uses_new_identity_latest_snapshot_and_persistent_dedup",
+        "seconds": 43.791246200002206
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_unrelated_text_cannot_approve_or_replan_and_exit_preserves_pause",
+        "seconds": 17.63250490000064
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_actual_fact_bytes_and_hash_unchanged_after_all_feedback_operations",
+        "seconds": 1.2431937000001199
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_choice_execution_difference_withdrawal_correction_and_restart",
+        "seconds": 0.9677054999992833
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_context_mission_revision_and_spoofed_source_rejected",
+        "seconds": 1.1323134000049322
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_correction_must_reference_same_recommendation_current_execution",
+        "seconds": 1.2768061000024318
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_execution_without_adoption_and_distinct_windows_remain_independent",
+        "seconds": 0.685699099994963
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_expired_or_withdrawn_adoption_rejected_but_history_and_replay_survive",
+        "seconds": 0.6755043999946793
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_invalid_windows_blank_feedback_and_incomplete_corrections_rejected",
+        "seconds": 0.5745104999950854
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_request_replay_conflict_concurrent_cas_and_no_duplicate_events",
+        "seconds": 1.4068953999958467
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_transaction_failure_rolls_back_object_head_request_and_event",
+        "seconds": 0.6516692000004696
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_actual_repository_projection_preserves_fact_hash_and_does_not_certify_game_support",
+        "seconds": 0.5147228999994695
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_concurrent_reprojection_restart_and_get_are_idempotent_and_read_only",
+        "seconds": 0.8575401999987662
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_context_isolation_source_failure_retains_history_and_withdraws_once",
+        "seconds": 0.5989836000007926
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_corrupt_stored_content_baseline_or_review_never_passes_current_source_verification",
+        "seconds": 0.6284672999972827
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_current_applicability_changes_without_rewriting_historical_record_or_report",
+        "seconds": 0.6095626000023913
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_delivery_projects_fixed_source_and_unknown_execution_without_touching_facts",
+        "seconds": 0.5275967999987188
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_demo_does_not_project_specialist_or_report_text_as_verified_suggestions",
+        "seconds": 0.21042839999427088
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_failed_unreviewed_invalidated_and_tampered_sources_never_return_current",
+        "seconds": 0.9286862999942969
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_projection_transaction_rollback_does_not_withdraw_valid_parent_report",
+        "seconds": 0.5213848999992479
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_same_agent_multiple_tasks_are_distinct_and_new_versions_supersede_without_overwrite",
+        "seconds": 0.5913512999977684
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_all_specialist_capabilities_fail_without_default_answers",
+        "seconds": 0.09575100000074599
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_body_rejects_wrong_values_citations_and_stale_report",
+        "seconds": 0.009412100000190549
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_document_modes_fail_and_normal_delivery_is_version_checked",
+        "seconds": 0.07269710000400664
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_graph_rejects_self_reported_success_without_schema",
+        "seconds": 0.057287299998279195
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_planning_failure_never_becomes_document_only_success",
+        "seconds": 0.006852900005469564
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_report_keeps_literal_objective_gate_for_feedback_reports",
+        "seconds": 0.007908799998403993
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_review_failures_and_old_records_never_pass",
+        "seconds": 0.02048760000616312
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_valid_specialist_schema_paths",
+        "seconds": 0.029459399993356783
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_actual_a_bytes_and_frozen_mission_inputs_are_unchanged",
+        "seconds": 0.6863635000045178
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_context_filtering_and_e_reference_write_protection",
+        "seconds": 1.0643439999985276
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_decisions_executions_corrections_and_read_time_missing_sync",
+        "seconds": 1.0868792999972356
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_empty_chat_and_a_goals_do_not_create_preferences_or_actions",
+        "seconds": 0.7725730000020121
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_pagination_does_not_drop_or_duplicate_decisions",
+        "seconds": 10.022364900003595
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_projection_and_user_transaction_failures_roll_back",
+        "seconds": 0.6333454000050551
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_explicit_user_revisions_cas_retraction_and_concurrent_requests",
+        "seconds": 0.6061023000002024
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_invalid_times_and_sources_do_not_create_confirmed_memory",
+        "seconds": 0.49682169999869075
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_missing_or_tampered_source_never_remains_current_and_get_is_read_only",
+        "seconds": 0.6825017000010121
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_model_candidate_requires_explicit_confirmation_and_never_auto_extracts",
+        "seconds": 0.538338800004567
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_restart_and_replay_restore_records_without_model_or_latest_a_writes",
+        "seconds": 0.7943497000014759
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_source_failure_applicability_and_retraction_are_checked_on_read",
+        "seconds": 0.9346950999970431
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_concurrent_replay_cas_and_transaction_rollback",
+        "seconds": 1.3582829000006313
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_execution_is_independent_user_reported_and_correction_invalidates_old_version",
+        "seconds": 0.9674534000005224
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_followup_and_baseline_corrections_supersede_without_rewriting",
+        "seconds": 1.8073565000013332
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_frozen_baseline_zero_missing_pending_and_hand_checked_mean",
+        "seconds": 0.911581300002581
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_restart_fact_bytes_mission_inputs_and_read_only_evidence",
+        "seconds": 0.9463441999978386
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_scope_revision_payload_and_post_result_target_rejected",
+        "seconds": 0.8811368000024231
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_speed_game_date_window_waits_for_observed_end_and_no_invented_target",
+        "seconds": 0.7016892000028747
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_unrelated_or_recorded_only_observations_do_not_duplicate_assessment",
+        "seconds": 0.6900890000033542
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_version_mismatch_and_unknown_chronology_are_incomparable",
+        "seconds": 2.00779020000482
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_explicit_applied_correction_preserves_old_numbers",
+        "seconds": 0.8808294000045862
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_requires_attribute_window_and_preserves_explicit_zero",
+        "seconds": 0.6233353999996325
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_uses_its_own_source_and_ignores_unrelated_profile_corrections",
+        "seconds": 0.7061403999978211
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_checkpoint_and_public_feedback_corruption_are_rejected",
+        "seconds": 1.1395967999997083
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_creation_failure_rolls_back_references_and_failed_child_preserves_parent",
+        "seconds": 1.0454273000068497
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_fixed_feedback_latest_snapshot_old_execution_and_new_choice_independence",
+        "seconds": 1.5540791000021272
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_real_manager_coach_and_fingerprint_consume_fixed_feedback",
+        "seconds": 1.1457176000039908
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_retry_is_original_task_after_correction_and_restart",
+        "seconds": 0.9434947000045213
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_stale_or_cross_context_sources_create_nothing",
+        "seconds": 0.9859508000008645
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_commit_faults_preserve_old_state_and_response_loss_is_idempotent",
+        "seconds": 0.042232700005115476
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_concurrent_compare_and_swap",
+        "seconds": 0.02474110000184737
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_corruption_does_not_reset_data",
+        "seconds": 0.020092200000362936
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_dedup_before_cas_conflict_and_restart",
+        "seconds": 0.024074799999652896
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_empty_actual_initialization_patch_null_and_source_map",
+        "seconds": 0.024599600001238286
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_histories_corrections_sparse_and_manual_confirmation",
+        "seconds": 0.0702674999993178
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_invalid_values_sources_and_legacy_writers_rejected",
+        "seconds": 0.003267300002335105
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_old_unknown_equal_cross_domain_times_never_override",
+        "seconds": 0.07065359999978682
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_same_observation_id_isolated_by_career_branch_and_player",
+        "seconds": 0.0425254000001587
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_actual_mode_requires_configuration_and_no_demo_fallback",
+        "seconds": 0.0095352999996976
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_all_entrypoints_use_one_source_and_keep_unknown_values",
+        "seconds": 0.12696219999634195
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_predictions_excluded_estimates_preserved_and_corruption_not_hidden",
+        "seconds": 0.0984902999989572
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_snapshot_fixed_across_file_change_and_another_context",
+        "seconds": 0.02689470000041183
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_all_model_tool_sets_are_read_only",
+        "seconds": 8.420000085607171e-05
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_real_coach_predictions_and_revisions_leave_files_unchanged",
+        "seconds": 0.005895199996302836
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_budget_exhaustion_is_failed_not_old_completed_or_published",
+        "seconds": 0.008095299999695271
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_changed_used_hypothesis_invalidates_only_its_consumer",
+        "seconds": 0.007567500004370231
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_dependency_set_version_context_constraints_and_missing_fingerprint",
+        "seconds": 0.041988899996795226
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_display_fields_and_constraint_order_do_not_invalidate",
+        "seconds": 0.005145599992829375
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_removed_new_and_reused_agent_task_id_do_not_inherit_current_results",
+        "seconds": 0.009446800002478994
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_cascades_and_recomputes_only_A_B_C",
+        "seconds": 0.05151060000207508
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_immediately_revokes_report_review_and_reducer_validity",
+        "seconds": 0.005659800001012627
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_scoped_confirmed_feedback_is_semantic_input",
+        "seconds": 0.004873900004895404
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_upstream_failure_revokes_downstream_and_current_review",
+        "seconds": 0.0048494999937247485
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_all_capabilities_receive_unique_dependency_in_initial_and_revision_prompts",
+        "seconds": 0.0657883000021684
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_completed_label_without_valid_result_is_not_ready",
+        "seconds": 0.014847400001599453
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_context_is_copied_and_identity_and_versions_come_from_A",
+        "seconds": 0.004092900002433453
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_corrupt_dependency_cycle_fails_closed",
+        "seconds": 0.004336700003477745
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_stale_ancestor_rejects_direct_context_even_before_reconciliation",
+        "seconds": 0.004231699997035321
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_a_normal_task_passes_directly_to_document_with_telemetry",
+        "seconds": 0.04490159999841126
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_b_local_error_revises_only_the_affected_subtask",
+        "seconds": 0.07074510000529699
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_c_conflict_revises_the_minimal_two_subtask_scope",
+        "seconds": 0.06889419999788515
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_d_blocked_waits_for_user_and_does_not_retry_automatically",
+        "seconds": 0.07048000000213506
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_dependency_priority_and_observation_merge",
+        "seconds": 0.006643200002145022
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_e_refuted_hypothesis_enters_replan_and_records_llm_usage",
+        "seconds": 0.07128060000104597
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_f_low_finding_is_kept_and_cannot_start_an_infinite_revision_loop",
+        "seconds": 0.05185929999424843
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_empty_and_model_failure_exit_reasons",
+        "seconds": 0.00021700000070268288
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_hypotheses_are_not_clamped_coerced_or_silently_dropped",
+        "seconds": 8.659999730298296e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_numeric_and_missing_schema",
+        "seconds": 0.00015279999934136868
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_plan_dependencies_capabilities_and_ids",
+        "seconds": 0.0001109000004362315
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_tool_budget_never_returns_tool_json",
+        "seconds": 0.0009863999948720448
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_unknown_arguments_execution_and_mixed_tools",
+        "seconds": 0.0010757000054582022
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_fixture_context_or_mixed_versions_cannot_pass",
+        "seconds": 0.00020349999977042899
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_non_personal_events_and_missing_values_are_not_invented_as_matches",
+        "seconds": 0.00013770000077784061
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_read_only_missing_database_does_not_initialize_a_task_root",
+        "seconds": 0.002103500002704095
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_ten_is_a_contiguous_exact_current_run_not_just_a_record_count",
+        "seconds": 0.00021240000205580145
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_collector_keeps_lock_through_receipt_and_nested_imports",
+        "seconds": 1.557456499998807
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_different_task_dirs_and_contexts_still_share_actual_lock",
+        "seconds": 2.3285101000001305
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_killed_writer_releases_root_and_task_locks",
+        "seconds": 1.6205520999938017
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_two_processes_cannot_lose_confirmed_observations",
+        "seconds": 1.9544872000042233
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterReentrancyTests.test_collector_style_nested_owner_and_competing_thread",
+        "seconds": 0.024336399997991975
+      }
+    ],
+    "protected_file_count": 1150,
+    "protected_changed": [],
+    "source_sha256": {
+      "backend/operation_metrics.py": "44c56ef77374a8464edb215f97f1b155449bd26dfc87303c6b503ac1ada690fb",
+      "utils/telemetry.py": "d51a67ded540ef03c3d451b78115874f1452733600799c5769840d5e37f8c530",
+      "evaluation/m45_worker.py": "ec73955e29ae336eddee636bc7d62e974b0f39218fdfaca239cebe6d5b46bf35",
+      "evaluation/test_m45_metering.py": "a518c301a9d0ec37a51281a4d4fbae6b51e81306932ac5c919dc5cbda7dffb54",
+      "evaluation/run_m45.py": "8ac88aa49ad7d83f67b5cdf05d077568e7b7cb81c6721c53e7eade1370bff7ca",
+      "backend/continuations.py": "554fcfbbb0e9418183e3bdee4566cc1daca384fbe9bd94e6ba2ba1e39e9e2cde",
+      "backend/store.py": "91a15510ca43f7f5cf1188d3e0b8885607b5a7796debe1af4c35cf95d8f62cd7",
+      "backend/events.py": "c817b343acd0cb0d713631f202471cf890298b8c9366ecdd89bae9915f0cf0aa",
+      "app.py": "620a3589bc90621958bbf4c6e48b5d007340dee0b444615c6991907ad9690e01",
+      "utils/sessions.py": "235c87eee8a82a3f04c7064a21c8cf0157688304e5d750d2bc3d4c5181cd204f",
+      "career_actions/application.py": "e8be2d779d29f65ec8f354d64c009ae4446bb48ca5bdf575f8fa6f9b38849280",
+      "evaluation/test_m44_cancellation.py": "e03af805647ef5f6526ca253cf398f2eeac47d21748305f59624fdc0cd826c59",
+      "evaluation/test_m44_cli.py": "fb41cbb202e501d423701bd702810d03e15d275fe10b2938b7d91a9de351c203",
+      "evaluation/m44_api_fixture.py": "376bfb2d9b3a55e4d0abbb695a204a2c4824f15d5ba0b96ce9a3e530e86be72e",
+      "evaluation/run_m44.py": "f3912fae2c1f5b195641c871fdb78ca617d9d5adaa45c244de38d6b271960351",
+      "evaluation/test_memory_retrieval.py": "dc0e2ad8f7100c31514240527adca019c1ba195f4588a97310736010d33c3ea5",
+      "evaluation/test_feedback_followups.py": "ea37df95d6849f595cf1c1ee9d4055f5359ae1cea9700d9e35278d1e791265d3",
+      "evaluation/test_reevaluation.py": "aeedae7fc6281fb9d84312e23e39aaff15faec0be576ac287dd971c0ed099381",
+      "backend/call_limits.py": "7d32fe545e33eff2c550f78c1fe36a584b457dd403377499bb9689171f558ccf",
+      "backend/execution_worker.py": "0737eeec3525057b2b75b4b489493b18ef0a7ac0298cd6950c5f627805213f03",
+      "backend/process_runner.py": "669bf07c751c0dbab93a0df65194e8feae8d35b3b5cca80fdfc722e0e5169df3",
+      "backend/process_supervisor.py": "15e750344c4b3ad49d4718a05f60516f00c4da08b6f6c2d36c199e7357ad8368",
+      "backend/runtime_contracts.py": "c7352814ccad3b82309dfe461cb39fca7c937a40e62bc758e9009b2c8e59cb64",
+      "backend/task_queue.py": "62fc40db781733f8ac5123918dc2ae29124901524d83cb0fa787e2bd61d30167",
+      "backend/service.py": "c31df899a43f65c72747d2cfd13c2f3ba0e05baaff50fc3633f905ed6c58c130",
+      "backend/main.py": "0246ab9f700c74a4510e6377e5a712eced116506729269996e4550105bb4b25c",
+      "backend/models.py": "ad49a86de46def11aefa2a109847d10c2a08bf5b0d2955a1efd02a0ceff0515d",
+      "backend/demo.py": "cde76b87ae4c3a9c25aad4c1edf54eae721936f0c5cb3470c1bf44e193189343",
+      "agents/base.py": "de9b9b0146f89ccc2726f2f9f3d2cd1f03abe80c0c980407e3a8fda2dda990c1",
+      "utils/helpers.py": "776e169173c7d211e55b2240d5e91b83efef1dfc05ac4222eef21e9c2958bf9c",
+      "tools/search.py": "2047373a771332995d2650b3004bc1e04a2201d56a01b68b650180108a4b170e",
+      "evaluation/runtime_fixture.py": "dd36b959805d302317341ac785b502ec3f3ccf298d332487403b390890806790",
+      "evaluation/m43_worker.py": "28cb2a9ec44f23abb9a4a76eec9f4f4f684d788b5dd38f798f1c9fd40e287631",
+      "evaluation/m43_owner_probe.py": "b3fb812cf673c63e24ecaec08cf9fd35d89c6686c6419597f879313259a6c930",
+      "evaluation/test_m43_runtime.py": "f49e9b2686893a7ae976a971aab4de3a7625aa1e0f5a271d2d9c9e36e8684ab4",
+      "evaluation/test_session_semantics.py": "ab76021afa3bcfb48fc8b254c771536ece45112997aee90f480b4e554e95e20f",
+      "evaluation/test_web.py": "b66d6b5feb6cd8906f675415fad6d3ddcb725076847ba73580d4bad3f53212d5",
+      "evaluation/cli_process_fixture.py": "8bd913fb98d85b19782531603671bde4cf44dcccf527b5d9e18c664468be33a2",
+      "evaluation/run_m43.py": "5f704cff467e1e455ab2abf50ecac1e171546ac215628d18fce7fd6e614c1c71",
+      "evaluation/test_m43_admission.py": "d1da670e7bf3fc1c4da6caad880590e4cb0e18a21e54a0891afe084469525931"
+    }
+  },
+  "frontend": {
+    "root": "local_data/game_imports/m4-implementation/20261026-m45-frontend-final",
+    "unit": {
+      "pid": 50112,
+      "code": 0
+    },
+    "browser": {
+      "pid": 15964,
+      "code": 0
+    },
+    "browserStats": {
+      "startTime": "2026-10-26T15:06:56.325Z",
+      "duration": 23650.255,
+      "expected": 24,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "passed": true,
+    "unit_counts": {
+      "numTotalTests": 14,
+      "numPassedTests": 14,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "browser_cases": [
+      {
+        "file": "contracts.spec.ts",
+        "title": "failed: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "contracts.spec.ts",
+        "title": "invalidated: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "contracts.spec.ts",
+        "title": "legacy: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost create response: reload reuses request and draft conversation",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost create response: edited intent gets a new request",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost input response replays exact request; later same-field pause starts empty",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 lost cancel response reloads the same target and request, then observes cleanup",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 stale pause cancel is rejected and the refreshed pause has a new target identity",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 explanation cancel preserves original report",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 explanation cancel loses to completion",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 a late cancel response cannot switch or overwrite the newly selected mission",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 cancelled checkpoint results are not offered as history for a retry",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 cancelling an active mission resets the associated-task draft to retry",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 report generation, two explanations and known partial usage remain separate",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 legacy and interrupted usage render unknown totals, not zero",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 failed explanation shows unknown usage and the correct new-request action",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 equal revisions can advance user waiting time while execution stays fixed",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 an older HTTP runtime response cannot roll back newer operation counters",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 a previous mission response does not contaminate the newly selected runtime",
+        "ok": true
+      },
+      {
+        "file": "reevaluation.spec.ts",
+        "title": "lost response, reload, retry keeps the exact request",
+        "ok": true
+      },
+      {
+        "file": "reevaluation.spec.ts",
+        "title": "lost response, reload, edited draft creates a new request",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "explanation-failure: original identity and explicit operations",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "approval: original identity and explicit operations",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "missing-checkpoint: original identity and explicit operations",
+        "ok": true
+      }
+    ]
+  },
+  "frontend_source_sha256_at_finalization": {
+    "frontend/src/api/runtime.ts": "b273a14165030aa1e50a2f46c424721f44be61cf53f8e21874776b222ef454ea",
+    "frontend/src/api/runtime.test.ts": "572ed17d7b11f4a17ce4b02728014fa3862983aa6be87225de839c40ef462ace",
+    "frontend/src/types/runtime.ts": "c561f3ee0576e04ab65a3fe9666d0c1fcadb9dc8f22269abcbb356d20bed17b4",
+    "frontend/src/types/mission.ts": "93ed43035aa48e3d0c8316098b1dff4d3fc6a78f97f9d99e8fd238dfd1dde1a4",
+    "frontend/src/features/mission/RuntimePanel.tsx": "2dffd4129857cddf5ced2dba144857e0ac2eef7d1ba3984d2573c32749f29e8d",
+    "frontend/src/features/mission/OperationControls.tsx": "13cb5b09d42d9eaffa5d4504885f1f38b84f32743d26fb44ca149f767e6bc43c",
+    "frontend/src/features/mission/MissionWorkspace.tsx": "f620ada0df98e62144e1189aabcaf1c774a62e6082de77aab97d1238345b65fd",
+    "frontend/src/features/mission/BlockedInputPanel.tsx": "4df56459f4a8592ce6f580e94ba7264f9546c70bc7db507e7b8a819974693c7a",
+    "frontend/src/hooks/useConversation.ts": "c607139ac6b7c30ba7567236ee390e61d5babba08f9c8c5f8445963dc03355ec",
+    "frontend/src/hooks/useMissionEvents.ts": "71ee433c4a33f4b834614825c6c95305fbf410957d1810e8b1d3572f14894053",
+    "frontend/e2e/m45-runtime.spec.ts": "c068f8bc51b8455bc92fffa344fd683d9bd31c9912872188d40cd9c22afc129e",
+    "evaluation/m45_frontend.mjs": "3bcd920174026700ed8e38f9b72dbfd062d3e8b802812c8c8cb9130ae1a4b239"
+  },
+  "backend_sources_match_full_run": true,
+  "build": {
+    "command": "npm.cmd run build",
+    "cwd": "frontend",
+    "exit_code": 0,
+    "typescript_passed": true,
+    "vite_passed": true,
+    "existing_warning": "Main JS chunk remains larger than 500 kB; warning threshold unchanged.",
+    "artifacts": {
+      "frontend/dist/index.html": {
+        "bytes": 473,
+        "sha256": "39a749938e5e31dc1fcef7b53fa4ca0519e1e24c3cf2398c16bb9269ee6f60e9"
+      },
+      "frontend/dist/assets/index-anelxHit.js": {
+        "bytes": 513466,
+        "sha256": "45f8cd65a628efe11829f032ba7cf93625414ddb4abd0727c4130efbc3ff0917"
+      },
+      "frontend/dist/assets/index-DOqMSxt4.css": {
+        "bytes": 33306,
+        "sha256": "9469e13153804d5f3363ca555862c42a521831f7cdcd6588773d20f7e6bf0e64"
+      }
+    }
+  },
+  "metering_samples": {
+    "test_legacy_and_crash_do_not_become_zero_usage": [
+      {
+        "mission_id": "mission_c2c15ffb2f184deea56073456be7822a",
+        "mission_sequence": 30,
+        "read_at": "2026-10-26T15:11:33.003831+00:00",
+        "workflow_operation_id": "op_5af55d584f364c78849ea05d4b73b846",
+        "operations": [
+          {
+            "id": "op_5af55d584f364c78849ea05d4b73b846",
+            "mission_id": "mission_c2c15ffb2f184deea56073456be7822a",
+            "kind": "workflow",
+            "status": "COMPLETED",
+            "run_id": 2,
+            "created_at": "2026-10-26T15:11:32.571847+00:00",
+            "ended_at": "2026-10-26T15:11:32.911499+00:00",
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 0.21890820000407984,
+            "queue_seconds": 0.0013280999919516034,
+            "budget_history_complete": true,
+            "worker_pid": 45792,
+            "cleanup_status": "COMPLETE",
+            "revision": 15,
+            "metering": null,
+            "run_requests": {
+              "1": "test_6c1124d900f94f55b9b8a67465ee4168",
+              "2": "test_b49bbdd47b984521a68d1bb1e3980962"
+            },
+            "timing_history_complete": false,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:11:32.917852+00:00",
+            "user_wait_seconds": 0.119838,
+            "usage": {
+              "available": false,
+              "logical_calls": null,
+              "network_attempts": null,
+              "known_network_attempts": 0,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": null,
+              "output_tokens": null,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": null,
+              "unknown_attempts": null,
+              "complete": false
+            },
+            "timing": {
+              "history_complete": false,
+              "queue_seconds": null,
+              "execution_seconds": null,
+              "user_wait_seconds": null,
+              "known_queue_seconds": 0.0013280999919516034,
+              "known_execution_seconds": 0.21890820000407984,
+              "known_user_wait_seconds": 0.119838,
+              "wall_seconds": 0.346005,
+              "live": false
+            }
+          },
+          {
+            "id": "op_crashed_explanation",
+            "mission_id": "mission_c2c15ffb2f184deea56073456be7822a",
+            "kind": "explanation",
+            "status": "FAILED",
+            "run_id": 1,
+            "created_at": "2026-10-26T00:00:00+00:00",
+            "ended_at": "2026-10-26T15:11:32.956819+00:00",
+            "pause_id": null,
+            "error": "INTERRUPTED",
+            "legacy_history": false,
+            "execution_seconds": 0.0,
+            "queue_seconds": 0.0,
+            "budget_history_complete": false,
+            "worker_pid": null,
+            "cleanup_status": "COMPLETE",
+            "revision": 2,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": false,
+              "finished_runs": [],
+              "calls": {}
+            },
+            "run_requests": {},
+            "timing_history_complete": false,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:11:32.956794+00:00",
+            "user_wait_seconds": 0.0,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 0,
+              "succeeded_calls": 0,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 0,
+              "tool_calls": 0,
+              "known_network_attempts": 0,
+              "network_attempts": null,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": null,
+              "output_tokens": null,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": 0,
+              "unknown_attempts": 0,
+              "complete": false,
+              "counts_complete": false
+            },
+            "timing": {
+              "history_complete": false,
+              "queue_seconds": null,
+              "execution_seconds": null,
+              "user_wait_seconds": null,
+              "known_queue_seconds": 0.0,
+              "known_execution_seconds": 0.0,
+              "known_user_wait_seconds": 0.0,
+              "wall_seconds": 54692.956794,
+              "live": false
+            }
+          }
+        ],
+        "totals": {
+          "logical_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 0,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 0,
+          "available": false,
+          "complete": false,
+          "counts_complete": false,
+          "network_attempts": null,
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "report_telemetry": {
+          "llm_call_count": 0,
+          "manager_call_count": 2,
+          "reviewer_call_count": 1,
+          "agent_call_count": 2,
+          "review_count": 1,
+          "revision_count": 0,
+          "replan_count": 0,
+          "latency_ms": 18.122,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "usage_tracking_version": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_unknown_calls": 0
+        }
+      }
+    ],
+    "test_logs_correlate_identity_without_provider_error_or_prompt": [
+      {
+        "correlation_present": true,
+        "secrets_and_prompts_absent": true
+      }
+    ],
+    "test_pause_wait_is_separate_persistent_and_request_replay_does_not_add_it_again": [
+      {
+        "mission_id": "mission_d69278e4e8574035aed4cd5706259b04",
+        "mission_sequence": 52,
+        "read_at": "2026-10-26T15:11:34.414280+00:00",
+        "workflow_operation_id": "op_88eeb1e90ed94f768b189ee6e5aff457",
+        "operations": [
+          {
+            "id": "op_88eeb1e90ed94f768b189ee6e5aff457",
+            "mission_id": "mission_d69278e4e8574035aed4cd5706259b04",
+            "kind": "workflow",
+            "status": "COMPLETED",
+            "run_id": 3,
+            "created_at": "2026-10-26T15:11:33.641661+00:00",
+            "ended_at": "2026-10-26T15:11:34.401216+00:00",
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 0.3176805000039167,
+            "queue_seconds": 0.0023446999985026196,
+            "budget_history_complete": true,
+            "worker_pid": 45792,
+            "cleanup_status": "COMPLETE",
+            "revision": 21,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": true,
+              "finished_runs": [
+                1,
+                2,
+                3
+              ],
+              "calls": {}
+            },
+            "run_requests": {
+              "1": "test_a3277836437e4f0fac472a94466e1c3d",
+              "2": "resume_pause",
+              "3": "test_b86c6a2d7bb842f699c13818f6bb9732"
+            },
+            "timing_history_complete": true,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:11:34.409072+00:00",
+            "user_wait_seconds": 0.436964,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 0,
+              "succeeded_calls": 0,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 0,
+              "tool_calls": 0,
+              "known_network_attempts": 0,
+              "network_attempts": 0,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": 0,
+              "unknown_attempts": 0,
+              "complete": true,
+              "counts_complete": true
+            },
+            "timing": {
+              "history_complete": true,
+              "queue_seconds": 0.0023446999985026196,
+              "execution_seconds": 0.3176805000039167,
+              "user_wait_seconds": 0.436964,
+              "known_queue_seconds": 0.0023446999985026196,
+              "known_execution_seconds": 0.3176805000039167,
+              "known_user_wait_seconds": 0.436964,
+              "wall_seconds": 0.767411,
+              "live": false
+            }
+          }
+        ],
+        "totals": {
+          "logical_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 0,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 0,
+          "available": true,
+          "complete": true,
+          "counts_complete": true,
+          "network_attempts": 0,
+          "input_tokens": 0,
+          "output_tokens": 0
+        },
+        "report_telemetry": {
+          "llm_call_count": 0,
+          "manager_call_count": 4,
+          "reviewer_call_count": 2,
+          "agent_call_count": 3,
+          "review_count": 2,
+          "revision_count": 1,
+          "replan_count": 0,
+          "latency_ms": 35.455999999999996,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "usage_tracking_version": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_unknown_calls": 0
+        }
+      }
+    ],
+    "test_publication_rollback_keeps_already_observed_response_usage": [
+      {
+        "report_unpublished": true,
+        "observed_usage_preserved": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 1,
+          "failed_calls": 0,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 0,
+          "network_attempts": null,
+          "known_input_tokens": 7,
+          "known_output_tokens": 3,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 1,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 0,
+          "complete": false,
+          "counts_complete": true
+        }
+      }
+    ],
+    "test_queue_cancel_records_wait_and_known_zero_model_calls": [
+      {
+        "operation": {
+          "id": "op_cc31cc91ce2f44df879c5c07bddec0ea",
+          "mission_id": "mission_725a5d4e23454650ab3a4949f7f82bc3",
+          "kind": "workflow",
+          "status": "CANCELLED",
+          "run_id": 1,
+          "created_at": "2026-10-26T15:11:34.924804+00:00",
+          "ended_at": "2026-10-26T15:11:34.982221+00:00",
+          "pause_id": null,
+          "error": "USER_CANCELLED",
+          "legacy_history": false,
+          "execution_seconds": 0.0,
+          "queue_seconds": 0.057496400004311,
+          "budget_history_complete": true,
+          "worker_pid": null,
+          "cleanup_status": "COMPLETE",
+          "revision": 3,
+          "metering": {
+            "version": 1,
+            "mode": "live",
+            "history_complete": true,
+            "finished_runs": [
+              1
+            ],
+            "calls": {}
+          },
+          "run_requests": {
+            "1": "test_a40089d66f894707a7b26b0509e803f5"
+          },
+          "timing_history_complete": true,
+          "queued_at": null,
+          "run_started_at": null,
+          "pause_started_at": null,
+          "closed_at": "2026-10-26T15:11:34.985665+00:00",
+          "user_wait_seconds": 0.0
+        },
+        "usage": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 0,
+          "succeeded_calls": 0,
+          "failed_calls": 0,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 0,
+          "network_attempts": 0,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 0,
+          "complete": true,
+          "counts_complete": true
+        }
+      }
+    ],
+    "test_real_http_sse_replay_does_not_charge_calls_again": {
+      "origin": "http://127.0.0.1:55272",
+      "owner_pid": 55528,
+      "same_replayed_sequences": [
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "runtime_before_and_after_replay": {
+        "mission_id": "mission_6521a0b029dc4ef3a09449be19a9db46",
+        "mission_sequence": 2,
+        "read_at": "2026-10-26T15:11:32.206455+00:00",
+        "workflow_operation_id": "op_59ea9ee6e459454097b4b6af487fda78",
+        "operations": [
+          {
+            "id": "op_59ea9ee6e459454097b4b6af487fda78",
+            "mission_id": "mission_6521a0b029dc4ef3a09449be19a9db46",
+            "kind": "workflow",
+            "status": "RUNNING",
+            "run_id": 1,
+            "created_at": "2026-10-26T15:11:31.931694+00:00",
+            "ended_at": null,
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 0.0,
+            "queue_seconds": 0.0007315999973798171,
+            "budget_history_complete": true,
+            "worker_pid": 26256,
+            "cleanup_status": "PENDING",
+            "revision": 5,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": true,
+              "finished_runs": [],
+              "calls": {
+                "c4f3199e79ae4c90bd0adb2f72f5ba29": {
+                  "run_id": 1,
+                  "kind": "model",
+                  "agent": "",
+                  "purpose": "",
+                  "status": "RUNNING",
+                  "duration_seconds": null,
+                  "input_tokens": null,
+                  "output_tokens": null,
+                  "attempts_observed": false,
+                  "attempts": {}
+                }
+              }
+            },
+            "run_requests": {
+              "1": "sse_meter"
+            },
+            "timing_history_complete": true,
+            "queued_at": null,
+            "run_started_at": "2026-10-26T15:11:31.936023+00:00",
+            "pause_started_at": null,
+            "closed_at": null,
+            "user_wait_seconds": 0.0,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 1,
+              "succeeded_calls": 0,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 1,
+              "tool_calls": 0,
+              "known_network_attempts": 0,
+              "network_attempts": null,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": null,
+              "output_tokens": null,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": 1,
+              "unknown_attempts": 0,
+              "complete": false,
+              "counts_complete": false
+            },
+            "timing": {
+              "history_complete": true,
+              "queue_seconds": 0.0007315999973798171,
+              "execution_seconds": 0.270432,
+              "user_wait_seconds": 0.0,
+              "known_queue_seconds": 0.0007315999973798171,
+              "known_execution_seconds": 0.270432,
+              "known_user_wait_seconds": 0.0,
+              "wall_seconds": 0.274761,
+              "live": true
+            }
+          }
+        ],
+        "totals": {
+          "logical_calls": 1,
+          "tool_calls": 0,
+          "known_network_attempts": 0,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 0,
+          "available": true,
+          "complete": false,
+          "counts_complete": false,
+          "network_attempts": null,
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "report_telemetry": {}
+      },
+      "read_only_revision": 5
+    },
+    "test_sdk_retry_success_failure_400_missing_and_explicit_zero": [
+      {
+        "mode": "retry_success",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 1,
+          "failed_calls": 0,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 2,
+          "network_attempts": 2,
+          "known_input_tokens": 11,
+          "known_output_tokens": 7,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 1,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 1,
+          "complete": false,
+          "counts_complete": true
+        },
+        "events": [
+          {
+            "type": "span_start",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "kind": "model",
+            "agent": "manager",
+            "purpose": "manager_revision"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "attempt": 1,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "attempt": 1,
+            "phase": "end",
+            "status_code": 500
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "attempt": 2,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "attempt": 2,
+            "phase": "end",
+            "status_code": 200
+          },
+          {
+            "type": "span_end",
+            "span_id": "70db982e7bda4430b783e84eb6afce3c",
+            "kind": "model",
+            "status": "SUCCEEDED",
+            "duration_seconds": 0.4607116999977734,
+            "input_tokens": 11,
+            "output_tokens": 7
+          }
+        ]
+      },
+      {
+        "mode": "retry_failure",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 0,
+          "failed_calls": 1,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 2,
+          "network_attempts": 2,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 2,
+          "complete": false,
+          "counts_complete": true
+        },
+        "events": [
+          {
+            "type": "span_start",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "kind": "model",
+            "agent": "manager",
+            "purpose": "manager_revision"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "attempt": 1,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "attempt": 1,
+            "phase": "end",
+            "status_code": 500
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "attempt": 2,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "attempt": 2,
+            "phase": "end",
+            "status_code": 500
+          },
+          {
+            "type": "span_end",
+            "span_id": "bd61e5967899406c9e6ab3bfa7025736",
+            "kind": "model",
+            "status": "FAILED",
+            "duration_seconds": 0.4868597000022419
+          }
+        ]
+      },
+      {
+        "mode": "400",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 0,
+          "failed_calls": 1,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 1,
+          "network_attempts": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 1,
+          "complete": false,
+          "counts_complete": true
+        },
+        "events": [
+          {
+            "type": "span_start",
+            "span_id": "c8ad49155e4245129b4ae9cd7d54f5f1",
+            "kind": "model",
+            "agent": "manager",
+            "purpose": "manager_revision"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "c8ad49155e4245129b4ae9cd7d54f5f1",
+            "attempt": 1,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "c8ad49155e4245129b4ae9cd7d54f5f1",
+            "attempt": 1,
+            "phase": "end",
+            "status_code": 400
+          },
+          {
+            "type": "span_end",
+            "span_id": "c8ad49155e4245129b4ae9cd7d54f5f1",
+            "kind": "model",
+            "status": "FAILED",
+            "duration_seconds": 0.0012862000003224239
+          }
+        ]
+      },
+      {
+        "mode": "missing",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 1,
+          "failed_calls": 0,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 1,
+          "network_attempts": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 0,
+          "complete": false,
+          "counts_complete": true
+        },
+        "events": [
+          {
+            "type": "span_start",
+            "span_id": "57a629ff721f4656a86b828e0310144c",
+            "kind": "model",
+            "agent": "manager",
+            "purpose": "manager_revision"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "57a629ff721f4656a86b828e0310144c",
+            "attempt": 1,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "57a629ff721f4656a86b828e0310144c",
+            "attempt": 1,
+            "phase": "end",
+            "status_code": 200
+          },
+          {
+            "type": "span_end",
+            "span_id": "57a629ff721f4656a86b828e0310144c",
+            "kind": "model",
+            "status": "SUCCEEDED",
+            "duration_seconds": 0.001276200004213024,
+            "input_tokens": null,
+            "output_tokens": null
+          }
+        ]
+      },
+      {
+        "mode": "zero",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 1,
+          "failed_calls": 0,
+          "interrupted_calls": 0,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 1,
+          "network_attempts": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "usage_known_calls": 1,
+          "usage_unknown_calls": 0,
+          "unknown_attempts": 0,
+          "complete": true,
+          "counts_complete": true
+        },
+        "events": [
+          {
+            "type": "span_start",
+            "span_id": "3aec3cf123664738bd8e9a16aa5999ac",
+            "kind": "model",
+            "agent": "manager",
+            "purpose": "manager_revision"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "3aec3cf123664738bd8e9a16aa5999ac",
+            "attempt": 1,
+            "phase": "start"
+          },
+          {
+            "type": "model_attempt",
+            "span_id": "3aec3cf123664738bd8e9a16aa5999ac",
+            "attempt": 1,
+            "phase": "end",
+            "status_code": 200
+          },
+          {
+            "type": "span_end",
+            "span_id": "3aec3cf123664738bd8e9a16aa5999ac",
+            "kind": "model",
+            "status": "SUCCEEDED",
+            "duration_seconds": 0.0032628999979351647,
+            "input_tokens": 0,
+            "output_tokens": 0
+          }
+        ]
+      }
+    ],
+    "test_timeout_and_cancel_keep_inflight_usage_unknown": [
+      {
+        "reason": "timeout",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 0,
+          "failed_calls": 0,
+          "interrupted_calls": 1,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 1,
+          "network_attempts": null,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 1,
+          "complete": false,
+          "counts_complete": false
+        },
+        "operation": {
+          "id": "op_999fffc35eeb4b4983f8007c3b16a694",
+          "mission_id": "mission_e7727ed7670b45b5b3a102458182df59",
+          "kind": "explanation",
+          "status": "FAILED",
+          "run_id": 1,
+          "created_at": "2026-10-26T15:11:35.442395+00:00",
+          "ended_at": "2026-10-26T15:11:45.027716+00:00",
+          "pause_id": null,
+          "error": "MODEL_TIMEOUT",
+          "legacy_history": false,
+          "execution_seconds": 9.581234199999017,
+          "queue_seconds": 0.0006034000034560449,
+          "budget_history_complete": true,
+          "worker_pid": 57656,
+          "cleanup_status": "COMPLETE",
+          "revision": 9,
+          "metering": {
+            "version": 1,
+            "mode": "live",
+            "history_complete": false,
+            "finished_runs": [],
+            "calls": {
+              "8197ddc6c301495f9cb180d5b8f0939c": {
+                "run_id": 1,
+                "kind": "model",
+                "agent": "explanation",
+                "purpose": "explain",
+                "status": "INTERRUPTED",
+                "duration_seconds": 0.6551812999969115,
+                "input_tokens": null,
+                "output_tokens": null,
+                "attempts_observed": true,
+                "attempts": {
+                  "1": {
+                    "status": "INTERRUPTED",
+                    "status_code": null
+                  }
+                }
+              }
+            }
+          },
+          "run_requests": {
+            "1": "timeout"
+          },
+          "timing_history_complete": true,
+          "queued_at": null,
+          "run_started_at": null,
+          "pause_started_at": null,
+          "closed_at": "2026-10-26T15:11:45.027794+00:00",
+          "user_wait_seconds": 0.0
+        }
+      },
+      {
+        "reason": "cancel",
+        "summary": {
+          "available": true,
+          "mode": "live",
+          "logical_calls": 1,
+          "succeeded_calls": 0,
+          "failed_calls": 0,
+          "interrupted_calls": 1,
+          "running_calls": 0,
+          "tool_calls": 0,
+          "known_network_attempts": 1,
+          "network_attempts": null,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "input_tokens": null,
+          "output_tokens": null,
+          "usage_known_calls": 0,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 1,
+          "complete": false,
+          "counts_complete": false
+        },
+        "operation": {
+          "id": "op_2a7f1d2962474b0a9cb80d7047531971",
+          "mission_id": "mission_e7727ed7670b45b5b3a102458182df59",
+          "kind": "explanation",
+          "status": "CANCELLED",
+          "run_id": 1,
+          "created_at": "2026-10-26T15:11:45.037370+00:00",
+          "ended_at": "2026-10-26T15:11:53.478929+00:00",
+          "pause_id": null,
+          "error": "USER_CANCELLED",
+          "legacy_history": false,
+          "execution_seconds": 8.496110699998098,
+          "queue_seconds": 0.0006705999985570088,
+          "budget_history_complete": true,
+          "worker_pid": 30488,
+          "cleanup_status": "COMPLETE",
+          "revision": 9,
+          "metering": {
+            "version": 1,
+            "mode": "live",
+            "history_complete": false,
+            "finished_runs": [],
+            "calls": {
+              "59194dd806c8403ea7887850ce0526bc": {
+                "run_id": 1,
+                "kind": "model",
+                "agent": "explanation",
+                "purpose": "explain",
+                "status": "INTERRUPTED",
+                "duration_seconds": 0.08759670000290498,
+                "input_tokens": null,
+                "output_tokens": null,
+                "attempts_observed": true,
+                "attempts": {
+                  "1": {
+                    "status": "INTERRUPTED",
+                    "status_code": null
+                  }
+                }
+              }
+            }
+          },
+          "run_requests": {
+            "1": "cancel"
+          },
+          "timing_history_complete": true,
+          "queued_at": null,
+          "run_started_at": null,
+          "pause_started_at": null,
+          "closed_at": "2026-10-26T15:11:53.536821+00:00",
+          "user_wait_seconds": 0.0
+        }
+      }
+    ],
+    "test_two_explanations_are_independent_and_do_not_rewrite_report_generation": [
+      {
+        "mission_id": "mission_d802eb353471493186bcdd46048bace7",
+        "mission_sequence": 36,
+        "read_at": "2026-10-26T15:12:12.572036+00:00",
+        "workflow_operation_id": "op_a6087a7a10f34e7f85feafe1f10ac863",
+        "operations": [
+          {
+            "id": "op_a6087a7a10f34e7f85feafe1f10ac863",
+            "mission_id": "mission_d802eb353471493186bcdd46048bace7",
+            "kind": "workflow",
+            "status": "COMPLETED",
+            "run_id": 2,
+            "created_at": "2026-10-26T15:11:53.647731+00:00",
+            "ended_at": "2026-10-26T15:11:54.262228+00:00",
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 0.19404480000957847,
+            "queue_seconds": 0.0018273999958182685,
+            "budget_history_complete": true,
+            "worker_pid": 45792,
+            "cleanup_status": "COMPLETE",
+            "revision": 14,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": true,
+              "finished_runs": [
+                1,
+                2
+              ],
+              "calls": {}
+            },
+            "run_requests": {
+              "1": "test_ba944a563cdd49b3bc63a2fb512b97d1",
+              "2": "test_70fb141210b14141b1e56a3ea8b3f112"
+            },
+            "timing_history_complete": true,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:11:54.267399+00:00",
+            "user_wait_seconds": 0.411031,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 0,
+              "succeeded_calls": 0,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 0,
+              "tool_calls": 0,
+              "known_network_attempts": 0,
+              "network_attempts": 0,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": 0,
+              "unknown_attempts": 0,
+              "complete": true,
+              "counts_complete": true
+            },
+            "timing": {
+              "history_complete": true,
+              "queue_seconds": 0.0018273999958182685,
+              "execution_seconds": 0.19404480000957847,
+              "user_wait_seconds": 0.411031,
+              "known_queue_seconds": 0.0018273999958182685,
+              "known_execution_seconds": 0.19404480000957847,
+              "known_user_wait_seconds": 0.411031,
+              "wall_seconds": 0.619668,
+              "live": false
+            }
+          },
+          {
+            "id": "op_5e7094085030460fb17d02997945554e",
+            "mission_id": "mission_d802eb353471493186bcdd46048bace7",
+            "kind": "explanation",
+            "status": "COMPLETED",
+            "run_id": 1,
+            "created_at": "2026-10-26T15:11:54.278655+00:00",
+            "ended_at": "2026-10-26T15:12:03.784232+00:00",
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 9.505984499999613,
+            "queue_seconds": 0.0001593000051798299,
+            "budget_history_complete": true,
+            "worker_pid": 57188,
+            "cleanup_status": "COMPLETE",
+            "revision": 14,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": true,
+              "finished_runs": [
+                1
+              ],
+              "calls": {
+                "c2107f44940d403c88f3cff613316ecb": {
+                  "run_id": 1,
+                  "kind": "model",
+                  "agent": "explanation",
+                  "purpose": "explain",
+                  "status": "SUCCEEDED",
+                  "duration_seconds": 0.5207219000003533,
+                  "input_tokens": 11,
+                  "output_tokens": 7,
+                  "attempts_observed": true,
+                  "attempts": {
+                    "1": {
+                      "status": "RESPONDED",
+                      "status_code": 500
+                    },
+                    "2": {
+                      "status": "RESPONDED",
+                      "status_code": 200
+                    }
+                  }
+                }
+              }
+            },
+            "run_requests": {
+              "1": "retry_success"
+            },
+            "timing_history_complete": true,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:12:03.787430+00:00",
+            "user_wait_seconds": 0.0,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 1,
+              "succeeded_calls": 1,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 0,
+              "tool_calls": 0,
+              "known_network_attempts": 2,
+              "network_attempts": 2,
+              "known_input_tokens": 11,
+              "known_output_tokens": 7,
+              "input_tokens": null,
+              "output_tokens": null,
+              "usage_known_calls": 1,
+              "usage_unknown_calls": 0,
+              "unknown_attempts": 1,
+              "complete": false,
+              "counts_complete": true
+            },
+            "timing": {
+              "history_complete": true,
+              "queue_seconds": 0.0001593000051798299,
+              "execution_seconds": 9.505984499999613,
+              "user_wait_seconds": 0.0,
+              "known_queue_seconds": 0.0001593000051798299,
+              "known_execution_seconds": 9.505984499999613,
+              "known_user_wait_seconds": 0.0,
+              "wall_seconds": 9.508775,
+              "live": false
+            }
+          },
+          {
+            "id": "op_03ad422ab19e4e51b9bd7122d0c84156",
+            "mission_id": "mission_d802eb353471493186bcdd46048bace7",
+            "kind": "explanation",
+            "status": "COMPLETED",
+            "run_id": 1,
+            "created_at": "2026-10-26T15:12:03.797375+00:00",
+            "ended_at": "2026-10-26T15:12:12.560566+00:00",
+            "pause_id": null,
+            "error": null,
+            "legacy_history": false,
+            "execution_seconds": 8.763109200001054,
+            "queue_seconds": 0.0002964000013889745,
+            "budget_history_complete": true,
+            "worker_pid": 35216,
+            "cleanup_status": "COMPLETE",
+            "revision": 12,
+            "metering": {
+              "version": 1,
+              "mode": "live",
+              "history_complete": true,
+              "finished_runs": [
+                1
+              ],
+              "calls": {
+                "ce49498d89b540ddb6c03b3c2c2ab357": {
+                  "run_id": 1,
+                  "kind": "model",
+                  "agent": "explanation",
+                  "purpose": "explain",
+                  "status": "SUCCEEDED",
+                  "duration_seconds": 0.033581100004084874,
+                  "input_tokens": null,
+                  "output_tokens": null,
+                  "attempts_observed": true,
+                  "attempts": {
+                    "1": {
+                      "status": "RESPONDED",
+                      "status_code": 200
+                    }
+                  }
+                }
+              }
+            },
+            "run_requests": {
+              "1": "missing"
+            },
+            "timing_history_complete": true,
+            "queued_at": null,
+            "run_started_at": null,
+            "pause_started_at": null,
+            "closed_at": "2026-10-26T15:12:12.563557+00:00",
+            "user_wait_seconds": 0.0,
+            "usage": {
+              "available": true,
+              "mode": "live",
+              "logical_calls": 1,
+              "succeeded_calls": 1,
+              "failed_calls": 0,
+              "interrupted_calls": 0,
+              "running_calls": 0,
+              "tool_calls": 0,
+              "known_network_attempts": 1,
+              "network_attempts": 1,
+              "known_input_tokens": 0,
+              "known_output_tokens": 0,
+              "input_tokens": null,
+              "output_tokens": null,
+              "usage_known_calls": 0,
+              "usage_unknown_calls": 1,
+              "unknown_attempts": 0,
+              "complete": false,
+              "counts_complete": true
+            },
+            "timing": {
+              "history_complete": true,
+              "queue_seconds": 0.0002964000013889745,
+              "execution_seconds": 8.763109200001054,
+              "user_wait_seconds": 0.0,
+              "known_queue_seconds": 0.0002964000013889745,
+              "known_execution_seconds": 8.763109200001054,
+              "known_user_wait_seconds": 0.0,
+              "wall_seconds": 8.766182,
+              "live": false
+            }
+          }
+        ],
+        "totals": {
+          "logical_calls": 2,
+          "tool_calls": 0,
+          "known_network_attempts": 3,
+          "known_input_tokens": 11,
+          "known_output_tokens": 7,
+          "usage_known_calls": 1,
+          "usage_unknown_calls": 1,
+          "unknown_attempts": 1,
+          "available": true,
+          "complete": false,
+          "counts_complete": true,
+          "network_attempts": 3,
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        "report_telemetry": {
+          "llm_call_count": 0,
+          "manager_call_count": 2,
+          "reviewer_call_count": 1,
+          "agent_call_count": 2,
+          "review_count": 1,
+          "revision_count": 0,
+          "replan_count": 0,
+          "latency_ms": 16.639,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "usage_tracking_version": 1,
+          "known_input_tokens": 0,
+          "known_output_tokens": 0,
+          "usage_unknown_calls": 0
+        }
+      }
+    ]
+  },
+  "related_current_run_pause_budget_samples": {
+    "test_cross_process_pauses_keep_frozen_input_and_document_runs_once": [
+      {
+        "runs": 3,
+        "pids": [
+          30348,
+          52120,
+          45492
+        ],
+        "execution_seconds": 25.353425100001914,
+        "paused_seconds_excluded": true,
+        "document_events": 1
+      }
+    ],
+    "test_cumulative_budget_survives_pause_and_limits_resume": [
+      {
+        "before_resume": 8.675828999999794,
+        "total": 8.779448799999955,
+        "configured_total": 8.775828999999794
+      }
+    ]
+  },
+  "artifact_sha256": {
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/summary.json": "222fb0b70d65b1d3bd349c5544b9910e4f10b84de382d2b9780e9ca179f67e27",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/unittest.log": "faa0fd9ddbbec0c5525120fbea8c36aab91fd99b82215dc05a3f5c121b08e2a9",
+    "local_data/game_imports/m4-implementation/20261026-m45-frontend-final/summary.json": "4e7094b4e44fabea430af7a80ed4c9dbe666636dc852906f4d7ca29d7892a4b9",
+    "local_data/game_imports/m4-implementation/20261026-m45-frontend-final/vitest.json": "6db239ba646fb61e4ee4d9ea32acf4f56d88d88e6cf7d99d0bd18210bf2c42a9",
+    "local_data/game_imports/m4-implementation/20261026-m45-frontend-final/playwright.json": "38535de17632060f155354fe67e6db84126dc54f2acfeb0c713ae41275ba1a2e",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_legacy_and_crash_do_not_become_zero_usage/evidence.json": "bba0fbc57e47b057b96fbdb5bd129a89b53401e8f9d14a24a328fcf295f440c0",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_logs_correlate_identity_without_provider_error_or_prompt/evidence.json": "ca548e4d77e1bf6d7fa72ff8e9239dffcb863b4444387110afd4e05addc65f1f",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_pause_wait_is_separate_persistent_and_request_replay_does_not_add_it_again/evidence.json": "c1567ab94ec5073c946f102b2f4a5262442c6cad0acc00bca7a6cfb57afd95c3",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_publication_rollback_keeps_already_observed_response_usage/evidence.json": "d67705b0ddaec8814fd225dae2926675e7fdad5d1cedde1c7a8d3e043caf46e7",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_queue_cancel_records_wait_and_known_zero_model_calls/evidence.json": "5356a87b0778ecb588e53c67479fafeb2ab0eaf6d390c649b885b76b95c8645d",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_real_http_sse_replay_does_not_charge_calls_again/evidence.json": "a467f31d00fa9596bfdffe6b26bf0c8d3e4e499373dadc1518de5e4375df4602",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_sdk_retry_success_failure_400_missing_and_explicit_zero/evidence.json": "474ba1a65dc9bb6f53061ed35e0584eb66077a21f69c843a9ff9aaa41c9dd335",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_timeout_and_cancel_keep_inflight_usage_unknown/evidence.json": "03934c2f4653c3642beebce6a904ecbb014ca7587b3abe8a0afd1f28e610c081",
+    "local_data/game_imports/m4-implementation/20261026-m45-full-02/m45/test_two_explanations_are_independent_and_do_not_rewrite_report_generation/evidence.json": "fe44052a5769be2f8a23704a64227bc973b247196fb3b7c5b8bdb4317bd86c48",
+    "local_data/game_imports/m4-implementation/20261026-m45-frontend-final/playwright-results/m45-runtime-M4-5-report-ge-805d6-rtial-usage-remain-separate/runtime-partial-usage.png": "2d5507b18af56ccf5fcacef4f7d186f448b62446254501fa0282537cb03d6e34"
+  },
+  "development_failures": [
+    {
+      "root": "local_data/game_imports/m4-implementation/20261026-m45-sanity-01",
+      "reason": "Old event assertions omitted the new final operation.updated metadata event; original message/business assertions retained and metadata expectations updated."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261026-m45-frontend-01",
+      "expected": 23,
+      "unexpected": 1,
+      "reason": "New TypeScript fixture used a comma expression instead of two assignments; corrected the fixture and reran all selected browser cases."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261026-m45-full-01",
+      "tests": 205,
+      "failures": 1,
+      "errors": 1,
+      "passed_gate": false,
+      "reason": "Two existing pause/budget tests observed PAUSED publication before coordinator execution accounting settled. Wait for execution-handle release before asserting frozen duration; preserve pause exclusion, PID exit and remaining-budget checks. Final full rerun passed."
+    }
+  ],
+  "protected_data": {
+    "during_full_run": {
+      "files": 1150,
+      "changed": []
+    },
+    "after_documentation_changed": [
+      "docs/README.md"
+    ],
+    "authorized_navigation_change_only": true,
+    "user_memory_sha256": {
+      "memory/player.json": "de7f479db04c1f5af961b29cb065efccd972597e13c0ab2831398dcd9450162a",
+      "memory/sessions.json": "e71079c537924e131aa25a569993c6661569f42c4749d26a4896abd89b5ea0f3"
+    }
+  },
+  "test_boundaries": "Real installed synchronous OpenAI SDK with MockTransport, actual owned Windows workers/IPC and local Uvicorn HTTP/SSE. Graph semantics/publication faults also use explicit InlineRunner with real SQLite/checkpoints. Browser API responses controlled; no paid/live provider or game operations.",
+  "not_verified_this_turn": [
+    "Paid/live providers or provider billing",
+    "Game operations",
+    "Existing actual-workspace deployment or migration",
+    "M4.6 full restart and format compatibility matrix",
+    "M4.7 backup/restore tooling",
+    "M4.8 milestone acceptance",
+    "New asynchronous model integrations"
+  ],
+  "documentation_check": {
+    "command": "python tools/check_docs.py",
+    "documents": 43,
+    "local_links": 676,
+    "preserved_sources": 45,
+    "errors": 0
+  },
+  "diff_check": {
+    "command": "git -c core.whitespace=trailing-space,space-before-tab,cr-at-eol diff --check",
+    "exit_code": 0
+  }
+}

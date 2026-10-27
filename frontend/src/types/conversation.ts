@@ -4,8 +4,8 @@ export interface ConversationMessage {
   content: string
   created_at: string
   mission_id: string
-  kind?: 'task' | 'explanation' | 'resume'
-  operation_status?: 'COMPLETED' | 'FAILED'
+  kind?: 'task' | 'explanation' | 'resume' | 'cancellation'
+  operation_status?: 'COMPLETED' | 'FAILED' | 'CANCELLED'
   in_reply_to?: string | null
 }
 export type DemoScenario = 'pass' | 'revision' | 'blocked' | 'replan'

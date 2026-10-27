@@ -30,6 +30,8 @@ class SessionRepository:
         try:
             db = sqlite3.connect(self.workspace_path.as_uri() + '?mode=ro', uri=True)
             try:
+                from backend.storage_contracts import validate_database
+                validate_database(db, 'workspace')
                 return db.execute(statement, parameters).fetchall()
             finally:
                 db.close()
@@ -40,6 +42,19 @@ class SessionRepository:
         from backend.models import MissionView
         rows = self._read('SELECT snapshot FROM missions WHERE id=?', (thread_id,))
         return MissionView.model_validate_json(rows[0][0]) if rows else None
+
+    def receipt(self, request_id):
+        if not self._read("SELECT 1 FROM sqlite_master WHERE type='table' AND name='request_receipts'"):
+            return None
+        rows = self._read('SELECT payload FROM request_receipts WHERE request_id=?', (request_id,))
+        return json.loads(rows[0][0]) if rows else None
+
+    def operations(self, mission_id):
+        from backend.models import OperationView
+        if not self._read("SELECT 1 FROM sqlite_master WHERE type='table' AND name='operations'"):
+            return []
+        return [OperationView.model_validate_json(row[0]) for row in self._read(
+            'SELECT payload FROM operations WHERE mission_id=? ORDER BY rowid', (mission_id,))]
 
     def list(self):
         from backend.models import MissionView

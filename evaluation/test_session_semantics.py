@@ -9,10 +9,17 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
+from evaluation.request_fixtures import message_body, input_body
 from fastapi.testclient import TestClient
-from backend.main import create_app
+from backend.main import create_app as application_factory
+from evaluation.runtime_fixture import InlineRunner
 from evaluation.player_fixtures import write_fixture
 from player_data.repository import FixtureRepository
+
+
+def create_app(**kwargs):
+    kwargs.setdefault('runner', InlineRunner())
+    return application_factory(**kwargs)
 
 
 class SessionSemanticsTests(unittest.TestCase):
@@ -49,7 +56,7 @@ class SessionSemanticsTests(unittest.TestCase):
             return {'mission': mission, 'plan': plan, **build_v2_state_patch(material)}
 
         def reviewer(state):
-            blocked = self.require_input and not state['user_context'].get('human_inputs')
+            blocked = self.require_input and len(state['user_context'].get('human_inputs') or []) < getattr(self, 'required_input_rounds', 1)
             result = normalise_review_result({'decision': 'BLOCKED' if blocked else 'PASS',
                 'blocking_information': ['原任务需要恢复反馈'] if blocked else [],
                 'findings': [{'action': 'BLOCKED', 'severity': 'HIGH', 'subtask_ids': ['training'],
@@ -77,7 +84,7 @@ class SessionSemanticsTests(unittest.TestCase):
             checkpointer=SqliteSaver(connection), interrupt_before=['document']), connection
 
     def start(self, client):
-        response = client.post('/api/messages', json={'conversation_id': 'conv_session', 'content': '解释训练安排依据'})
+        response = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'content': '解释训练安排依据'}))
         self.assertEqual(response.status_code, 202, response.text)
         return response.json()['mission_id']
 
@@ -97,12 +104,12 @@ class SessionSemanticsTests(unittest.TestCase):
     def complete(self, client, identity):
         paused = self.wait(client, identity, 'BLOCKED')
         self.assertEqual(paused['blocked']['reason'], 'report_approval')
-        self.assertEqual(client.post(f'/api/missions/{identity}/input', json={'values': {'approved': True}}).status_code, 202)
+        self.assertEqual(client.post(f'/api/missions/{identity}/input', json=input_body(client, f'/api/missions/{identity}/input', {'values': {'approved': True}})).status_code, 202)
         return self.wait(client, identity, 'COMPLETED')
 
     def explain(self, client, identity, *, intent='explain'):
-        result = client.post('/api/messages', json={'conversation_id': 'conv_session', 'mission_id': identity,
-            'intent': intent, 'content': '为什么原报告这样安排？'})
+        result = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'mission_id': identity,
+            'intent': intent, 'content': '为什么原报告这样安排？'}))
         self.assertEqual(result.status_code, 202, result.text)
         self.assertEqual(result.json()['mission_id'], identity)
         self.wait(client, identity, 'COMPLETED')
@@ -136,7 +143,7 @@ class SessionSemanticsTests(unittest.TestCase):
                     self.assertEqual(current[key], old[key])
                 self.assertEqual(service.store.report(identity), original_report)
                 explanation_events = service.store.events(identity, original_events)
-                self.assertEqual([event['type'] for event in explanation_events], ['message.created', 'message.created'])
+                self.assertEqual([event['type'] for event in explanation_events], ['message.created', 'message.created', 'operation.updated'])
                 messages = model.invoke.call_args.args[0]
                 self.assertEqual(len(messages), 2)  # system + explicit explanation question
                 prompt = messages[0].content
@@ -179,8 +186,9 @@ class SessionSemanticsTests(unittest.TestCase):
                         self.assertEqual(failure.operation_status, 'FAILED')
                         self.assertEqual(failure.kind, 'explanation')
                         events = service.store.events(identity, sequence)
-                        self.assertTrue(all(event['type'] == 'message.created' for event in events))
-                        self.assertEqual(events[-1]['data']['operation_status'], 'FAILED')
+                        self.assertTrue(all(event['type'] in {'message.created', 'operation.updated'} for event in events))
+                        self.assertEqual(sum(event['type'] == 'message.created' for event in events), 2)
+                        self.assertEqual([event for event in events if event['type'] == 'message.created'][-1]['data']['operation_status'], 'FAILED')
                         self.assertNotIn('private model failure', str(events))
 
     def test_restart_missing_input_and_report_approval_resume_same_snapshot(self):
@@ -191,22 +199,22 @@ class SessionSemanticsTests(unittest.TestCase):
                 paused = self.wait(client, identity, 'BLOCKED')
                 self.assertEqual(paused['available_operations'], ['view', 'supply_input'])
                 reference = paused['input_reference']
-                self.assertEqual(client.post('/api/messages', json={'conversation_id': 'conv_session', 'mission_id': identity,
-                    'intent': 'explain', 'content': '继续'}).status_code, 409)
+                self.assertEqual(client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'mission_id': identity,
+                    'intent': 'explain', 'content': '继续'})).status_code, 409)
             write_fixture(self.fixture, name='Changed after pause', speed=91)
             with TestClient(self.app()) as client:
                 with patch.object(self.repository, 'read_snapshot', side_effect=AssertionError('Must keep old snapshot')):
-                    response = client.post('/api/messages', json={'conversation_id': 'conv_session', 'mission_id': identity,
-                        'intent': 'followup', 'content': '原任务补充：睡眠八小时'})
+                    response = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'mission_id': identity,
+                        'intent': 'followup', 'content': '原任务补充：睡眠八小时'}))
                     self.assertEqual(response.status_code, 202, response.text)
                     self.assertEqual(response.json()['mission_id'], identity)
                     approval = self.wait(client, identity, 'BLOCKED')
                     self.assertEqual(approval['available_operations'], ['view', 'approve_report'])
                     calls = list(self.calls)
                     for values in ({'approved': False}, {'information': '批准'}, {'approved': 'yes'}):
-                        self.assertEqual(client.post(f'/api/missions/{identity}/input', json={'values': values}).status_code, 422)
-                    self.assertEqual(client.post('/api/messages', json={'conversation_id': 'conv_session', 'mission_id': identity,
-                        'intent': 'followup', 'content': '批准'}).status_code, 409)
+                        self.assertEqual(client.post(f'/api/missions/{identity}/input', json=input_body(client, f'/api/missions/{identity}/input', {'values': values})).status_code, 422)
+                    self.assertEqual(client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'mission_id': identity,
+                        'intent': 'followup', 'content': '批准'})).status_code, 409)
                     self.assertEqual(self.calls, calls)
                     complete = self.complete(client, identity)
                 self.assertEqual(complete['input_reference'], reference)
@@ -257,9 +265,9 @@ class SessionSemanticsTests(unittest.TestCase):
                     view = client.get(f'/api/missions/{identity}').json()
                     self.assertEqual(view['available_operations'], ['view'])
                     self.assertTrue(view['resume_error'])
-                    self.assertEqual(client.post(f'/api/missions/{identity}/input', json={'values': {'approved': True}}).status_code, 422)
-                    self.assertEqual(client.post('/api/messages', json={'conversation_id': 'conv_session', 'mission_id': identity,
-                        'intent': 'followup', 'content': '继续'}).status_code, 409)
+                    self.assertEqual(client.post(f'/api/missions/{identity}/input', json=input_body(client, f'/api/missions/{identity}/input', {'values': {'approved': True}})).status_code, 422)
+                    self.assertEqual(client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_session', 'mission_id': identity,
+                        'intent': 'followup', 'content': '继续'})).status_code, 409)
                     self.assertEqual(service.store.get(identity).model_dump(), before)
                     self.assertEqual(len(service.store.messages('conv_session')), message_count)
                     self.assertEqual(service.store.events(identity, 0), events)

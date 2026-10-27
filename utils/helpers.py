@@ -5,15 +5,27 @@ FootballAI Career Agent - 工具函数
 from typing import List, Tuple, Dict, Any
 from langchain_openai import ChatOpenAI
 from config import config
+from backend.call_limits import current_policy, remaining_seconds, observe_transport
 
 
-def create_llm(temperature: float = 0.3) -> ChatOpenAI:
+def create_llm(temperature: float = 0.3, *, http_client=None) -> ChatOpenAI:
     """创建大模型实例。"""
+    import httpx
+    from openai import DefaultHttpxClient
+    policy = current_policy()
+    remaining = max(.001, remaining_seconds())
+    read = min(policy.model_read_seconds, remaining)
+    connect = min(policy.model_connect_seconds, remaining)
+    timeout = httpx.Timeout(read, connect=connect, pool=connect)
+    client = observe_transport(http_client if http_client is not None else DefaultHttpxClient(timeout=timeout))
     return ChatOpenAI(
         model=config.MODEL_NAME,
         api_key=config.OPENAI_API_KEY,
         base_url=config.OPENAI_BASE_URL,
         temperature=temperature,
+        timeout=timeout,
+        max_retries=policy.network_max_attempts - 1,
+        http_client=client,
     )
 
 

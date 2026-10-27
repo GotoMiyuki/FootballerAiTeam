@@ -55,7 +55,8 @@ class RecommendationApplication:
         self.repository.save_projection(source['mission'].id, self._records(source))
 
     def record_delivery(self, mission, state):
-        self._project(self.reader.verify(mission, state, completing=True))
+        # Only a report already committed by the coordinator may create E records.
+        self._project(self.reader.verify(self.service.store.get(mission.id), state))
 
     def project_mission(self, mission_id):
         """Writer-side replay/backfill. GET consumers never call this method."""

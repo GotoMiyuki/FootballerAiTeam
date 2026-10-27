@@ -6,6 +6,8 @@ export const eventTypes = [
   'mission.blocked',
   'mission.completed',
   'mission.failed',
+  'mission.cancelled',
+  'operation.updated',
   'plan.created',
   'plan.updated',
   'subtask.failed',

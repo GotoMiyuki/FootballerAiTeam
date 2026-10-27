@@ -7,8 +7,8 @@ class CLIMissionService(MissionService):
         self.pending = None
         super().__init__(*args, **kwargs)
 
-    def _enqueue(self, mission_id, fn, *args):
-        self.pending = super()._enqueue(mission_id, fn, *args)
+    def _enqueue(self, mission_id, fn, *args, **kwargs):
+        self.pending = super()._enqueue(mission_id, fn, *args, **kwargs)
         return self.pending
 
     def wait(self):

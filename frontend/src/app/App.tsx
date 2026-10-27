@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { version as appVersion } from '../../package.json'
 import { useQuery } from '@tanstack/react-query'
 import { CircleDot, History, SlidersHorizontal, Plus, ArrowUpRight } from 'lucide-react'
 import { apiBase, request } from '../api/client'
@@ -8,11 +9,20 @@ import { PlayerPanel } from '../features/player/PlayerPanel'
 import { MissionWorkspace } from '../features/mission/MissionWorkspace'
 import { MissionHistory } from '../features/history/MissionHistory'
 
+function draftConversation() {
+  let id = localStorage.getItem('fait.draftConversation')
+  if (!id) {
+    id = `conv_${crypto.randomUUID()}`
+    localStorage.setItem('fait.draftConversation', id)
+  }
+  return id
+}
+
 export default function App() {
   const [missionId, setMissionId] = useState<string | undefined>(
     () => localStorage.getItem('fait.mission') || undefined,
   )
-  const [draftId, setDraftId] = useState(() => `conv_${crypto.randomUUID()}`)
+  const [draftId, setDraftId] = useState(draftConversation)
   const [history, setHistory] = useState(false)
   const [settings, setSettings] = useState(false)
   const health = useQuery({
@@ -27,7 +37,8 @@ export default function App() {
   function newMission() {
     setMissionId(undefined)
     localStorage.removeItem('fait.mission')
-    setDraftId(`conv_${crypto.randomUUID()}`)
+    localStorage.removeItem('fait.draftConversation')
+    setDraftId(draftConversation())
   }
   return (
     <>
@@ -43,7 +54,7 @@ export default function App() {
         </a>
         <div className="header-divider" />
         <span className="workspace-name">
-          球员工作台<span>V0.1</span>
+          球员工作台<span>V{appVersion}</span>
         </span>
         <nav aria-label="全局导航">
           <button className="nav-button" onClick={() => setHistory(true)}>

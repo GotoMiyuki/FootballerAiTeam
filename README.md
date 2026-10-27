@@ -2,9 +2,13 @@
 
 基于 LangGraph 的足球运动员职业生涯多智能体协作系统。输入需求后，系统根据球员快照和任务约束分工，生成训练、营养、表现与职业建议，或公关声明等报告。
 
-文档入口：[分类导航](docs/README.md)、[运行与验收](docs/guides/运行与验收.md)、[排障指南](docs/guides/排障指南.md)。
+文档入口：[版本变化](CHANGELOG.md)、[开发日志](docs/development_logs/README.md)、[操作指南](docs/guides/运行与验收.md)、[验收交接](docs/completed/README.md)、[报告证据](docs/reports/README.md)。完整分类与当前/历史说明见[文档导航](docs/README.md)，写作约定见[文档管理规范](docs/guides/文档管理规范.md)。
 
-2026-10-25：[阶段三M3已通过指定本地PES2021范围验收](docs/completed/M3_阶段三验收与交接.md)：十场连续赛程、真实采纳与菜单调整、57→57观测比较及真实模型新建议已贯通。新建议未自动采纳；不据此声称训练有效或AI代踢。下一阶段为B4/G与M4的独立实施。
+当前版本：**v0.4.0 — Career Companion MVP**。版本由根目录[VERSION](VERSION)与前端元数据声明，[发布准备与验证](docs/development_logs/2026-10-27_v0.4.0发布准备.md)记录本次版本统一和文档CI；远程状态见[GitHub发布记录](https://github.com/GotoMiyuki/FootballerAiTeam/releases/tag/v0.4.0)。
+
+2026-10-27：[M4已通过当前本地单用户Windows Career Companion的production-like MVP验收](docs/completed/M4_阶段四验收与交接.md)。软件验收沿用该日期与范围，发布准备未新增实机、外部模型或实际库迁移结论。
+
+历史阶段记录（2026-10-25）：[M3已通过指定本地PES2021范围验收](docs/completed/M3_阶段三验收与交接.md)：十场连续赛程、真实采纳与菜单调整、57→57观测比较及真实模型新建议已贯通。新建议未自动采纳；不据此声称训练有效或AI代踢。其后开展的M4已完成上述范围验收，PES底层写回仍属后续方向。
 
 阶段二已通过指定PES2021测试范围的[M2验收](docs/completed/M2_阶段二验收与交接.md)；E1.2、C2.1、E2.1、C2.2与[E2.2反馈闭环](docs/completed/E_E2.2_反馈驱动关联任务.md)已交付。此前实机输入失败与恢复背景保留在[M3接续记录](docs/roadmap/M3_实机验收与接续.md)。
 
@@ -154,7 +158,7 @@ CLI 在等待输入/审批时输入 `q` 保存暂停并退出，稍后用 `--con
 - DeepSeek API（或 OpenAI 兼容接口）
 - ChromaDB（向量检索）
 - Tavily API（可选，联网搜索）
-## Web 工作台 V0.1
+## Web 工作台 v0.4.0
 
 Web使用React + TypeScript + Vite前端及FastAPI应用层；CLI复用任务应用与存储格式。当前操作以[运行指南](docs/guides/运行与验收.md)为准，[前端初始设计](docs/guides/前端初始设计指南.md)保留设计背景。
 

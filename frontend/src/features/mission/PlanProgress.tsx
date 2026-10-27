@@ -10,6 +10,7 @@ const labels = {
   SKIPPED: '已跳过',
   FAILED: '未输出结果',
   INVALIDATED: '结果已失效',
+  CANCELLED: '已取消',
 }
 export function PlanProgress({
   plan,
@@ -39,7 +40,9 @@ export function PlanProgress({
         <>
           <div className="progress-caption">
             <span>
-              {missionStatus === 'FAILED'
+              {missionStatus === 'CANCELLED'
+                ? '任务已取消，原计划保留'
+                : missionStatus === 'FAILED'
                 ? '任务执行中断，已保留计划'
                 : complete === total
                   ? '计划步骤已完成'
@@ -66,7 +69,7 @@ export function PlanProgress({
           {plan.reason && <p className="plan-reason">计划更新：{plan.reason}</p>}
         </>
       ) : (
-        <Empty>任务开始后，Manager 会在这里建立执行计划。</Empty>
+        <Empty>{missionStatus === 'CANCELLED' ? '任务已取消，未生成计划。' : '任务开始后，Manager 会在这里建立执行计划。'}</Empty>
       )}
     </section>
   )
