@@ -13,6 +13,7 @@ from backend.models import MissionView, MessageRequest, MessageAccepted, InputRe
 from backend.service import MissionService
 from backend.store import RequestConflict
 from backend.task_queue import AdmissionError
+from backend.version import APP_VERSION
 from backend.models import CancelRequest, CancelAccepted
 from career_actions.models import (RecommendationList, RecommendationEvent, DecisionRequest, ExecutionRequest,
                                   DecisionAccepted, ExecutionAccepted, RecommendationActivity)
@@ -36,7 +37,7 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
             runtime_policy=runtime_policy, runner=runner)
         yield
         app.state.service.close()
-    app = FastAPI(title='FootballerAiTeam API', version='0.1.0', lifespan=lifespan)
+    app = FastAPI(title='FootballerAiTeam API', version=APP_VERSION, lifespan=lifespan)
     @app.exception_handler(AdmissionError)
     async def admission_error(_request, error):
         return JSONResponse(status_code=error.status_code, headers={'Retry-After': '1'},
@@ -52,7 +53,7 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
 
     @app.get('/api/health')
     def health():
-        return {'status': 'ok', 'mode': 'demo' if service().demo else 'live', 'version': '0.1.0'}
+        return {'status': 'ok', 'mode': 'demo' if service().demo else 'live', 'version': APP_VERSION}
 
     def player_snapshot():
         from player_data.models import PlayerDataError

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { version as appVersion } from '../../package.json'
 import { useQuery } from '@tanstack/react-query'
 import { CircleDot, History, SlidersHorizontal, Plus, ArrowUpRight } from 'lucide-react'
 import { apiBase, request } from '../api/client'
@@ -53,7 +54,7 @@ export default function App() {
         </a>
         <div className="header-divider" />
         <span className="workspace-name">
-          球员工作台<span>V0.1</span>
+          球员工作台<span>V{appVersion}</span>
         </span>
         <nav aria-label="全局导航">
           <button className="nav-button" onClick={() => setHistory(true)}>

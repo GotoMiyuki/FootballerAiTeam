@@ -1,0 +1,29 @@
+name: Documentation and release metadata
+
+on:
+  pull_request:
+  push:
+    branches: ['**']
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Portable docs (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Check portable document links and preserved history
+        run: python tools/check_docs.py --portable
+      - name: Check product versions
+        run: python tools/check_version.py
+      - name: Verify portable checker rejection boundaries
+        run: python -m unittest evaluation.test_documentation_release -v
