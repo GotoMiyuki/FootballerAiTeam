@@ -1,0 +1,762 @@
+{
+  "date": "2026-10-26",
+  "milestone_m4_passed": false,
+  "completed_task": "M4.2",
+  "next": "M4.3",
+  "backend": {
+    "scope": "M4.2 request identities, operations, pause versions and existing regressions",
+    "full": true,
+    "tests": 154,
+    "passed_gate": true,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "cases": [
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_explanation_replay_retains_original_report_and_runs_model_once",
+        "seconds": 30.56581609999921
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_failed_explanation_returns_failure_code_and_replay_does_not_call_model",
+        "seconds": 29.92009170000165
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_input_receipt_replay_does_not_approve_the_next_pause",
+        "seconds": 22.670820299998013
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_new_request_replays_across_processes_without_config_latest_or_runtime",
+        "seconds": 14.944842699998844
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_acceptance_transaction_rolls_back_receipt_message_event_and_operation",
+        "seconds": 0.3695566999995208
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_concurrent_creation_and_restart_replay_never_read_latest_or_enqueue_twice",
+        "seconds": 0.14330869999685092
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_duplicate_approval_returns_same_receipt_and_document_once",
+        "seconds": 0.4217121999972733
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_accepted_before_restart_stays_failed_without_harming_report",
+        "seconds": 0.46861490000082995
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_has_independent_identity_and_once_only_model_effect",
+        "seconds": 0.44079599999895436
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_future_workspace_version_is_refused_without_rewriting_database",
+        "seconds": 0.019469900002150098
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_later_pause_with_identical_fields_rejects_old_form",
+        "seconds": 0.7093100999991293
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_legacy_pause_adoption_is_explicit_and_does_not_rewrite_fixed_input",
+        "seconds": 0.3811357999984466
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_old_write_client_is_rejected_instead_of_receiving_a_generated_identity",
+        "seconds": 0.08341529999961494
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_metadata_only_history_is_read_only_and_needs_no_model_config",
+        "seconds": 0.016480000002047746
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_same_process_approval_delivers_only_publishable_report",
+        "seconds": 0.3636657999995805
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_failed_or_empty_explanation_does_not_damage_report_and_followup_is_compatible",
+        "seconds": 0.5051358999990043
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_history_and_explanation_keep_original_version_and_never_run_graph",
+        "seconds": 0.8003778999991482
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_missing_or_incompatible_checkpoint_rejected_before_mutation",
+        "seconds": 2.0094147000017983
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_restart_missing_input_and_report_approval_resume_same_snapshot",
+        "seconds": 0.8449628000016673
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_application_retry_is_a_new_task_and_binds_parent_context",
+        "seconds": 0.5962206999975024
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_concurrent_duplicate_submissions_create_and_enqueue_once",
+        "seconds": 0.49200029999701655
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_create_transaction_rolls_back_every_record_on_failure",
+        "seconds": 0.48616760000004433
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_creation_request_survives_restart_and_conflicting_content_is_rejected",
+        "seconds": 1.0328996000025654
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_invalid_context_history_and_external_references_create_nothing",
+        "seconds": 0.6209073999998509
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_latest_read_failure_and_failed_child_preserve_parent_report",
+        "seconds": 0.5504281999965315
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_new_identity_freezes_v2_even_if_v3_arrives_before_execution",
+        "seconds": 0.8061285000003409
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_selected_history_and_new_requirements_enter_real_manager_and_coach_prompts",
+        "seconds": 0.6660139999985404
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_blocked_validation_and_resume_across_restart",
+        "seconds": 0.23531950000324287
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_live_application_adapter_with_real_graph_and_durable_hitl",
+        "seconds": 0.6909993000008399
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_pass_report_history_restart_and_followup",
+        "seconds": 0.2596975000014936
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_real_agents_fail_consistently_in_api_events_and_saved_state",
+        "seconds": 0.7192895000007411
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_revision_and_replan_are_distinct",
+        "seconds": 0.9262558999980683
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_unknown_mission_and_cross_conversation_rejected",
+        "seconds": 0.22088390000135405
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.AssessmentMemoryTests.test_e_assessment_versions_currentness_and_read_only_projection",
+        "seconds": 1.2243511000015133
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_context_mode_retractions_budgets_and_disabled_no_source_read",
+        "seconds": 0.6351353999998537
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_continuation_default_hash_retry_and_explicit_opt_out",
+        "seconds": 0.6824104000006628
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_missing_or_corrupt_packet_and_checkpoint_rejected_without_latest_fallback",
+        "seconds": 0.6791793000011239
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_old_task_executes_and_explains_saved_revision_new_task_uses_correction",
+        "seconds": 0.9021845999996003
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_real_manager_and_coach_prompts_share_saved_source_and_replan_keeps_it",
+        "seconds": 0.9497460999991745
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_relevance_before_recency_candidates_and_time_filters_read_only",
+        "seconds": 0.5882234000018798
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_task_scope_changes_only_consumed_fingerprints_and_reconciliation",
+        "seconds": 0.52129369999966
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_unsynced_e_records_are_checked_and_freeze_historical_not_execution_authority",
+        "seconds": 0.6466336999983469
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_approval_resumes_in_second_process_only_document_with_original_input",
+        "seconds": 15.352377100000012
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_completed_history_is_read_only_without_configuration_or_latest_access",
+        "seconds": 37.37161280000146
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_failed_cli_task_retry_creates_child_and_never_resumes_original",
+        "seconds": 15.485481799998524
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_index_empty_read_does_not_initialize_directory_and_legacy_is_unchanged",
+        "seconds": 0.01724810000087018
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_invalid_missing_checkpoint_or_snapshot_refuses_before_any_mutation",
+        "seconds": 59.83171199999924
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_missing_input_then_approval_survive_three_distinct_processes",
+        "seconds": 22.87338979999913
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_one_writer_guard_blocks_other_process_but_allows_read_only_history",
+        "seconds": 29.928775600001245
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_related_cli_uses_new_identity_latest_snapshot_and_persistent_dedup",
+        "seconds": 37.56182389999958
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_unrelated_text_cannot_approve_or_replan_and_exit_preserves_pause",
+        "seconds": 15.02112599999964
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_actual_fact_bytes_and_hash_unchanged_after_all_feedback_operations",
+        "seconds": 0.6739791999971203
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_choice_execution_difference_withdrawal_correction_and_restart",
+        "seconds": 1.1287811000001966
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_context_mission_revision_and_spoofed_source_rejected",
+        "seconds": 0.933294799997384
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_correction_must_reference_same_recommendation_current_execution",
+        "seconds": 1.0284694000001764
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_execution_without_adoption_and_distinct_windows_remain_independent",
+        "seconds": 0.6296755999974266
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_expired_or_withdrawn_adoption_rejected_but_history_and_replay_survive",
+        "seconds": 0.6338773000024958
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_invalid_windows_blank_feedback_and_incomplete_corrections_rejected",
+        "seconds": 0.4728735999997298
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_request_replay_conflict_concurrent_cas_and_no_duplicate_events",
+        "seconds": 0.9121709000028204
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_transaction_failure_rolls_back_object_head_request_and_event",
+        "seconds": 0.6498112000008405
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_actual_repository_projection_preserves_fact_hash_and_does_not_certify_game_support",
+        "seconds": 0.5048268999998982
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_concurrent_reprojection_restart_and_get_are_idempotent_and_read_only",
+        "seconds": 0.7693619999990915
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_context_isolation_source_failure_retains_history_and_withdraws_once",
+        "seconds": 0.5524218999998993
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_corrupt_stored_content_baseline_or_review_never_passes_current_source_verification",
+        "seconds": 0.5294152000024042
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_current_applicability_changes_without_rewriting_historical_record_or_report",
+        "seconds": 0.5275007999989612
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_delivery_projects_fixed_source_and_unknown_execution_without_touching_facts",
+        "seconds": 0.46831659999952535
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_demo_does_not_project_specialist_or_report_text_as_verified_suggestions",
+        "seconds": 0.18147959999987506
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_failed_unreviewed_invalidated_and_tampered_sources_never_return_current",
+        "seconds": 0.8754517000015767
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_projection_transaction_rollback_does_not_withdraw_valid_parent_report",
+        "seconds": 0.4299647999978333
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_same_agent_multiple_tasks_are_distinct_and_new_versions_supersede_without_overwrite",
+        "seconds": 0.4237935999990441
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_all_specialist_capabilities_fail_without_default_answers",
+        "seconds": 0.0781213000009302
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_body_rejects_wrong_values_citations_and_stale_report",
+        "seconds": 0.0074238999986846466
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_document_modes_fail_and_normal_delivery_is_version_checked",
+        "seconds": 0.04377490000115358
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_graph_rejects_self_reported_success_without_schema",
+        "seconds": 0.03361099999892758
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_planning_failure_never_becomes_document_only_success",
+        "seconds": 0.0038925000008021016
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_report_keeps_literal_objective_gate_for_feedback_reports",
+        "seconds": 0.003924900000129128
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_review_failures_and_old_records_never_pass",
+        "seconds": 0.013947700001153862
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_valid_specialist_schema_paths",
+        "seconds": 0.015467099998204503
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_actual_a_bytes_and_frozen_mission_inputs_are_unchanged",
+        "seconds": 0.5718382000013662
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_context_filtering_and_e_reference_write_protection",
+        "seconds": 0.9319498000004387
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_decisions_executions_corrections_and_read_time_missing_sync",
+        "seconds": 0.8267685000027996
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_empty_chat_and_a_goals_do_not_create_preferences_or_actions",
+        "seconds": 0.5610720999975456
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_pagination_does_not_drop_or_duplicate_decisions",
+        "seconds": 8.360225100001117
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_projection_and_user_transaction_failures_roll_back",
+        "seconds": 0.5129106999993382
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_explicit_user_revisions_cas_retraction_and_concurrent_requests",
+        "seconds": 0.4865819000006013
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_invalid_times_and_sources_do_not_create_confirmed_memory",
+        "seconds": 0.4567334000021219
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_missing_or_tampered_source_never_remains_current_and_get_is_read_only",
+        "seconds": 0.5633732999995118
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_model_candidate_requires_explicit_confirmation_and_never_auto_extracts",
+        "seconds": 0.9593648000009125
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_restart_and_replay_restore_records_without_model_or_latest_a_writes",
+        "seconds": 1.0437215999991167
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_source_failure_applicability_and_retraction_are_checked_on_read",
+        "seconds": 0.6585993000007875
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_concurrent_replay_cas_and_transaction_rollback",
+        "seconds": 0.6534978999989107
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_execution_is_independent_user_reported_and_correction_invalidates_old_version",
+        "seconds": 0.7573738999999478
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_followup_and_baseline_corrections_supersede_without_rewriting",
+        "seconds": 0.8027818999980809
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_frozen_baseline_zero_missing_pending_and_hand_checked_mean",
+        "seconds": 0.7630722000030801
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_restart_fact_bytes_mission_inputs_and_read_only_evidence",
+        "seconds": 1.0047947999992175
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_scope_revision_payload_and_post_result_target_rejected",
+        "seconds": 0.5820711999986088
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_speed_game_date_window_waits_for_observed_end_and_no_invented_target",
+        "seconds": 0.6203912000019045
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_unrelated_or_recorded_only_observations_do_not_duplicate_assessment",
+        "seconds": 0.5772193999982846
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_version_mismatch_and_unknown_chronology_are_incomparable",
+        "seconds": 1.6846893999972963
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_explicit_applied_correction_preserves_old_numbers",
+        "seconds": 0.6441283999993175
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_requires_attribute_window_and_preserves_explicit_zero",
+        "seconds": 0.5560370999992301
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_uses_its_own_source_and_ignores_unrelated_profile_corrections",
+        "seconds": 1.032078600001114
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_checkpoint_and_public_feedback_corruption_are_rejected",
+        "seconds": 0.9722553000028711
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_creation_failure_rolls_back_references_and_failed_child_preserves_parent",
+        "seconds": 0.9283092000005126
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_fixed_feedback_latest_snapshot_old_execution_and_new_choice_independence",
+        "seconds": 1.2180125000013504
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_real_manager_coach_and_fingerprint_consume_fixed_feedback",
+        "seconds": 0.982557999999699
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_retry_is_original_task_after_correction_and_restart",
+        "seconds": 1.2746201000009023
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_stale_or_cross_context_sources_create_nothing",
+        "seconds": 0.880111599999509
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_commit_faults_preserve_old_state_and_response_loss_is_idempotent",
+        "seconds": 0.03627249999772175
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_concurrent_compare_and_swap",
+        "seconds": 0.02067460000034771
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_corruption_does_not_reset_data",
+        "seconds": 0.015304200001992285
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_dedup_before_cas_conflict_and_restart",
+        "seconds": 0.019004199999471894
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_empty_actual_initialization_patch_null_and_source_map",
+        "seconds": 0.019190199996955926
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_histories_corrections_sparse_and_manual_confirmation",
+        "seconds": 0.054139799998665694
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_invalid_values_sources_and_legacy_writers_rejected",
+        "seconds": 0.0025710000008984935
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_old_unknown_equal_cross_domain_times_never_override",
+        "seconds": 0.05510850000064238
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_same_observation_id_isolated_by_career_branch_and_player",
+        "seconds": 0.03312990000267746
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_actual_mode_requires_configuration_and_no_demo_fallback",
+        "seconds": 0.005808400001114933
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_all_entrypoints_use_one_source_and_keep_unknown_values",
+        "seconds": 0.11647300000186078
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_predictions_excluded_estimates_preserved_and_corruption_not_hidden",
+        "seconds": 0.09230060000118101
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_snapshot_fixed_across_file_change_and_another_context",
+        "seconds": 0.018806099997163983
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_all_model_tool_sets_are_read_only",
+        "seconds": 4.9700000090524554e-05
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_real_coach_predictions_and_revisions_leave_files_unchanged",
+        "seconds": 0.0045092999971529935
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_budget_exhaustion_is_failed_not_old_completed_or_published",
+        "seconds": 0.0049026000015146565
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_changed_used_hypothesis_invalidates_only_its_consumer",
+        "seconds": 0.004499999999097781
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_dependency_set_version_context_constraints_and_missing_fingerprint",
+        "seconds": 0.028914499998791143
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_display_fields_and_constraint_order_do_not_invalidate",
+        "seconds": 0.004215799999656156
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_removed_new_and_reused_agent_task_id_do_not_inherit_current_results",
+        "seconds": 0.009022800000821007
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_cascades_and_recomputes_only_A_B_C",
+        "seconds": 0.04511139999885927
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_immediately_revokes_report_review_and_reducer_validity",
+        "seconds": 0.004532999999355525
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_scoped_confirmed_feedback_is_semantic_input",
+        "seconds": 0.004298699997889344
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_upstream_failure_revokes_downstream_and_current_review",
+        "seconds": 0.004320000000006985
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_all_capabilities_receive_unique_dependency_in_initial_and_revision_prompts",
+        "seconds": 0.044216800000867806
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_completed_label_without_valid_result_is_not_ready",
+        "seconds": 0.012700400002358947
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_context_is_copied_and_identity_and_versions_come_from_A",
+        "seconds": 0.005484400000568712
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_corrupt_dependency_cycle_fails_closed",
+        "seconds": 0.004407199998240685
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_stale_ancestor_rejects_direct_context_even_before_reconciliation",
+        "seconds": 0.004318600000260631
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_a_normal_task_passes_directly_to_document_with_telemetry",
+        "seconds": 0.041134899998723995
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_b_local_error_revises_only_the_affected_subtask",
+        "seconds": 0.04282059999968624
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_c_conflict_revises_the_minimal_two_subtask_scope",
+        "seconds": 0.04238859999895794
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_d_blocked_waits_for_user_and_does_not_retry_automatically",
+        "seconds": 0.044795199999498436
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_dependency_priority_and_observation_merge",
+        "seconds": 0.004183599998214049
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_e_refuted_hypothesis_enters_replan_and_records_llm_usage",
+        "seconds": 0.04155919999902835
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_f_low_finding_is_kept_and_cannot_start_an_infinite_revision_loop",
+        "seconds": 0.03801509999902919
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_empty_and_model_failure_exit_reasons",
+        "seconds": 0.00010779999865917489
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_hypotheses_are_not_clamped_coerced_or_silently_dropped",
+        "seconds": 5.729999975301325e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_numeric_and_missing_schema",
+        "seconds": 9.659999705036171e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_plan_dependencies_capabilities_and_ids",
+        "seconds": 6.320000102277845e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_tool_budget_never_returns_tool_json",
+        "seconds": 0.0006642000007559545
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_unknown_arguments_execution_and_mixed_tools",
+        "seconds": 0.0005875999995623715
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_fixture_context_or_mixed_versions_cannot_pass",
+        "seconds": 0.0001258000011148397
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_non_personal_events_and_missing_values_are_not_invented_as_matches",
+        "seconds": 8.22000001790002e-05
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_read_only_missing_database_does_not_initialize_a_task_root",
+        "seconds": 0.0012520999989646953
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_ten_is_a_contiguous_exact_current_run_not_just_a_record_count",
+        "seconds": 0.00012889999925391749
+      }
+    ],
+    "protected_file_count": 1150,
+    "protected_changed": [],
+    "source_sha256": {
+      "backend/models.py": "618e09c87a4333e4bf1c075a6de22b83aa226dd57c40579ac51c800aafb3ab78",
+      "backend/store.py": "4cb3180d68ffbe7f5836e70ecbf59aaca5d38d0a33a394e50cedddb35a83e784",
+      "backend/service.py": "ec13db9bc086908e42b9fd00d77f4e617b3003f694da61ee3a959b3360d38b2d",
+      "backend/events.py": "403b280ffd685f833299500d4ed3decf63b32c482d33d27fe901cf7a78efae26",
+      "backend/demo.py": "5970de9346732f3bc7b6a3d01314703ba5880161e2347a5021779462746e2b1d",
+      "backend/main.py": "4117b2878ddb0f94c22ec0fff6c3a948fd5699706c907823542aa9494d98a7e9",
+      "backend/cli.py": "835e7144f8ab2b6b97c5ffa7c02b304f971fc26571b31112df33dc45821dd6b9",
+      "app.py": "ded09fcb4cec29bbc57abdb7a798c4dac9fb9381cee9b4b88bf2648b9fb85147",
+      "utils/sessions.py": "0d763bb391f3432e41e7f34c6a653bebf7ff3bd309252fcdbe7549fae930e6ab",
+      "evaluation/request_fixtures.py": "0ed6afa4c896dbfc2d6cb7a064b1bccc9b8ae61a457d4cbdec25b8828e7a967c",
+      "evaluation/test_m42_requests.py": "0be3625c77ea5b1757394b83fda16d3b8491bdc70a52205801300d839e3a5452",
+      "evaluation/cli_process_fixture.py": "5b5107f92373ef224e48108f584a97f789ed7f108bba4fe06aef8346f1fd40fd",
+      "evaluation/run_m42.py": "5dbcf0e2dff0698ef55136abc824959ad59ceceb647b5ec9041a909519bf02ec"
+    }
+  },
+  "frontend": {
+    "unit": {
+      "pid": 46932,
+      "code": 0
+    },
+    "browser": {
+      "pid": 29072,
+      "code": 0
+    },
+    "browserStats": {
+      "startTime": "2026-10-26T07:46:36.268Z",
+      "duration": 12396.453000000001,
+      "expected": 11,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "passed": true
+  },
+  "unit": {
+    "numTotalTestSuites": 4,
+    "numPassedTestSuites": 4,
+    "numFailedTestSuites": 0,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 10,
+    "numPassedTests": 10,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": true
+  },
+  "cli_after_flush": {
+    "tests": 2,
+    "passed": true,
+    "cases": [
+      "evaluation.test_m42_requests.CLIRequestIdentityTests.test_new_request_replays_across_processes_without_config_latest_or_runtime",
+      "evaluation.test_m42_requests.CLIRequestIdentityTests.test_failed_explanation_returns_failure_code_and_replay_does_not_call_model"
+    ],
+    "seconds": 45.09938780000084,
+    "app_sha256": "0b5892c4fb81ec62ff97dc6cbee2e56f3fef376c4e0078a17cf15b000d5bf284",
+    "scope": "CLI identities flushed before submission; otherwise same behavior as full-02"
+  },
+  "source_sha256_final": {
+    "app.py": "0b5892c4fb81ec62ff97dc6cbee2e56f3fef376c4e0078a17cf15b000d5bf284",
+    "backend/cli.py": "835e7144f8ab2b6b97c5ffa7c02b304f971fc26571b31112df33dc45821dd6b9",
+    "backend/demo.py": "5970de9346732f3bc7b6a3d01314703ba5880161e2347a5021779462746e2b1d",
+    "backend/events.py": "403b280ffd685f833299500d4ed3decf63b32c482d33d27fe901cf7a78efae26",
+    "backend/main.py": "4117b2878ddb0f94c22ec0fff6c3a948fd5699706c907823542aa9494d98a7e9",
+    "backend/models.py": "618e09c87a4333e4bf1c075a6de22b83aa226dd57c40579ac51c800aafb3ab78",
+    "backend/service.py": "ec13db9bc086908e42b9fd00d77f4e617b3003f694da61ee3a959b3360d38b2d",
+    "backend/store.py": "4cb3180d68ffbe7f5836e70ecbf59aaca5d38d0a33a394e50cedddb35a83e784",
+    "evaluation/cli_process_fixture.py": "5b5107f92373ef224e48108f584a97f789ed7f108bba4fe06aef8346f1fd40fd",
+    "evaluation/m42_frontend.mjs": "b02c048936483119795ebaf7969e085ffbe091178ea1a2941bf3265f7906884c",
+    "evaluation/request_fixtures.py": "0ed6afa4c896dbfc2d6cb7a064b1bccc9b8ae61a457d4cbdec25b8828e7a967c",
+    "evaluation/run_m42.py": "5dbcf0e2dff0698ef55136abc824959ad59ceceb647b5ec9041a909519bf02ec",
+    "evaluation/smoke_stage2_native.py": "3952e8f00863f7dbd40670f81d896977214548e2e21e40e9ab3517521d35a245",
+    "evaluation/smoke_web_live.py": "dcb217c561a1f320ca4877c0f2229556fcc267201522fa10021ac22fb678d75f",
+    "evaluation/test_m42_requests.py": "0be3625c77ea5b1757394b83fda16d3b8491bdc70a52205801300d839e3a5452",
+    "evaluation/test_memory_retrieval.py": "664b6b42c9ada0bfa84c7db47f6836154a6c2d3651679656cb98ade4df9df306",
+    "evaluation/test_session_semantics.py": "1fc0a2a0d1b8948ef9cb207a0a75c209acdd22191d3f81001ab2ae28caa9849e",
+    "evaluation/test_web.py": "54a28818d31c1fd96d53fa48d94489413a2e5beb76055633003e69aa12e41d70",
+    "frontend/e2e/m42-requests.spec.ts": "9a2105a23cee90ab26776395601c3773b799c8ef82337af70b8f955013c83479",
+    "frontend/e2e/session-semantics.spec.ts": "a8136e2b9572e1dd6b3a33ce61c68eaf76dfa2856fabbeec0469af30085aa278",
+    "frontend/src/api/missions.ts": "c0b5ce5efc7b52428da1cb84d8c4d275a6535c2c93a705e182024b02f7e1d3fb",
+    "frontend/src/api/pendingRequests.test.ts": "ab6778097d5dbe8686de41c88212f03f7ffda6b951ae358e5062beaa8bf2cbec",
+    "frontend/src/api/pendingRequests.ts": "1ed2d842d99d49ec66321fe088cc6ea4ff56b96d660e45298be5dec75f04ac80",
+    "frontend/src/app/App.tsx": "42501a0f8df630bedf1f187f39ff2971fdca6acd7ebd5793f8e80a60a38f8ef3",
+    "frontend/src/features/conversation/ConversationPanel.tsx": "58b11d79645025bff34712424d790b97710416aacdb6dd66d2ba1ed1144561e2",
+    "frontend/src/features/mission/BlockedInputPanel.tsx": "26d273c1a7908303a7c0b9d63ae55ef60066b10a3cfa24cfd082edd851389393",
+    "frontend/src/features/mission/MissionWorkspace.tsx": "8583f557addd45b471a2a9270a042f4c8644836549ff488153da4c6db0dfa40e",
+    "frontend/src/hooks/useConversation.ts": "23de8682d728c1ee0c4ee3d4e16bc43bae10d71340f91ce14ecac66d6c9550e1",
+    "frontend/src/types/mission.ts": "a318cffb5982f784b189a9135c2177d67aa138660169721f3d4d016d80ac08be",
+    "utils/sessions.py": "0d763bb391f3432e41e7f34c6a653bebf7ff3bd309252fcdbe7549fae930e6ab"
+  },
+  "data_protection": {
+    "files_checked_during_run": 1150,
+    "final_data_files_checked": 1148,
+    "changed": [],
+    "authorized_doc_updates": [
+      "docs/README.md",
+      "docs/guides/运行与验收.md",
+      "docs/guides/排障指南.md",
+      "docs/guides/M4_运行契约_v1.md"
+    ]
+  },
+  "build": {
+    "status": "passed",
+    "typescript": "passed",
+    "main_bundle_kb": 505.45,
+    "warning": "Existing >500 kB chunk advisory retained"
+  },
+  "invalid_attempts": [
+    {
+      "run": "20261026-m42-focus-01",
+      "classification": "test resource cleanup",
+      "reason": "two test-created SQLite connections were not explicitly closed; fixed contextlib.closing"
+    },
+    {
+      "run": "20261026-m42-full-01",
+      "classification": "product regression",
+      "reason": "repeated PRAGMA user_version write changed paused workspace bytes; fixed migration to execute only at version 0; full-02 rerun passed"
+    }
+  ],
+  "not_run": [
+    "paid/external models",
+    "live smoke clients",
+    "real game",
+    "actual workspace migration",
+    "M4.3 bounded execution",
+    "M4.4 cancellation",
+    "formal M4 acceptance"
+  ]
+}

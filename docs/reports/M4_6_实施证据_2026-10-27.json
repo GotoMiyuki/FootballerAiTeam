@@ -1,0 +1,1717 @@
+{
+  "date": "2026-10-27",
+  "completed_task": "M4.6",
+  "milestone_m4_passed": false,
+  "next": "M4.7",
+  "git_base_commit": "dcf6e7bf740d41ab13bfc2e718e3251e0f6afb24",
+  "changes_committed_or_pushed": false,
+  "full_backend": {
+    "root": "local_data/game_imports/m4-implementation/20261027-m46-full-02",
+    "scope": "M4.6 restart policy and current-format compatibility; M4 overall not passed",
+    "full": true,
+    "tests": 221,
+    "passed_gate": true,
+    "seconds": 847.7892845999995,
+    "failures": [],
+    "errors": [],
+    "skips": [],
+    "cases": [
+      {
+        "test": "evaluation.test_m46_recovery.ProcessRecoveryTests.test_live_checkpoint_writer_refuses_restart_before_database_mutation",
+        "seconds": 0.8085590999999113
+      },
+      {
+        "test": "evaluation.test_m46_recovery.ProcessRecoveryTests.test_normal_shutdown_is_separate_from_kill_and_preserves_pauses_and_delivery",
+        "seconds": 55.795252799999616
+      },
+      {
+        "test": "evaluation.test_m46_recovery.ProcessRecoveryTests.test_real_owner_kill_restart_lifecycle_matrix",
+        "seconds": 187.6364635
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_both_pauses_reject_changed_checkpoint_material_before_acceptance",
+        "seconds": 3.7781865999995716
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_fixed_input_versions_and_hashes_refused_before_any_resume_write",
+        "seconds": 1.5805485999999291
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_nonempty_history_memory_and_feedback_survive_both_pause_restarts",
+        "seconds": 1.91328490000069
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_old_pass_and_completed_flags_do_not_authorize_publication",
+        "seconds": 0.1026666000007026
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_operation_authority_overrides_a_stale_blocked_mission",
+        "seconds": 0.27262440000049537
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_restart_explanation_is_atomic_visible_and_once_only",
+        "seconds": 0.5631490000005215
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_restart_failure_rolls_back_operation_mission_message_and_events",
+        "seconds": 0.18090090000077907
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_restart_preserves_completed_failed_timeout_and_cancelled_cleanup",
+        "seconds": 0.6928533999998763
+      },
+      {
+        "test": "evaluation.test_m46_recovery.RecoveryTests.test_workspace_and_checkpoint_future_or_damaged_formats_are_not_repaired",
+        "seconds": 0.4030459999994491
+      },
+      {
+        "test": "evaluation.test_m46_migrations.LegacyLayoutTests.test_incompatible_existing_optional_tables_refuse_before_legacy_upgrade",
+        "seconds": 0.10420680000061111
+      },
+      {
+        "test": "evaluation.test_m46_migrations.LegacyLayoutTests.test_known_legacy_and_compatible_partial_layouts_upgrade_without_losing_rows",
+        "seconds": 0.22094780000043102
+      },
+      {
+        "test": "evaluation.test_m46_finalization.FinalizationRecoveryTests.test_completed_and_paused_unsettled_segments_stop_execution_clock",
+        "seconds": 0.6523852000000261
+      },
+      {
+        "test": "evaluation.test_m46_finalization.PublishedProcessTailTests.test_real_published_owner_crash_closes_accounting_without_revoking_delivery",
+        "seconds": 22.84506969999984
+      },
+      {
+        "test": "evaluation.test_m45_metering.HttpReplayTests.test_real_http_sse_replay_does_not_charge_calls_again",
+        "seconds": 1.5292600999991919
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_legacy_and_crash_do_not_become_zero_usage",
+        "seconds": 0.47693470000012894
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_logs_correlate_identity_without_provider_error_or_prompt",
+        "seconds": 0.41833070000029693
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_pause_wait_is_separate_persistent_and_request_replay_does_not_add_it_again",
+        "seconds": 0.7786329000000478
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_publication_rollback_keeps_already_observed_response_usage",
+        "seconds": 0.36461489999965124
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_queue_cancel_records_wait_and_known_zero_model_calls",
+        "seconds": 0.206671599999936
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_timeout_and_cancel_keep_inflight_usage_unknown",
+        "seconds": 15.772748700000193
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringServiceTests.test_two_explanations_are_independent_and_do_not_rewrite_report_generation",
+        "seconds": 15.482905400000163
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringUnitTests.test_sdk_retry_success_failure_400_missing_and_explicit_zero",
+        "seconds": 1.847793200000524
+      },
+      {
+        "test": "evaluation.test_m45_metering.MeteringUnitTests.test_unknown_partial_zero_and_legacy_graph_usage_are_distinct",
+        "seconds": 9.800000043469481e-05
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_both_pauses_cancel_without_runtime_or_latest_read_and_survive_restart",
+        "seconds": 0.4761868000005052
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_cancel_after_candidate_then_late_result_cannot_publish_or_project",
+        "seconds": 0.3682174000005034
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_cancel_receipt_failure_rolls_back_revocation_and_does_not_signal_runner",
+        "seconds": 0.3561717000002318
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_complete_and_cancel_race_has_one_consistent_winner",
+        "seconds": 2.1612883999996484
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_completed_first_cancel_is_terminal_receipt_without_withdrawing_delivery",
+        "seconds": 0.38767639999969106
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_explanation_cancel_keeps_original_delivery_and_its_ec_records",
+        "seconds": 0.4017746999998053
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_explanation_commit_failure_never_leaves_an_answer_with_failed_operation",
+        "seconds": 0.39343079999980546
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_publication_failure_rolls_back_report_message_events_and_operation_together",
+        "seconds": 0.38015850000010687
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_queued_cancel_frees_capacity_and_never_invokes_worker",
+        "seconds": 0.17841950000001816
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_real_owned_worker_is_killed_before_cleanup_complete_and_next_task_runs",
+        "seconds": 0.4297333000004073
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_repeated_cancel_and_stale_generation_do_not_target_a_new_run",
+        "seconds": 0.4378613000008045
+      },
+      {
+        "test": "evaluation.test_m44_cancellation.CancellationTests.test_target_validation_cross_entry_identity_and_cancelled_parent_retry",
+        "seconds": 0.42646809999951074
+      },
+      {
+        "test": "evaluation.test_m44_cli.CancellationCLITests.test_cli_cancels_running_http_owner_without_acquiring_its_writer_lock",
+        "seconds": 15.605365200000051
+      },
+      {
+        "test": "evaluation.test_m44_cli.CancellationCLITests.test_local_pause_cancel_replay_and_continue_never_invoke_models",
+        "seconds": 29.1479946999998
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_application_retry_is_a_new_task_and_binds_parent_context",
+        "seconds": 0.549093300000095
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_concurrent_duplicate_submissions_create_and_enqueue_once",
+        "seconds": 0.4865490000001955
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_create_transaction_rolls_back_every_record_on_failure",
+        "seconds": 0.4848394000000553
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_creation_request_survives_restart_and_conflicting_content_is_rejected",
+        "seconds": 0.6598764000000301
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_invalid_context_history_and_external_references_create_nothing",
+        "seconds": 0.6600773000000117
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_latest_read_failure_and_failed_child_preserve_parent_report",
+        "seconds": 0.5376440999998522
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_new_identity_freezes_v2_even_if_v3_arrives_before_execution",
+        "seconds": 0.8582248000002437
+      },
+      {
+        "test": "evaluation.test_reevaluation.ReevaluationTests.test_selected_history_and_new_requirements_enter_real_manager_and_coach_prompts",
+        "seconds": 0.6813711000004332
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_cross_process_pauses_keep_frozen_input_and_document_runs_once",
+        "seconds": 22.32003309999982
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_cumulative_budget_survives_pause_and_limits_resume",
+        "seconds": 7.404660000000149
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_model_and_tool_hangs_are_killed_and_second_execution_runs",
+        "seconds": 1.8129910999996355
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_owner_crash_kills_real_service_worker_and_restart_does_not_replay",
+        "seconds": 0.671448899999632
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_protocol_failures_kill_the_owned_worker",
+        "seconds": 0.7347773000001325
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_queue_expiry_does_not_wait_for_the_running_hang",
+        "seconds": 0.49095590000069933
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_queue_full_has_no_writes_and_replay_bypasses_admission",
+        "seconds": 0.2819915999998557
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_shutdown_stops_admission_cleans_workers_and_releases_writer",
+        "seconds": 0.3029996999994182
+      },
+      {
+        "test": "evaluation.test_m43_runtime.BoundedRuntimeTests.test_startup_and_whole_execution_timeouts_are_distinct",
+        "seconds": 1.6431894999996075
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_all_seven_roles_and_explanation_emit_the_same_model_span",
+        "seconds": 0.0005023000003347988
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_sdk_timeouts_and_attempts_use_policy_for_all_shared_model_clients",
+        "seconds": 0.9617812999995294
+      },
+      {
+        "test": "evaluation.test_m43_runtime.ProviderPolicyTests.test_search_transport_timeout_is_clipped_to_remaining_execution",
+        "seconds": 0.026143799999772455
+      },
+      {
+        "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_terminal_and_stale_generation_have_no_commit_authority",
+        "seconds": 5.469999996421393e-05
+      },
+      {
+        "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_unknown_or_unbounded_configuration_fails_closed",
+        "seconds": 0.00018629999976838008
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_checkpoint_survives_kill_and_new_process_resumes",
+        "seconds": 14.688561399999344
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_failed_job_assignment_never_admits_child",
+        "seconds": 0.009491499999967346
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_normal_existing_graph_finishes_and_closes",
+        "seconds": 7.709768300000178
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_owner_kill_removes_its_checkpoint_child",
+        "seconds": 7.401727200000096
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_permanent_block_is_bounded_and_next_worker_can_run",
+        "seconds": 7.995731299999534
+      },
+      {
+        "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_worker_without_bootstrap_admission_does_no_writes",
+        "seconds": 0.18923139999969862
+      },
+      {
+        "test": "evaluation.test_m43_admission.AdmissionAndHistoryTests.test_full_queue_rejects_create_explain_continuation_and_input_without_writes",
+        "seconds": 0.24363530000027822
+      },
+      {
+        "test": "evaluation.test_m43_admission.AdmissionAndHistoryTests.test_restart_does_not_label_unrecorded_running_time_complete",
+        "seconds": 0.17527309999968566
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_explanation_replay_retains_original_report_and_runs_model_once",
+        "seconds": 29.703103799999553
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_failed_explanation_returns_failure_code_and_replay_does_not_call_model",
+        "seconds": 30.395866699999715
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_input_receipt_replay_does_not_approve_the_next_pause",
+        "seconds": 22.388709899999412
+      },
+      {
+        "test": "evaluation.test_m42_requests.CLIRequestIdentityTests.test_new_request_replays_across_processes_without_config_latest_or_runtime",
+        "seconds": 14.90673870000046
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_acceptance_transaction_rolls_back_receipt_message_event_and_operation",
+        "seconds": 0.431674400000702
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_concurrent_creation_and_restart_replay_never_read_latest_or_enqueue_twice",
+        "seconds": 0.1330313999997088
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_duplicate_approval_returns_same_receipt_and_document_once",
+        "seconds": 0.36419800000021496
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_accepted_before_restart_stays_failed_without_harming_report",
+        "seconds": 0.43973129999994853
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_explanation_has_independent_identity_and_once_only_model_effect",
+        "seconds": 0.3710925999994288
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_future_workspace_version_is_refused_without_rewriting_database",
+        "seconds": 0.013374299999668438
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_later_pause_with_identical_fields_rejects_old_form",
+        "seconds": 0.60615929999949
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_legacy_pause_adoption_is_explicit_and_does_not_rewrite_fixed_input",
+        "seconds": 0.35860700000012
+      },
+      {
+        "test": "evaluation.test_m42_requests.RequestIdentityTests.test_old_write_client_is_rejected_instead_of_receiving_a_generated_identity",
+        "seconds": 0.07834140000068146
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_metadata_only_history_is_read_only_and_needs_no_model_config",
+        "seconds": 0.016847799999595736
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_same_process_approval_delivers_only_publishable_report",
+        "seconds": 0.09886939999978495
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_failed_or_empty_explanation_does_not_damage_report_and_followup_is_compatible",
+        "seconds": 0.7772633999993559
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_history_and_explanation_keep_original_version_and_never_run_graph",
+        "seconds": 0.7138506999999663
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_missing_or_incompatible_checkpoint_rejected_before_mutation",
+        "seconds": 1.880375699999604
+      },
+      {
+        "test": "evaluation.test_session_semantics.SessionSemanticsTests.test_restart_missing_input_and_report_approval_resume_same_snapshot",
+        "seconds": 0.7318138000000545
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_blocked_validation_and_resume_across_restart",
+        "seconds": 0.2086397000002762
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_live_application_adapter_with_real_graph_and_durable_hitl",
+        "seconds": 0.640465899999981
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_pass_report_history_restart_and_followup",
+        "seconds": 0.21778139999969426
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_real_agents_fail_consistently_in_api_events_and_saved_state",
+        "seconds": 0.5691082000003007
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_revision_and_replan_are_distinct",
+        "seconds": 0.664784000000509
+      },
+      {
+        "test": "evaluation.test_web.WebTests.test_unknown_mission_and_cross_conversation_rejected",
+        "seconds": 0.16611319999992702
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.AssessmentMemoryTests.test_e_assessment_versions_currentness_and_read_only_projection",
+        "seconds": 1.085073199999897
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_context_mode_retractions_budgets_and_disabled_no_source_read",
+        "seconds": 0.5242219000001569
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_continuation_default_hash_retry_and_explicit_opt_out",
+        "seconds": 0.4819830999995247
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_missing_or_corrupt_packet_and_checkpoint_rejected_without_latest_fallback",
+        "seconds": 0.5828871000003346
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_old_task_executes_and_explains_saved_revision_new_task_uses_correction",
+        "seconds": 0.7994792999998026
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_real_manager_and_coach_prompts_share_saved_source_and_replan_keeps_it",
+        "seconds": 0.44182290000026114
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_relevance_before_recency_candidates_and_time_filters_read_only",
+        "seconds": 0.5108948999995846
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_task_scope_changes_only_consumed_fingerprints_and_reconciliation",
+        "seconds": 0.4342996999994284
+      },
+      {
+        "test": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_unsynced_e_records_are_checked_and_freeze_historical_not_execution_authority",
+        "seconds": 0.9717474000008224
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_approval_resumes_in_second_process_only_document_with_original_input",
+        "seconds": 15.066416699999536
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_completed_history_is_read_only_without_configuration_or_latest_access",
+        "seconds": 36.9206992999998
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_failed_cli_task_retry_creates_child_and_never_resumes_original",
+        "seconds": 15.271646799999871
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_index_empty_read_does_not_initialize_directory_and_legacy_is_unchanged",
+        "seconds": 0.016310199999679753
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_invalid_missing_checkpoint_or_snapshot_refuses_before_any_mutation",
+        "seconds": 59.045470699999896
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_missing_input_then_approval_survive_three_distinct_processes",
+        "seconds": 22.609147400000438
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_one_writer_guard_blocks_other_process_but_allows_read_only_history",
+        "seconds": 29.442053199999464
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_related_cli_uses_new_identity_latest_snapshot_and_persistent_dedup",
+        "seconds": 38.15325969999958
+      },
+      {
+        "test": "evaluation.test_cli_persistence.CLIPersistenceTests.test_unrelated_text_cannot_approve_or_replan_and_exit_preserves_pause",
+        "seconds": 15.140884400000687
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_actual_fact_bytes_and_hash_unchanged_after_all_feedback_operations",
+        "seconds": 0.5453288999997312
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_choice_execution_difference_withdrawal_correction_and_restart",
+        "seconds": 0.7772565000004761
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_context_mission_revision_and_spoofed_source_rejected",
+        "seconds": 0.8591188000000329
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_correction_must_reference_same_recommendation_current_execution",
+        "seconds": 0.8928752000001623
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_execution_without_adoption_and_distinct_windows_remain_independent",
+        "seconds": 0.5744508000007045
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_expired_or_withdrawn_adoption_rejected_but_history_and_replay_survive",
+        "seconds": 0.5760670999998183
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_invalid_windows_blank_feedback_and_incomplete_corrections_rejected",
+        "seconds": 0.4250645000001896
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_request_replay_conflict_concurrent_cas_and_no_duplicate_events",
+        "seconds": 0.7289694000000964
+      },
+      {
+        "test": "evaluation.test_recommendation_actions.RecommendationActionTests.test_transaction_failure_rolls_back_object_head_request_and_event",
+        "seconds": 0.9261488000001918
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_actual_repository_projection_preserves_fact_hash_and_does_not_certify_game_support",
+        "seconds": 0.41110290000051464
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_concurrent_reprojection_restart_and_get_are_idempotent_and_read_only",
+        "seconds": 0.7586311000004571
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_context_isolation_source_failure_retains_history_and_withdraws_once",
+        "seconds": 0.49028530000032333
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_corrupt_stored_content_baseline_or_review_never_passes_current_source_verification",
+        "seconds": 0.5017416999999114
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_current_applicability_changes_without_rewriting_historical_record_or_report",
+        "seconds": 0.5305039000004399
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_delivery_projects_fixed_source_and_unknown_execution_without_touching_facts",
+        "seconds": 0.4595168999994712
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_demo_does_not_project_specialist_or_report_text_as_verified_suggestions",
+        "seconds": 0.17971080000006623
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_failed_unreviewed_invalidated_and_tampered_sources_never_return_current",
+        "seconds": 0.45666800000071817
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_projection_transaction_rollback_does_not_withdraw_valid_parent_report",
+        "seconds": 0.7929088999999294
+      },
+      {
+        "test": "evaluation.test_recommendations.RecommendationTests.test_same_agent_multiple_tasks_are_distinct_and_new_versions_supersede_without_overwrite",
+        "seconds": 0.8940669000003254
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_all_specialist_capabilities_fail_without_default_answers",
+        "seconds": 0.08646850000059203
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_body_rejects_wrong_values_citations_and_stale_report",
+        "seconds": 0.009657900000092923
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_document_modes_fail_and_normal_delivery_is_version_checked",
+        "seconds": 0.049370900000212714
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_graph_rejects_self_reported_success_without_schema",
+        "seconds": 0.036412100000234204
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_planning_failure_never_becomes_document_only_success",
+        "seconds": 0.004633099999409751
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_report_keeps_literal_objective_gate_for_feedback_reports",
+        "seconds": 0.004317599999922095
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_review_failures_and_old_records_never_pass",
+        "seconds": 0.014943000000130269
+      },
+      {
+        "test": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_valid_specialist_schema_paths",
+        "seconds": 0.016389100000196777
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_actual_a_bytes_and_frozen_mission_inputs_are_unchanged",
+        "seconds": 0.5661076000005778
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_context_filtering_and_e_reference_write_protection",
+        "seconds": 0.9416686999993544
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_decisions_executions_corrections_and_read_time_missing_sync",
+        "seconds": 0.8014075000000958
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_empty_chat_and_a_goals_do_not_create_preferences_or_actions",
+        "seconds": 0.5725642000006701
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_pagination_does_not_drop_or_duplicate_decisions",
+        "seconds": 8.467776199999207
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_event_projection_and_user_transaction_failures_roll_back",
+        "seconds": 0.4894844999998895
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_explicit_user_revisions_cas_retraction_and_concurrent_requests",
+        "seconds": 0.43889690000014525
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_invalid_times_and_sources_do_not_create_confirmed_memory",
+        "seconds": 0.4374326999995901
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_missing_or_tampered_source_never_remains_current_and_get_is_read_only",
+        "seconds": 0.5443542000002708
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_model_candidate_requires_explicit_confirmation_and_never_auto_extracts",
+        "seconds": 0.4268709999996645
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_restart_and_replay_restore_records_without_model_or_latest_a_writes",
+        "seconds": 1.0715319000000818
+      },
+      {
+        "test": "evaluation.test_career_memory.CareerMemoryTests.test_source_failure_applicability_and_retraction_are_checked_on_read",
+        "seconds": 0.6416727000005267
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_concurrent_replay_cas_and_transaction_rollback",
+        "seconds": 0.6312827000001562
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_execution_is_independent_user_reported_and_correction_invalidates_old_version",
+        "seconds": 0.740562900000441
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_followup_and_baseline_corrections_supersede_without_rewriting",
+        "seconds": 0.790916500000094
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_frozen_baseline_zero_missing_pending_and_hand_checked_mean",
+        "seconds": 0.7193230000002586
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_restart_fact_bytes_mission_inputs_and_read_only_evidence",
+        "seconds": 0.6477961000000505
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_scope_revision_payload_and_post_result_target_rejected",
+        "seconds": 0.9249660000004951
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_speed_game_date_window_waits_for_observed_end_and_no_invented_target",
+        "seconds": 0.5670659999996133
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_unrelated_or_recorded_only_observations_do_not_duplicate_assessment",
+        "seconds": 0.5691805999995267
+      },
+      {
+        "test": "evaluation.test_assessments.AssessmentTests.test_version_mismatch_and_unknown_chronology_are_incomparable",
+        "seconds": 1.6532318000008672
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_explicit_applied_correction_preserves_old_numbers",
+        "seconds": 0.6018893999998909
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_requires_attribute_window_and_preserves_explicit_zero",
+        "seconds": 0.6298659000003681
+      },
+      {
+        "test": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_uses_its_own_source_and_ignores_unrelated_profile_corrections",
+        "seconds": 0.6287407999998322
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_checkpoint_and_public_feedback_corruption_are_rejected",
+        "seconds": 1.2885003999999753
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_creation_failure_rolls_back_references_and_failed_child_preserves_parent",
+        "seconds": 0.9740492999999333
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_fixed_feedback_latest_snapshot_old_execution_and_new_choice_independence",
+        "seconds": 1.1884958999999071
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_real_manager_coach_and_fingerprint_consume_fixed_feedback",
+        "seconds": 0.9262906000003568
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_retry_is_original_task_after_correction_and_restart",
+        "seconds": 0.8443268000000899
+      },
+      {
+        "test": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_stale_or_cross_context_sources_create_nothing",
+        "seconds": 1.428197000000182
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_commit_faults_preserve_old_state_and_response_loss_is_idempotent",
+        "seconds": 0.046883400000297115
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_concurrent_compare_and_swap",
+        "seconds": 0.026805700000295474
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_corruption_does_not_reset_data",
+        "seconds": 0.01749130000007426
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_dedup_before_cas_conflict_and_restart",
+        "seconds": 0.020192100000713253
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_empty_actual_initialization_patch_null_and_source_map",
+        "seconds": 0.02338640000016312
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_histories_corrections_sparse_and_manual_confirmation",
+        "seconds": 0.07663049999973737
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_invalid_values_sources_and_legacy_writers_rejected",
+        "seconds": 0.0025144999999611173
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_old_unknown_equal_cross_domain_times_never_override",
+        "seconds": 0.06676100000004226
+      },
+      {
+        "test": "evaluation.test_player_imports.PlayerImportTests.test_same_observation_id_isolated_by_career_branch_and_player",
+        "seconds": 0.031243800000083866
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_actual_mode_requires_configuration_and_no_demo_fallback",
+        "seconds": 0.006626299999879848
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_all_entrypoints_use_one_source_and_keep_unknown_values",
+        "seconds": 0.11623559999952704
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_predictions_excluded_estimates_preserved_and_corruption_not_hidden",
+        "seconds": 0.10694630000034522
+      },
+      {
+        "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_snapshot_fixed_across_file_change_and_another_context",
+        "seconds": 0.021879900000385533
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_all_model_tool_sets_are_read_only",
+        "seconds": 5.870000040886225e-05
+      },
+      {
+        "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_real_coach_predictions_and_revisions_leave_files_unchanged",
+        "seconds": 0.004449400000339665
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_budget_exhaustion_is_failed_not_old_completed_or_published",
+        "seconds": 0.00501929999973072
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_changed_used_hypothesis_invalidates_only_its_consumer",
+        "seconds": 0.004302000000279804
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_dependency_set_version_context_constraints_and_missing_fingerprint",
+        "seconds": 0.027347500000360014
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_display_fields_and_constraint_order_do_not_invalidate",
+        "seconds": 0.004204400000162423
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_removed_new_and_reused_agent_task_id_do_not_inherit_current_results",
+        "seconds": 0.009109900000112248
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_cascades_and_recomputes_only_A_B_C",
+        "seconds": 0.043426399999589194
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_immediately_revokes_report_review_and_reducer_validity",
+        "seconds": 0.004620799999429437
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_scoped_confirmed_feedback_is_semantic_input",
+        "seconds": 0.004544299999906798
+      },
+      {
+        "test": "evaluation.test_result_invalidation.ResultInvalidationTests.test_upstream_failure_revokes_downstream_and_current_review",
+        "seconds": 0.004501400000663125
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_all_capabilities_receive_unique_dependency_in_initial_and_revision_prompts",
+        "seconds": 0.04129009999996924
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_completed_label_without_valid_result_is_not_ready",
+        "seconds": 0.01057310000032885
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_context_is_copied_and_identity_and_versions_come_from_A",
+        "seconds": 0.0035654000002978137
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_corrupt_dependency_cycle_fails_closed",
+        "seconds": 0.003503899999486748
+      },
+      {
+        "test": "evaluation.test_dependency_context.DependencyContextTests.test_stale_ancestor_rejects_direct_context_even_before_reconciliation",
+        "seconds": 0.003703000000314205
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_a_normal_task_passes_directly_to_document_with_telemetry",
+        "seconds": 0.037060599999676924
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_b_local_error_revises_only_the_affected_subtask",
+        "seconds": 0.03987719999986439
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_c_conflict_revises_the_minimal_two_subtask_scope",
+        "seconds": 0.04310410000016418
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_d_blocked_waits_for_user_and_does_not_retry_automatically",
+        "seconds": 0.042539600000054634
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_dependency_priority_and_observation_merge",
+        "seconds": 0.0038993999996819184
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_e_refuted_hypothesis_enters_replan_and_records_llm_usage",
+        "seconds": 0.04189850000057049
+      },
+      {
+        "test": "evaluation.test_looping_plan.LoopingPlanContractTests.test_f_low_finding_is_kept_and_cannot_start_an_infinite_revision_loop",
+        "seconds": 0.0332990000006248
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_empty_and_model_failure_exit_reasons",
+        "seconds": 0.00011369999992894009
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_hypotheses_are_not_clamped_coerced_or_silently_dropped",
+        "seconds": 5.3200000365905e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_numeric_and_missing_schema",
+        "seconds": 8.799999977782136e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_plan_dependencies_capabilities_and_ids",
+        "seconds": 5.880000026081689e-05
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_tool_budget_never_returns_tool_json",
+        "seconds": 0.015830199999982142
+      },
+      {
+        "test": "evaluation.test_agent_output_validation.OutputValidationTests.test_unknown_arguments_execution_and_mixed_tools",
+        "seconds": 0.0009183000001939945
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_fixture_context_or_mixed_versions_cannot_pass",
+        "seconds": 0.00012129999959142879
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_non_personal_events_and_missing_values_are_not_invented_as_matches",
+        "seconds": 7.659999937459361e-05
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_read_only_missing_database_does_not_initialize_a_task_root",
+        "seconds": 0.0012697000001935521
+      },
+      {
+        "test": "evaluation.test_stage3_audit.Stage3AuditTests.test_ten_is_a_contiguous_exact_current_run_not_just_a_record_count",
+        "seconds": 0.00012760000026901253
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_collector_keeps_lock_through_receipt_and_nested_imports",
+        "seconds": 1.3377974000004542
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_different_task_dirs_and_contexts_still_share_actual_lock",
+        "seconds": 2.114436300000307
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_killed_writer_releases_root_and_task_locks",
+        "seconds": 1.4351067999996303
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_two_processes_cannot_lose_confirmed_observations",
+        "seconds": 1.7168998000006468
+      },
+      {
+        "test": "evaluation.test_m41_writer_lock.ActualWriterReentrancyTests.test_collector_style_nested_owner_and_competing_thread",
+        "seconds": 0.01944069999990461
+      }
+    ],
+    "protected_file_count": 1150,
+    "protected_changed": [],
+    "source_sha256": {
+      "backend/storage_contracts.py": "2ef08f8dd8cb5dc49deb54c172e32df3c920a301b605f06c002af731911cb188",
+      "backend/task_context.py": "3f44f2a43e57a67e5ff9f854704b1d5ca5a479c2eac77e205db4b1c6919c919f",
+      "backend/runtime.py": "0a270b382e92b12215e5ebe9754b122bae554464b2c45bc34c7c0652bf532c6b",
+      "backend/writer_lock.py": "89135e1336379ee96f945799672893fb96189ea871ed8df1e89b04c2c9054fce",
+      "evaluation/m46_worker.py": "da680ce32363a02ecdeaf165a483a2874f7b08d221118278720c2286681df8db",
+      "evaluation/m46_owner.py": "7faed6b85652dc71988bd6504801351d2a5132b3f440b89c5937d47cd1e6178a",
+      "evaluation/test_m46_recovery.py": "726b58a411d3e863bc544f63b66e156514e8338d27e0feb1b1e8364352f3a936",
+      "evaluation/test_m46_migrations.py": "a6212d051d0def6d3cfbd01b47341df87c6815f6b6d610e3490ce9b211d617e9",
+      "evaluation/test_m46_finalization.py": "60018336ecffd2193c52b320cb6f2c70873c61fcf7d8a52a6bf8174c373886a9",
+      "evaluation/run_m46.py": "f70cd067bfd4ed2b7b589f0030ae4ac719e45db9b5c75a39991377c901b89a2f",
+      "backend/operation_metrics.py": "44c56ef77374a8464edb215f97f1b155449bd26dfc87303c6b503ac1ada690fb",
+      "utils/telemetry.py": "d51a67ded540ef03c3d451b78115874f1452733600799c5769840d5e37f8c530",
+      "evaluation/m45_worker.py": "ec73955e29ae336eddee636bc7d62e974b0f39218fdfaca239cebe6d5b46bf35",
+      "evaluation/test_m45_metering.py": "a518c301a9d0ec37a51281a4d4fbae6b51e81306932ac5c919dc5cbda7dffb54",
+      "evaluation/run_m45.py": "8ac88aa49ad7d83f67b5cdf05d077568e7b7cb81c6721c53e7eade1370bff7ca",
+      "backend/continuations.py": "554fcfbbb0e9418183e3bdee4566cc1daca384fbe9bd94e6ba2ba1e39e9e2cde",
+      "backend/store.py": "21abaa7cd8c1d0e654e58d7f1ae2cc35d72b54c41591921923e50dcd72746363",
+      "backend/events.py": "c817b343acd0cb0d713631f202471cf890298b8c9366ecdd89bae9915f0cf0aa",
+      "app.py": "620a3589bc90621958bbf4c6e48b5d007340dee0b444615c6991907ad9690e01",
+      "utils/sessions.py": "f381108ec38ce6578da5b7bff1713423678ec334ea148b2b9d9cdef03abe7b53",
+      "career_actions/application.py": "e8be2d779d29f65ec8f354d64c009ae4446bb48ca5bdf575f8fa6f9b38849280",
+      "evaluation/test_m44_cancellation.py": "e03af805647ef5f6526ca253cf398f2eeac47d21748305f59624fdc0cd826c59",
+      "evaluation/test_m44_cli.py": "fb41cbb202e501d423701bd702810d03e15d275fe10b2938b7d91a9de351c203",
+      "evaluation/m44_api_fixture.py": "376bfb2d9b3a55e4d0abbb695a204a2c4824f15d5ba0b96ce9a3e530e86be72e",
+      "evaluation/run_m44.py": "f3912fae2c1f5b195641c871fdb78ca617d9d5adaa45c244de38d6b271960351",
+      "evaluation/test_memory_retrieval.py": "dc0e2ad8f7100c31514240527adca019c1ba195f4588a97310736010d33c3ea5",
+      "evaluation/test_feedback_followups.py": "ea37df95d6849f595cf1c1ee9d4055f5359ae1cea9700d9e35278d1e791265d3",
+      "evaluation/test_reevaluation.py": "aeedae7fc6281fb9d84312e23e39aaff15faec0be576ac287dd971c0ed099381",
+      "backend/call_limits.py": "7d32fe545e33eff2c550f78c1fe36a584b457dd403377499bb9689171f558ccf",
+      "backend/execution_worker.py": "e6611b6ed6960fee23e2b9e7b7656882f62726736e0e566443d70d4ac0c3aff7",
+      "backend/process_runner.py": "669bf07c751c0dbab93a0df65194e8feae8d35b3b5cca80fdfc722e0e5169df3",
+      "backend/process_supervisor.py": "15e750344c4b3ad49d4718a05f60516f00c4da08b6f6c2d36c199e7357ad8368",
+      "backend/runtime_contracts.py": "c7352814ccad3b82309dfe461cb39fca7c937a40e62bc758e9009b2c8e59cb64",
+      "backend/task_queue.py": "62fc40db781733f8ac5123918dc2ae29124901524d83cb0fa787e2bd61d30167",
+      "backend/service.py": "d9ac43247536fcf95d5999155ceb1b7e5e494389bf209de6ee3af61ddd3ff98e",
+      "backend/main.py": "0246ab9f700c74a4510e6377e5a712eced116506729269996e4550105bb4b25c",
+      "backend/models.py": "ad49a86de46def11aefa2a109847d10c2a08bf5b0d2955a1efd02a0ceff0515d",
+      "backend/demo.py": "cde76b87ae4c3a9c25aad4c1edf54eae721936f0c5cb3470c1bf44e193189343",
+      "agents/base.py": "de9b9b0146f89ccc2726f2f9f3d2cd1f03abe80c0c980407e3a8fda2dda990c1",
+      "utils/helpers.py": "776e169173c7d211e55b2240d5e91b83efef1dfc05ac4222eef21e9c2958bf9c",
+      "tools/search.py": "2047373a771332995d2650b3004bc1e04a2201d56a01b68b650180108a4b170e",
+      "evaluation/runtime_fixture.py": "dd36b959805d302317341ac785b502ec3f3ccf298d332487403b390890806790",
+      "evaluation/m43_worker.py": "28cb2a9ec44f23abb9a4a76eec9f4f4f684d788b5dd38f798f1c9fd40e287631",
+      "evaluation/m43_owner_probe.py": "b3fb812cf673c63e24ecaec08cf9fd35d89c6686c6419597f879313259a6c930",
+      "evaluation/test_m43_runtime.py": "f49e9b2686893a7ae976a971aab4de3a7625aa1e0f5a271d2d9c9e36e8684ab4",
+      "evaluation/test_session_semantics.py": "ab76021afa3bcfb48fc8b254c771536ece45112997aee90f480b4e554e95e20f",
+      "evaluation/test_web.py": "b66d6b5feb6cd8906f675415fad6d3ddcb725076847ba73580d4bad3f53212d5",
+      "evaluation/cli_process_fixture.py": "8bd913fb98d85b19782531603671bde4cf44dcccf527b5d9e18c664468be33a2",
+      "evaluation/run_m43.py": "5f704cff467e1e455ab2abf50ecac1e171546ac215628d18fce7fd6e614c1c71",
+      "evaluation/test_m43_admission.py": "d1da670e7bf3fc1c4da6caad880590e4cb0e18a21e54a0891afe084469525931"
+    }
+  },
+  "new_m46_case_count": 16,
+  "current_sources_match_full_run": true,
+  "frontend": {
+    "root": "local_data/game_imports/m4-implementation/20261027-m46-frontend-01",
+    "unit": {
+      "pid": 34616,
+      "code": 0
+    },
+    "browser": {
+      "pid": 44516,
+      "code": 0
+    },
+    "browserStats": {
+      "startTime": "2026-10-26T16:45:04.978Z",
+      "duration": 27578.07,
+      "expected": 24,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "passed": true,
+    "unit_counts": {
+      "numTotalTests": 14,
+      "numPassedTests": 14,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "browser_cases": [
+      {
+        "file": "contracts.spec.ts",
+        "title": "failed: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "contracts.spec.ts",
+        "title": "invalidated: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "contracts.spec.ts",
+        "title": "legacy: accurate result, review and unknown player display",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost create response: reload reuses request and draft conversation",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost create response: edited intent gets a new request",
+        "ok": true
+      },
+      {
+        "file": "m42-requests.spec.ts",
+        "title": "M4.2 lost input response replays exact request; later same-field pause starts empty",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 lost cancel response reloads the same target and request, then observes cleanup",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 stale pause cancel is rejected and the refreshed pause has a new target identity",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 explanation cancel preserves original report",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 explanation cancel loses to completion",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 a late cancel response cannot switch or overwrite the newly selected mission",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 cancelled checkpoint results are not offered as history for a retry",
+        "ok": true
+      },
+      {
+        "file": "m44-cancellation.spec.ts",
+        "title": "M4.4 cancelling an active mission resets the associated-task draft to retry",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 report generation, two explanations and known partial usage remain separate",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 legacy and interrupted usage render unknown totals, not zero",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 failed explanation shows unknown usage and the correct new-request action",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 equal revisions can advance user waiting time while execution stays fixed",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 an older HTTP runtime response cannot roll back newer operation counters",
+        "ok": true
+      },
+      {
+        "file": "m45-runtime.spec.ts",
+        "title": "M4.5 a previous mission response does not contaminate the newly selected runtime",
+        "ok": true
+      },
+      {
+        "file": "reevaluation.spec.ts",
+        "title": "lost response, reload, retry keeps the exact request",
+        "ok": true
+      },
+      {
+        "file": "reevaluation.spec.ts",
+        "title": "lost response, reload, edited draft creates a new request",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "explanation-failure: original identity and explicit operations",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "approval: original identity and explicit operations",
+        "ok": true
+      },
+      {
+        "file": "session-semantics.spec.ts",
+        "title": "missing-checkpoint: original identity and explicit operations",
+        "ok": true
+      }
+    ]
+  },
+  "frontend_source_sha256_at_finalization": {
+    "frontend/src/main.tsx": "bc7a10ef557d72da586af0a842bd29c32a0ff547284dea76de433f646d159bed",
+    "frontend/src/styles.css": "e986c1c15223932b3db380aba40eded800f6219d3ddb4ad96605ef6ad3ef93b0",
+    "frontend/src/api/assessments.ts": "cec15ede0f273dd9779b86ae200ce86bb2bb37432589979335a4c68b538162a1",
+    "frontend/src/api/career-memory.ts": "b7aca4778fc5e0af7f2ec54db53b22df31b172e1dd13750af91b2a3e07b6e955",
+    "frontend/src/api/client.ts": "839aba5badbe9faea11f89030a761b986ed12ccb15a285c0706589fd294970c0",
+    "frontend/src/api/events.test.ts": "8687a858763b1d7d2815a38f2233e7bdf3f8ed727fe37584418a20a41a828de6",
+    "frontend/src/api/events.ts": "d661f678bf115cb079b9236aad3e5c440b3e132550a60771d3513f9f96542dda",
+    "frontend/src/api/missions.ts": "207ae15f3d08aca2143a2e9f4ef380fa8544e4596ff602b37da2ae36cffee86e",
+    "frontend/src/api/pendingRequests.test.ts": "ab6778097d5dbe8686de41c88212f03f7ffda6b951ae358e5062beaa8bf2cbec",
+    "frontend/src/api/pendingRequests.ts": "1ed2d842d99d49ec66321fe088cc6ea4ff56b96d660e45298be5dec75f04ac80",
+    "frontend/src/api/player.ts": "770e04e602fd079c2982d9ae927e573db59044cb31afc066709dac36404a91c2",
+    "frontend/src/api/runtime.test.ts": "572ed17d7b11f4a17ce4b02728014fa3862983aa6be87225de839c40ef462ace",
+    "frontend/src/api/runtime.ts": "b273a14165030aa1e50a2f46c424721f44be61cf53f8e21874776b222ef454ea",
+    "frontend/src/app/App.tsx": "42501a0f8df630bedf1f187f39ff2971fdca6acd7ebd5793f8e80a60a38f8ef3",
+    "frontend/src/components/Dialog.tsx": "02104c2c41d1bc7ec09b9d1aaecd1cdbbcbe032229d084f1b2ab066a0c6bc62b",
+    "frontend/src/components/ui.tsx": "c446e6243f66c378d66db4425a8b2eb3463694c99f2d28dc6c17eb151f0c1f1d",
+    "frontend/src/hooks/useConversation.ts": "c607139ac6b7c30ba7567236ee390e61d5babba08f9c8c5f8445963dc03355ec",
+    "frontend/src/hooks/useMission.ts": "abad8d377e46c0082e1839458feb1a736232275a5b2d021e8952bd666fb0a900",
+    "frontend/src/hooks/useMissionEvents.ts": "71ee433c4a33f4b834614825c6c95305fbf410957d1810e8b1d3572f14894053",
+    "frontend/src/types/assessment.ts": "694e3a762be426f69ed7496d0da85667972a456ea893734a47a8863a0ce99fd6",
+    "frontend/src/types/career-memory.ts": "e9f9b041f39496607a78678afd169757ab5075e77d9022f3d89b1f25b63135f1",
+    "frontend/src/types/conversation.ts": "e84b08533013e0f22120662cef528015c150bca80b2fbbbb3fba0d5a635e69f2",
+    "frontend/src/types/events.ts": "a706f37540d5ccce752f57a06baafe78862ac9a754ffb02a63d518905e74e863",
+    "frontend/src/types/feedback.ts": "943f7f1f98945ac58a66b71877bfd2ce3b64567f72641f4b63f0d0090c83f976",
+    "frontend/src/types/mission.ts": "93ed43035aa48e3d0c8316098b1dff4d3fc6a78f97f9d99e8fd238dfd1dde1a4",
+    "frontend/src/types/player.ts": "1704b66961a68ef9f09b230601b248ccf9259fe221a83934ba7869d6c345314d",
+    "frontend/src/types/recommendation.ts": "ff5052c79d1ab4b646d4a3fe1339c61e96413d6594f23e0d1c8ccf7169076ce4",
+    "frontend/src/types/runtime.ts": "c561f3ee0576e04ab65a3fe9666d0c1fcadb9dc8f22269abcbb356d20bed17b4",
+    "frontend/src/features/conversation/ConversationPanel.tsx": "633ffa74f7203215c3213f0da983af133f6735e297651bcf887cf076309723f9",
+    "frontend/src/features/history/MissionHistory.tsx": "72d418df50c32aa1ba9044a1194920748d9f379d1ecad411b19be62abb2b203b",
+    "frontend/src/features/mission/AgentActivityPanel.tsx": "38df496ad2f4c28e08abebdd31ef79b9430884f8b71b9b207167ae42eadd0620",
+    "frontend/src/features/mission/AssessmentPanel.tsx": "8d1dbe6271f17f157bf542dd79ccab020d1c7c517fbe33938362188a6fe728b3",
+    "frontend/src/features/mission/BlockedInputPanel.tsx": "4df56459f4a8592ce6f580e94ba7264f9546c70bc7db507e7b8a819974693c7a",
+    "frontend/src/features/mission/CareerMemoryPanel.tsx": "b5bd792776037ae4dc8bdb23f26e514499148affa3672658895d66a9d80ab9fc",
+    "frontend/src/features/mission/FeedbackAdjustment.tsx": "9bf067d3c80bb3fd9d550be5abc434f228449923df8ccf7f28877139b044e632",
+    "frontend/src/features/mission/FeedbackInputPanel.tsx": "8f5b911bcef6a73c8afb7b2d67c475bd4e0a7f18e88a228890239a89771e7a12",
+    "frontend/src/features/mission/MissionMemoryPanel.tsx": "26b133816af2922061432f06725357611cde9993ad4749fcfd79778b77b5473a",
+    "frontend/src/features/mission/MissionResult.tsx": "61ffb06dbe7321fc7ff5c92c7619f7c0c35584975e7962bfe7de17d3dc844bcf",
+    "frontend/src/features/mission/MissionWorkspace.tsx": "f620ada0df98e62144e1189aabcaf1c774a62e6082de77aab97d1238345b65fd",
+    "frontend/src/features/mission/OperationControls.tsx": "13cb5b09d42d9eaffa5d4504885f1f38b84f32743d26fb44ca149f767e6bc43c",
+    "frontend/src/features/mission/PlanProgress.tsx": "d7834ecab95497567cd1450fce8a83b38ca96a8a1281bf91f52bce8875b8cb35",
+    "frontend/src/features/mission/RecommendationActivity.tsx": "3d034f2a85bd4c24705742bd7b3a2ad010c42bdf9e6823d2b8b364ac1eb0f022",
+    "frontend/src/features/mission/RecommendationFollowups.tsx": "ba689b1d15b4a24c87d15db0016d27af87664976db98a4a2c524d3ceba87c31c",
+    "frontend/src/features/mission/RecommendationsPanel.tsx": "b32216e1312e6bb9846e21bb538328576231bb10e9d22b34a1a25f96678a24e5",
+    "frontend/src/features/mission/ReevaluationPanel.tsx": "5474dc99e0a663c1858b03484aac6531e85d22eb45aed2552c67cf793a4327b2",
+    "frontend/src/features/mission/ReviewStatus.tsx": "757acfff3e255f7dda77c55bdb50e9a0fab8dfd44f0777ce37cf8f0dc329cfac",
+    "frontend/src/features/mission/RuntimePanel.tsx": "2dffd4129857cddf5ced2dba144857e0ac2eef7d1ba3984d2573c32749f29e8d",
+    "frontend/src/features/player/PlayerPanel.tsx": "5ec4d6fc6ffbd59c2229df3192b1fbfb9c98999f6d2f7761946264d3fdf3053e",
+    "frontend/src/features/report/ReportViewer.tsx": "12fc1201292d0ce67885d55e127dcca7b2ca749c3adb57eccffe1ec1704b9c40"
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "cwd": "frontend",
+    "exit_code": 0,
+    "typescript_passed": true,
+    "vite_passed": true,
+    "warning": "Existing main chunk exceeds 500 kB; threshold unchanged.",
+    "artifacts": {
+      "frontend/dist/index.html": {
+        "bytes": 473,
+        "sha256": "39a749938e5e31dc1fcef7b53fa4ca0519e1e24c3cf2398c16bb9269ee6f60e9"
+      },
+      "frontend/dist/assets/index-anelxHit.js": {
+        "bytes": 513466,
+        "sha256": "45f8cd65a628efe11829f032ba7cf93625414ddb4abd0727c4130efbc3ff0917"
+      },
+      "frontend/dist/assets/index-DOqMSxt4.css": {
+        "bytes": 33306,
+        "sha256": "9469e13153804d5f3363ca555862c42a521831f7cdcd6588773d20f7e6bf0e64"
+      }
+    }
+  },
+  "recovery_samples": {
+    "test_both_pauses_reject_changed_checkpoint_material_before_acceptance": [
+      {
+        "pause": "missing_user_input",
+        "field": "player_snapshot",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "missing_user_input",
+        "field": "continuation_context",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "missing_user_input",
+        "field": "career_memory_context",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "missing_user_input",
+        "field": "objective",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "report_approval",
+        "field": "player_snapshot",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "report_approval",
+        "field": "continuation_context",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "report_approval",
+        "field": "career_memory_context",
+        "refused_before_acceptance": true
+      },
+      {
+        "pause": "report_approval",
+        "field": "objective",
+        "refused_before_acceptance": true
+      }
+    ],
+    "test_completed_and_paused_unsettled_segments_stop_execution_clock": [
+      {
+        "terminal_and_pause_preserved": true,
+        "unfinished_time_unknown": true,
+        "execution_live_projection_stopped": true,
+        "known_lower_bounds_preserved": true
+      }
+    ],
+    "test_fixed_input_versions_and_hashes_refused_before_any_resume_write": [
+      {
+        "kind": "missing",
+        "status": 422,
+        "unchanged": true
+      },
+      {
+        "kind": "shape",
+        "status": 422,
+        "unchanged": true
+      },
+      {
+        "kind": "hash",
+        "status": 422,
+        "unchanged": true
+      },
+      {
+        "kind": "version",
+        "status": 422,
+        "unchanged": true
+      },
+      {
+        "kind": "mode",
+        "status": 422,
+        "unchanged": true
+      },
+      {
+        "kind": "context",
+        "status": 422,
+        "unchanged": true
+      }
+    ],
+    "test_incompatible_existing_optional_tables_refuse_before_legacy_upgrade": [
+      {
+        "table": "operations",
+        "refused_before_upgrading": true,
+        "bytes_unchanged": true
+      },
+      {
+        "table": "request_receipts",
+        "refused_before_upgrading": true,
+        "bytes_unchanged": true
+      }
+    ],
+    "test_known_legacy_and_compatible_partial_layouts_upgrade_without_losing_rows": [
+      {
+        "existing_optional_tables": [],
+        "upgraded_to": 1,
+        "original_rows_preserved": true
+      },
+      {
+        "existing_optional_tables": [
+          "operations"
+        ],
+        "upgraded_to": 1,
+        "original_rows_preserved": true
+      },
+      {
+        "existing_optional_tables": [
+          "request_receipts"
+        ],
+        "upgraded_to": 1,
+        "original_rows_preserved": true
+      },
+      {
+        "existing_optional_tables": [
+          "operations",
+          "request_receipts"
+        ],
+        "upgraded_to": 1,
+        "original_rows_preserved": true
+      }
+    ],
+    "test_live_checkpoint_writer_refuses_restart_before_database_mutation": [
+      {
+        "refused_seconds": 0.15219189999970695,
+        "database_unchanged": true,
+        "release_allows_startup": true
+      }
+    ],
+    "test_nonempty_history_memory_and_feedback_survive_both_pause_restarts": [
+      {
+        "nonempty_memory": true,
+        "nonempty_selected_history": true,
+        "nonempty_feedback": true,
+        "both_pause_restarts_preserve_all_fixed_inputs": true,
+        "latest_player_changed_without_reread": true
+      }
+    ],
+    "test_normal_shutdown_is_separate_from_kill_and_preserves_pauses_and_delivery": [
+      {
+        "mission_id": "mission_6b4b3bf001704dbe8713d6ac660d32b9",
+        "operation_id": "op_a0673f6f172e4df897ecd399dd582248",
+        "worker_pid": 13284,
+        "phase": "tool",
+        "gated_pid": 13284,
+        "normal_shutdown_status": "FAILED",
+        "error": "SERVICE_SHUTDOWN"
+      },
+      {
+        "mission_id": "mission_dc35b916fceb449ca19480ab0736c736",
+        "operation_id": "op_e083afbdcc0242908dc87b8473100f6f",
+        "worker_pid": 35448,
+        "phase": "missing_user_input",
+        "normal_shutdown_status": "PAUSED",
+        "error": null
+      },
+      {
+        "mission_id": "mission_3925f2246abe4e1c83c8877a23f70d08",
+        "operation_id": "op_45b910e5fcb24954bfa218555c8e0d53",
+        "worker_pid": 43228,
+        "phase": "report_approval",
+        "normal_shutdown_status": "PAUSED",
+        "error": null
+      },
+      {
+        "mission_id": "mission_11fff7e606844344a2a11c1b3a743737",
+        "operation_id": "op_87fb3eb477a945f9a63571ca123cc911",
+        "worker_pid": 30472,
+        "phase": "completed",
+        "normal_shutdown_status": "COMPLETED",
+        "error": null
+      }
+    ],
+    "test_old_pass_and_completed_flags_do_not_authorize_publication": [
+      {
+        "legacy_labels_cannot_publish": true
+      }
+    ],
+    "test_operation_authority_overrides_a_stale_blocked_mission": [
+      {
+        "mismatch": "status",
+        "operation_authority_enforced": true
+      },
+      {
+        "mismatch": "pause_id",
+        "operation_authority_enforced": true
+      },
+      {
+        "mismatch": "kind",
+        "operation_authority_enforced": true
+      }
+    ],
+    "test_real_owner_kill_restart_lifecycle_matrix": [
+      {
+        "mission_id": "mission_ad1c46e2d45446859779229fdf726da1",
+        "operation_id": "op_40d948b78cea43eab0c17bca81864f0d",
+        "worker_pid": null,
+        "phase": "created",
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_a6f2d3ee468d4a55bea541f5bba8633c",
+        "operation_id": "op_a5886bdd2da34cc9a7a5a5a0e387c163",
+        "worker_pid": null,
+        "phase": "queued",
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_57aa9d9887004d4e9c21f73690985c63",
+        "operation_id": "op_9473584593324fd799ab0227b2ac071e",
+        "worker_pid": 42084,
+        "phase": "manager",
+        "gated_pid": 42084,
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_db2913df384b4417b26b115b280b3bfc",
+        "operation_id": "op_7fa7a95ce53541c0961320528d0cf1ae",
+        "worker_pid": 45776,
+        "phase": "coach",
+        "gated_pid": 45776,
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_043108cd9860410bbcedf21df2bab823",
+        "operation_id": "op_d43d069a5e4e4f84a2e95834b74ee129",
+        "worker_pid": 32388,
+        "phase": "tool",
+        "gated_pid": 32388,
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_0b8d30c93cf04b0a9b896981de23a68b",
+        "operation_id": "op_b8745b38d39845ff9333da8f4f4977fb",
+        "worker_pid": 46900,
+        "phase": "reviewer",
+        "gated_pid": 46900,
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_681b8dfa2e464377b3cb1159147d1dee",
+        "operation_id": "op_676a1c158732499bbfbee7de50ff3b16",
+        "worker_pid": 35428,
+        "phase": "document",
+        "gated_pid": 35428,
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_185ef51e87d94c65bee1a8435aa52799",
+        "operation_id": "op_08902aec0d3f47028ed72c36a57c38f3",
+        "worker_pid": 21824,
+        "phase": "publish_transaction",
+        "restart_mission": "FAILED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_94061e7bc30347b781e91546a13c6fb7",
+        "operation_id": "op_0f80481725784fcba93954cde4196a82",
+        "worker_pid": 28452,
+        "phase": "published",
+        "restart_mission": "COMPLETED",
+        "restart_operation": "COMPLETED",
+        "error": null,
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_83540b89ff8642eba8c1ae618beb86d7",
+        "operation_id": "op_ae309ea57664401891bd53ed708dc3d8",
+        "worker_pid": 45504,
+        "phase": "missing_user_input",
+        "restart_mission": "BLOCKED",
+        "restart_operation": "PAUSED",
+        "error": null,
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_f80ed970cf7d4613a8371eabd52a344f",
+        "operation_id": "op_1a4825f5fca5413cbdd3a9dec838f01d",
+        "worker_pid": 15028,
+        "phase": "report_approval",
+        "restart_mission": "BLOCKED",
+        "restart_operation": "PAUSED",
+        "error": null,
+        "worker_exited": true,
+        "no_automatic_replay": true
+      },
+      {
+        "mission_id": "mission_6e6efd5e54a94f678b6a7604890a04ba",
+        "operation_id": "op_a4db00610c5d4b1d95fababe993c00a6",
+        "worker_pid": 29040,
+        "phase": "explanation",
+        "gated_pid": 29040,
+        "restart_mission": "COMPLETED",
+        "restart_operation": "FAILED",
+        "error": "INTERRUPTED",
+        "worker_exited": true,
+        "no_automatic_replay": true
+      }
+    ],
+    "test_real_published_owner_crash_closes_accounting_without_revoking_delivery": [
+      {
+        "mission_id": "mission_5be57ffdeccd40edb54c4e9a6dd086dc",
+        "operation_id": "op_3231aea88be54662bc7ac2a7fb34c05b",
+        "worker_pid": 6944,
+        "phase": "published",
+        "delivery_preserved": true,
+        "timing": {
+          "history_complete": false,
+          "queue_seconds": null,
+          "execution_seconds": null,
+          "user_wait_seconds": null,
+          "known_queue_seconds": 0.0005515000011655502,
+          "known_execution_seconds": 14.062383000000409,
+          "known_user_wait_seconds": 1.05105,
+          "wall_seconds": 22.176065,
+          "live": false
+        },
+        "second_restart_idempotent": true
+      }
+    ],
+    "test_restart_explanation_is_atomic_visible_and_once_only": [
+      {
+        "report_preserved": true,
+        "failed_explanation_visible": true,
+        "restart_replay_once": true
+      }
+    ],
+    "test_restart_failure_rolls_back_operation_mission_message_and_events": [
+      {
+        "failed_startup_atomic": true,
+        "following_startup_recovers": true,
+        "baseline": {
+          "missions": 1,
+          "events": 1,
+          "messages": 1,
+          "request_receipts": 1,
+          "operations": 1
+        }
+      }
+    ],
+    "test_restart_preserves_completed_failed_timeout_and_cancelled_cleanup": [
+      {
+        "completed_report_preserved": true,
+        "cancelled_not_failed": true,
+        "pending_cleanup_closed": true,
+        "persisted_timeout_not_rewritten": true
+      }
+    ],
+    "test_workspace_and_checkpoint_future_or_damaged_formats_are_not_repaired": [
+      {
+        "unsupported_formats_refused_without_rewrite": true
+      }
+    ]
+  },
+  "post_restart_pause_deliveries": {
+    "missing_user_input": {
+      "mission_id": "mission_83540b89ff8642eba8c1ae618beb86d7",
+      "final_status": "COMPLETED",
+      "frozen_speed": 44,
+      "report_uses_original_44": true,
+      "report_sha256": "b2a0a036952a9efa3a1e32947c5c9a9bf04c4b109a125156c98495a807a5518e",
+      "document_starts": 1
+    },
+    "report_approval": {
+      "mission_id": "mission_f80ed970cf7d4613a8371eabd52a344f",
+      "final_status": "COMPLETED",
+      "frozen_speed": 44,
+      "report_uses_original_44": true,
+      "report_sha256": "93313efd76f040fcfb2053f82927451fe4f4e42e666e3c1a313bc1cdf69e4c5a",
+      "document_starts": 1
+    }
+  },
+  "artifact_sha256": {
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/summary.json": "595bb981a0514014bf23d72fca4618afea13730c0921738deadfbe23682cd763",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/unittest.log": "3a844d7aa7364f9886362b72d19adae241f76292de8c4a94610a531a9813eaf1",
+    "local_data/game_imports/m4-implementation/20261027-m46-frontend-01/summary.json": "761132dbde9a704ccf7b77ed3f2d421ec1fd976ad7ed509ca202ab2d2b9e4560",
+    "local_data/game_imports/m4-implementation/20261027-m46-frontend-01/vitest.json": "0ec1ed2f6306311aad6c646a54c0584961213999ddc51b8a33d5b26909facf4c",
+    "local_data/game_imports/m4-implementation/20261027-m46-frontend-01/playwright.json": "13813b299a1b89e3796afdf6d89081306c4732a18f5d4d8c940104ed06625dfd",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_both_pauses_reject_changed_checkpoint_material_before_acceptance/evidence.json": "ce7f92a7f57b392ce6e83a170820196f28db26a608cd74f38e0377b8e8d7044b",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_completed_and_paused_unsettled_segments_stop_execution_clock/evidence.json": "2e8bb180109e647e075fe1545d8fe0075c381af752c01aa71a9c6c15eea750f6",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_fixed_input_versions_and_hashes_refused_before_any_resume_write/evidence.json": "dc4d152acd4a1231c0ca2bdab7bbd31abb801d64900417a76bd8cd4dfe003d96",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_incompatible_existing_optional_tables_refuse_before_legacy_upgrade/evidence.json": "14cd26fc5b1e4fae642c82264bddaae4832140635919770dd3c2ee7ce36307d6",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_known_legacy_and_compatible_partial_layouts_upgrade_without_losing_rows/evidence.json": "8bbcf0e0a860bacaf892cc47542bf5222598101ac198f14918e1dacadc08c354",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_live_checkpoint_writer_refuses_restart_before_database_mutation/evidence.json": "8b6c7b18ba1b49fe8dd31eac9961964c53885ed860dd7cf2c06073761fd51e7f",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_nonempty_history_memory_and_feedback_survive_both_pause_restarts/evidence.json": "603556f27e80bdb92bbf857b2cb3ccf4851c44aadcc1d6b5e03d77ab09d81113",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_normal_shutdown_is_separate_from_kill_and_preserves_pauses_and_delivery/evidence.json": "e5c5901c7256e21ebaacd7ad6b5986743bc4418ecdeae2c615eb1e18e18be8c4",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_old_pass_and_completed_flags_do_not_authorize_publication/evidence.json": "512a2c90845b8d08c1774e4f09e561ab4e4dfd087af7558e32396a8e2b619fec",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_operation_authority_overrides_a_stale_blocked_mission/evidence.json": "b1d2b990d4674d17daaf8dc8c5d6d805e29a5381e6f229c1667654ff1999cfe1",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_real_owner_kill_restart_lifecycle_matrix/evidence.json": "fb086dfab3d48ddbfc2afdbb671bef49c564a85745e0efb49ff99e3c3e580ff0",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_real_published_owner_crash_closes_accounting_without_revoking_delivery/evidence.json": "16da0785aa1878954385ffb18cd6d222190cf28fa7b396b38fe171dfe0639446",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_restart_explanation_is_atomic_visible_and_once_only/evidence.json": "3acfd62c4dbc9c098d8783019d675430e289d38ccf1dea50402ac3a6f7da34b4",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_restart_failure_rolls_back_operation_mission_message_and_events/evidence.json": "57dfa0d6083e8d5d40de7069f4be0bf2cacf7c1292323d566697c2708f5507f8",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_restart_preserves_completed_failed_timeout_and_cancelled_cleanup/evidence.json": "c16abe2c06406f7aee5a76a50907b3862cd6f499f3198a5c5807500ce5964429",
+    "local_data/game_imports/m4-implementation/20261027-m46-full-02/m46/test_workspace_and_checkpoint_future_or_damaged_formats_are_not_repaired/evidence.json": "7fd029f4393d4c2d42e1f69f9c337f81cb4a65f438d42e67a7bbdbc380d91feb"
+  },
+  "development_runs": [
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-sanity-01",
+      "tests": 15,
+      "failures": 9,
+      "reason": "Wrong initial checkpoint-version constant; current graph executor writes v4, not the checkpoint base helper version. Corrected after inspecting installed executor and actual files."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-sanity-02",
+      "tests": 15,
+      "passed": true,
+      "scope": "Earlier pause/request semantics only; final gate reruns them."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-focused-01",
+      "tests": 9,
+      "failed_process_subcases": 16,
+      "reason": "Test owner configured total execution budget below default model call budget; fixture refused before gate. Only fixture budget corrected."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-focused-02",
+      "tests": 10,
+      "passed": true,
+      "scope": "Earlier focused gate, before final compatibility and accounting-tail additions."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-full-01",
+      "complete": false,
+      "counted_as_passed": false,
+      "reason": "Execution session became unavailable and no summary was produced. Partial log includes an untraced CLI assertion failure; cause not inferred. Exact CLI case rerun passed and final full gate reruns all cases."
+    },
+    {
+      "root": "local_data/game_imports/m4-implementation/20261027-m46-cli-failure-recheck",
+      "tests": 1,
+      "passed": true,
+      "scope": "Exact failed-explanation CLI request/replay case from the incomplete run."
+    }
+  ],
+  "reproduced_final_gaps": {
+    "legacy_partial_schema": {
+      "isolated_only": true,
+      "before_version": 0,
+      "after_version": 1,
+      "invalid_existing_operation_table_error": "OperationalError",
+      "expected": "Refuse unsupported partial schema before upgrading user_version"
+    },
+    "published_accounting_tail": {
+      "source": "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261027-m46-full-01\\m46\\test_real_owner_kill_restart_lifecycle_matrix\\published\\tasks\\workspace.sqlite3",
+      "status": "COMPLETED",
+      "run_started_at": "2026-10-26T16:48:07.657461+00:00",
+      "timing_history_complete": true,
+      "timing": {
+        "history_complete": true,
+        "queue_seconds": 0.000826300005428493,
+        "execution_seconds": 38497.7899499,
+        "user_wait_seconds": 1.102841,
+        "known_queue_seconds": 0.000826300005428493,
+        "known_execution_seconds": 38497.7899499,
+        "known_user_wait_seconds": 1.102841,
+        "wall_seconds": 38498.896967,
+        "live": true
+      },
+      "expected": "Published terminal remains complete, but unfinished accounting after owner crash must stop its live clock and mark missing timing unknown."
+    }
+  },
+  "protected_data": {
+    "during_full_run": {
+      "files": 1150,
+      "changed": []
+    },
+    "after_documentation_changed": [
+      "docs/README.md"
+    ],
+    "user_memory_sha256": {
+      "memory/player.json": "de7f479db04c1f5af961b29cb065efccd972597e13c0ab2831398dcd9450162a",
+      "memory/sessions.json": "e71079c537924e131aa25a569993c6661569f42c4749d26a4896abd89b5ea0f3"
+    }
+  },
+  "test_boundaries": "Actual owned Windows owners/workers and Job kill-on-owner-exit; outer controller Job kept open. Real SQLite/checkpoints, fixed A/C/E/history fixtures and local HTTP/SDK transports. Browser APIs controlled. No game or live/paid model calls.",
+  "not_verified_this_turn": [
+    "Existing actual workspace deployment or migration",
+    "Arbitrary external historical formats",
+    "M4.7 backup/new-directory restore",
+    "M4.8 formal milestone acceptance",
+    "Live model/provider billing",
+    "Game operations"
+  ],
+  "dependency_versions": {
+    "langgraph": "1.2.9",
+    "langgraph-checkpoint-sqlite": "3.1.1",
+    "langchain-openai": "1.3.5",
+    "openai": "2.45.0"
+  },
+  "documentation_check": {
+    "command": "python tools/check_docs.py",
+    "documents": 44,
+    "local_links": 693,
+    "preserved_sources": 45,
+    "errors": 0
+  },
+  "diff_check": {
+    "command": "git -c core.whitespace=trailing-space,space-before-tab,cr-at-eol diff --check",
+    "exit_code": 0
+  }
+}

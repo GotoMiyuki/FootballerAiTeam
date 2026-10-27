@@ -1,0 +1,941 @@
+{
+  "date": "2026-10-26",
+  "base_commit": "dcf6e7bf740d41ab13bfc2e718e3251e0f6afb24",
+  "m4_passed": false,
+  "completed_scope": [
+    "M4.0",
+    "M4.1"
+  ],
+  "next": "M4.2",
+  "live_executor_replaced": false,
+  "actual_schema_changed": false,
+  "existing_actual_data_changed": [],
+  "protected_files_checked": 1150,
+  "evidence": {
+    "M4.0": {
+      "run": "local_data\\game_imports\\m4-implementation\\20261026-m40-02",
+      "summary": {
+        "scope": "M4.0 contracts and Windows isolation only; live executor unchanged",
+        "tests": 8,
+        "passed_gate": true,
+        "failures": [],
+        "errors": [],
+        "skips": [],
+        "cases": [
+          {
+            "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_terminal_and_stale_generation_have_no_commit_authority",
+            "seconds": 0.00023239999973156955
+          },
+          {
+            "test": "evaluation.test_m40_runtime.RuntimeContractTests.test_unknown_or_unbounded_configuration_fails_closed",
+            "seconds": 0.00021889999879931565
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_checkpoint_survives_kill_and_new_process_resumes",
+            "seconds": 16.530159700001605
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_failed_job_assignment_never_admits_child",
+            "seconds": 0.012407500000335858
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_normal_existing_graph_finishes_and_closes",
+            "seconds": 7.993268899999748
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_owner_kill_removes_its_checkpoint_child",
+            "seconds": 7.868161799999143
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_permanent_block_is_bounded_and_next_worker_can_run",
+            "seconds": 8.544462100000601
+          },
+          {
+            "test": "evaluation.test_m40_runtime.WindowsOwnershipTests.test_worker_without_bootstrap_admission_does_no_writes",
+            "seconds": 0.17302790000030654
+          }
+        ],
+        "seconds": 42.446349899999404,
+        "protected_file_count": 1150,
+        "protected_changed": [],
+        "source_sha256": {
+          "backend\\runtime_contracts.py": "51656c5a8e8446d4c55941824ded13667ced756fa8c4c1d67495782e9511b0e3",
+          "backend\\process_supervisor.py": "852a41118ab91e52379f4d954a357909b8ae2496e71d951468b2c27074e47633",
+          "evaluation\\m4_process_probe.py": "e821b291754e40c49caa11d4ed58d839dab3364afae5ce9d704a04e17587d537",
+          "evaluation\\test_m40_runtime.py": "3caf49899d5038b1c3699f93e86ac3bb7c0fa1c847a204688d24a7e057d67db6",
+          "evaluation\\run_m40.py": "c85b38410372ba66dd4bbeb6cc70daaccf8f7847e6a49d31f9845b63ff59a0ef"
+        }
+      },
+      "process_evidence": {
+        "test_checkpoint_survives_kill_and_new_process_resumes": [
+          {
+            "owned_pid": 52220,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "checkpoint",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_checkpoint_survives_kill_and_new_process_resumes\\worker"
+            ],
+            "mode": "checkpoint"
+          },
+          {
+            "ready": {
+              "pid": 52220,
+              "stage": "checkpoint-committed-write-lock-held",
+              "next": [
+                "document"
+              ],
+              "version": "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980",
+              "startup_seconds": 7.269
+            }
+          },
+          {
+            "checkpoint_readable": true,
+            "uncommitted_write_rolled_back": true,
+            "sqlite_writer_reacquired": true
+          },
+          {
+            "owned_pid": 48196,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "resume",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_checkpoint_survives_kill_and_new_process_resumes\\worker"
+            ],
+            "mode": "resume"
+          },
+          {
+            "resumed": {
+              "pid": 48196,
+              "status": "COMPLETED",
+              "report": "# Original report\nM4 checkpoint probe\n原球员速度：44\n依据与限制：确定性测试样本",
+              "nodes": [
+                "document"
+              ],
+              "version": "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980",
+              "elapsed_seconds": 7.08,
+              "mode": "resume"
+            },
+            "old_pid": 52220,
+            "new_pid": 48196
+          }
+        ],
+        "test_failed_job_assignment_never_admits_child": [],
+        "test_normal_existing_graph_finishes_and_closes": [
+          {
+            "owned_pid": 47884,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "normal",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_normal_existing_graph_finishes_and_closes\\worker"
+            ],
+            "mode": "normal"
+          },
+          {
+            "result": {
+              "pid": 47884,
+              "status": "COMPLETED",
+              "report": "# Original report\nM4 checkpoint probe\n原球员速度：44\n依据与限制：确定性测试样本",
+              "nodes": [
+                "manager",
+                "coach",
+                "intent_checkpoint",
+                "reviewer",
+                "document"
+              ],
+              "version": "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980",
+              "elapsed_seconds": 7.242,
+              "mode": "normal"
+            }
+          }
+        ],
+        "test_owner_kill_removes_its_checkpoint_child": [
+          {
+            "owned_pid": 33436,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "parent",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_owner_kill_removes_its_checkpoint_child\\worker"
+            ],
+            "mode": "parent"
+          },
+          {
+            "ready": {
+              "pid": 33436,
+              "child_pid": 18304,
+              "child_command": [
+                "C:\\Users\\99662\\miniconda3\\python.exe",
+                "-m",
+                "evaluation.m4_process_probe",
+                "checkpoint",
+                "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_owner_kill_removes_its_checkpoint_child\\worker\\child"
+              ],
+              "stage": "owner-holding-private-job"
+            }
+          },
+          {
+            "parent_killed": 33436,
+            "child_terminated": 18304,
+            "seconds": 0.049972900000284426,
+            "outer_job_still_open_during_verification": true
+          },
+          {
+            "checkpoint_readable": true,
+            "uncommitted_write_rolled_back": true,
+            "sqlite_writer_reacquired": true
+          }
+        ],
+        "test_permanent_block_is_bounded_and_next_worker_can_run": [
+          {
+            "owned_pid": 28440,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "hold",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_permanent_block_is_bounded_and_next_worker_can_run\\worker"
+            ],
+            "mode": "hold"
+          },
+          {
+            "ready": {
+              "pid": 28440,
+              "stage": "permanent-block-after-admission"
+            }
+          },
+          {
+            "owned_pid": 44944,
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m4_process_probe",
+              "normal",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m40-02\\tests\\test_permanent_block_is_bounded_and_next_worker_can_run\\next"
+            ],
+            "mode": "normal"
+          },
+          {
+            "cleanup_seconds": 0.003328200000396464,
+            "first_exit_code": 0,
+            "next_exit_code": 0
+          }
+        ],
+        "test_worker_without_bootstrap_admission_does_no_writes": [
+          {
+            "return_code": 1,
+            "no_admission_no_writes": true
+          }
+        ]
+      }
+    },
+    "M4.1": {
+      "run": "local_data\\game_imports\\m4-implementation\\20261026-m41-02",
+      "summary": {
+        "scope": "M4.1 root writer isolation + A/D regressions",
+        "tests": 41,
+        "passed_gate": true,
+        "failures": [],
+        "errors": [],
+        "skips": [],
+        "cases": [
+          {
+            "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_collector_keeps_lock_through_receipt_and_nested_imports",
+            "seconds": 1.3539594000012585
+          },
+          {
+            "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_different_task_dirs_and_contexts_still_share_actual_lock",
+            "seconds": 2.2258091000003333
+          },
+          {
+            "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_killed_writer_releases_root_and_task_locks",
+            "seconds": 1.482856399999946
+          },
+          {
+            "test": "evaluation.test_m41_writer_lock.ActualWriterProcessTests.test_two_processes_cannot_lose_confirmed_observations",
+            "seconds": 1.776075599998876
+          },
+          {
+            "test": "evaluation.test_m41_writer_lock.ActualWriterReentrancyTests.test_collector_style_nested_owner_and_competing_thread",
+            "seconds": 0.02807349999966391
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_commit_faults_preserve_old_state_and_response_loss_is_idempotent",
+            "seconds": 0.04625039999882574
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_concurrent_compare_and_swap",
+            "seconds": 0.02526899999975285
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_corruption_does_not_reset_data",
+            "seconds": 0.019364499999937834
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_dedup_before_cas_conflict_and_restart",
+            "seconds": 0.024026799999774084
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_empty_actual_initialization_patch_null_and_source_map",
+            "seconds": 0.02412730000105512
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_histories_corrections_sparse_and_manual_confirmation",
+            "seconds": 0.06572200000118755
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_invalid_values_sources_and_legacy_writers_rejected",
+            "seconds": 0.006916899999851012
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_old_unknown_equal_cross_domain_times_never_override",
+            "seconds": 0.06630479999876115
+          },
+          {
+            "test": "evaluation.test_player_imports.PlayerImportTests.test_same_observation_id_isolated_by_career_branch_and_player",
+            "seconds": 0.04572349999943981
+          },
+          {
+            "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_actual_mode_requires_configuration_and_no_demo_fallback",
+            "seconds": 0.008262100000138162
+          },
+          {
+            "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_all_entrypoints_use_one_source_and_keep_unknown_values",
+            "seconds": 0.15768600000046717
+          },
+          {
+            "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_predictions_excluded_estimates_preserved_and_corruption_not_hidden",
+            "seconds": 0.12050230000022566
+          },
+          {
+            "test": "evaluation.test_player_repository.PlayerRepositoryTests.test_snapshot_fixed_across_file_change_and_another_context",
+            "seconds": 0.023361099998510326
+          },
+          {
+            "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_all_model_tool_sets_are_read_only",
+            "seconds": 7.389999882434495e-05
+          },
+          {
+            "test": "evaluation.test_player_data_boundary.FactBoundaryTests.test_real_coach_predictions_and_revisions_leave_files_unchanged",
+            "seconds": 0.0095086999990599
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_another_career_cannot_reuse_current_target_context",
+            "seconds": 0.02013009999973292
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_binding_cannot_silently_adopt_unrelated_existing_history",
+            "seconds": 0.11625679999997374
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_changed_binding_adapter_and_native_club_rejected",
+            "seconds": 0.01789239999925485
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_changed_same_event_requires_explicit_correction",
+            "seconds": 0.1856145000001561
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_cli_write_requires_explicit_single_writer_declaration",
+            "seconds": 0.003996400000687572
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_correction_cannot_target_another_source_event",
+            "seconds": 0.11106409999956668
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_explicit_correction_retry_is_duplicate",
+            "seconds": 0.20471189999989292
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_fixture_or_version_rejected_before_binding",
+            "seconds": 0.0026516999987507006
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_native_fields_map_without_fabricating_absent_appearances",
+            "seconds": 0.11736410000048636
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_old_preview_cannot_write_over_changed_state",
+            "seconds": 0.1104550999989442
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_partial_response_loss_retries_original_ids",
+            "seconds": 0.12338820000150008
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_preview_requires_binding_and_never_creates_repository",
+            "seconds": 0.02145109999946726
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_recorded_only_status_preserved",
+            "seconds": 0.09854789999917557
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_registry_corruption_refuses_instead_of_rebinding",
+            "seconds": 0.024012500000026193
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_rejected_or_conflict_halts_without_retry",
+            "seconds": 0.048122500000317814
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_renaming_latest_event_cannot_append_same_fixture_twice",
+            "seconds": 0.11243000000104075
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_repeat_and_new_process_no_duplicate_records_or_state_change",
+            "seconds": 0.12303460000111954
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_repeat_detail_does_not_change_event_identity",
+            "seconds": 0.12871819999963918
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_reviewed_new_branch_is_independent_and_existing_snapshot_frozen",
+            "seconds": 0.2120027000000846
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_rollback_unseen_old_record_requires_new_branch",
+            "seconds": 0.10341390000030515
+          },
+          {
+            "test": "game_adapters.test_pes2021_import.CollectorTests.test_unknown_values_omitted_and_out_of_scale_not_clamped",
+            "seconds": 0.02018049999969662
+          }
+        ],
+        "protected_file_count": 1150,
+        "protected_changed": [],
+        "source_sha256": {
+          "player_data\\writer_lock.py": "48ad513c26973119afaaf1f8f61da83be3ed633b1188d5af193c866df426cc2c",
+          "player_data\\imports.py": "ef399878bab187b8ecfe6719f918cf5b10359f227fa255c6b335d73fe0696a69",
+          "game_adapters\\pes2021_import.py": "1f827437317167f52958469504288e63e9ff9e5cd1fe90704fe557843fadae79",
+          "evaluation\\m41_lock_probe.py": "893674b0a5cfa5c88de2f6207b6770464807cbe0172b4433cd0df06fe96eb1c0",
+          "evaluation\\test_m41_writer_lock.py": "fdde282d2fe4dd2d3d80a9c1c9a96b45682c07f6c25575687e64e9b1d231ffce",
+          "evaluation\\run_m41.py": "93feafce320f76793124e1f42fe23a83c6c9aeac705ea9cb991d5c48b39b2f05"
+        }
+      },
+      "process_evidence": {
+        "test_collector_keeps_lock_through_receipt_and_nested_imports": [
+          {
+            "pid": 16524,
+            "mode": "collector-hold",
+            "label": "collector",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "collector-hold",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_collector_keeps_lock_through_receipt_and_nested_imports",
+              "collector",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 52196,
+            "mode": "import",
+            "label": "external",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_collector_keeps_lock_through_receipt_and_nested_imports",
+              "external",
+              "--expected",
+              "5:f63e8e300dd331e70d908304b77a97278387a3f2fb57d8f0223853242ef44c0c"
+            ]
+          },
+          {
+            "pid": 52196,
+            "result": {
+              "status": "CONFLICT",
+              "state_version": "",
+              "observation_id": "external",
+              "reason": "writer_busy"
+            }
+          },
+          {
+            "pid": 49904,
+            "mode": "bind",
+            "label": "second_binding",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "bind",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_collector_keeps_lock_through_receipt_and_nested_imports",
+              "second_binding",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 49904,
+            "result": {
+              "status": "REJECTED",
+              "reason": "writer_busy"
+            }
+          },
+          {
+            "pid": 16524,
+            "result": {
+              "status": "COMPLETED",
+              "context": {
+                "career_id": "m41-career",
+                "branch_id": "main",
+                "player_id": "player"
+              },
+              "results": [
+                {
+                  "status": "APPLIED",
+                  "state_version": "1:c8f98e51ce5de1dd2d178cd58c64b4f82b9d1cc978cbe8fe2f5c6abd6a3a36af",
+                  "observation_id": "observation-fbce08ca65321fa083998eb7cc444556cf5934e0c9d14d24",
+                  "reason": "",
+                  "source_record_id": "source-fbce08ca65321fa083998eb7cc444556cf5934e0c9d14d24",
+                  "raw_reference": "{\"dataset\": \"C:\\\\Users\\\\99662\\\\Desktop\\\\footballerAITeam\\\\local_data\\\\game_imports\\\\m4-implementation\\\\20261026-m41-02\\\\tests\\\\test_collector_keeps_lock_through_receipt_and_nested_imports\\\\synthetic-dataset\", \"local_record\": \"snapshot-baseline\", \"mapping\": \"pes2021-canonical-v1\", \"sources\": [{\"path\": \"save.bin\", \"sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}]}"
+                },
+                {
+                  "status": "APPLIED",
+                  "state_version": "2:47f8ab5f70ef96aebb66c2be60bb50c8b7ccc0f38b4e3c6a1ef0c31a6ea403ba",
+                  "observation_id": "observation-06e6ce0566dd9d7a67d5ed8c91adf01d05a25f13758c16bf",
+                  "reason": "",
+                  "source_record_id": "source-06e6ce0566dd9d7a67d5ed8c91adf01d05a25f13758c16bf",
+                  "raw_reference": "{\"dataset\": \"C:\\\\Users\\\\99662\\\\Desktop\\\\footballerAITeam\\\\local_data\\\\game_imports\\\\m4-implementation\\\\20261026-m41-02\\\\tests\\\\test_collector_keeps_lock_through_receipt_and_nested_imports\\\\synthetic-dataset\", \"local_record\": \"event-2\", \"mapping\": \"pes2021-canonical-v1\", \"sources\": [{\"path\": \"after-2.json\", \"sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, {\"path\": \"review-2.json\", \"sha256\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}, {\"path\": \"detail.json\", \"sha256\": \"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\"}]}"
+                },
+                {
+                  "status": "APPLIED",
+                  "state_version": "3:026ae841cf76e6ef4da37455d70f05a98649a2a9dab8120f27c81cb94cdef836",
+                  "observation_id": "observation-5223f3a21eff1af5620795143bf59fc41309223dbcb4ecfa",
+                  "reason": "",
+                  "source_record_id": "source-5223f3a21eff1af5620795143bf59fc41309223dbcb4ecfa",
+                  "raw_reference": "{\"dataset\": \"C:\\\\Users\\\\99662\\\\Desktop\\\\footballerAITeam\\\\local_data\\\\game_imports\\\\m4-implementation\\\\20261026-m41-02\\\\tests\\\\test_collector_keeps_lock_through_receipt_and_nested_imports\\\\synthetic-dataset\", \"local_record\": \"event-3\", \"mapping\": \"pes2021-canonical-v1\", \"sources\": [{\"path\": \"after-3.json\", \"sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, {\"path\": \"review-3.json\", \"sha256\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}]}"
+                },
+                {
+                  "status": "APPLIED",
+                  "state_version": "4:ca94e76b0fa24575a14bbed410961ae7af7d44b3b8521bdb31ef83556b748fc2",
+                  "observation_id": "observation-5e16c5cd5ad93da53748304ae34913bdf2750b554e27f921",
+                  "reason": "",
+                  "source_record_id": "source-5e16c5cd5ad93da53748304ae34913bdf2750b554e27f921",
+                  "raw_reference": "{\"dataset\": \"C:\\\\Users\\\\99662\\\\Desktop\\\\footballerAITeam\\\\local_data\\\\game_imports\\\\m4-implementation\\\\20261026-m41-02\\\\tests\\\\test_collector_keeps_lock_through_receipt_and_nested_imports\\\\synthetic-dataset\", \"local_record\": \"event-4\", \"mapping\": \"pes2021-canonical-v1\", \"sources\": [{\"path\": \"after-4.json\", \"sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, {\"path\": \"review-4.json\", \"sha256\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}]}"
+                },
+                {
+                  "status": "APPLIED",
+                  "state_version": "5:f63e8e300dd331e70d908304b77a97278387a3f2fb57d8f0223853242ef44c0c",
+                  "observation_id": "observation-5dbb5e60cdce4ee95dd975b9c02637d8eba427f7f7344352",
+                  "reason": "",
+                  "source_record_id": "source-5dbb5e60cdce4ee95dd975b9c02637d8eba427f7f7344352",
+                  "raw_reference": "{\"dataset\": \"C:\\\\Users\\\\99662\\\\Desktop\\\\footballerAITeam\\\\local_data\\\\game_imports\\\\m4-implementation\\\\20261026-m41-02\\\\tests\\\\test_collector_keeps_lock_through_receipt_and_nested_imports\\\\synthetic-dataset\", \"local_record\": \"event-5\", \"mapping\": \"pes2021-canonical-v1\", \"sources\": [{\"path\": \"after-5.json\", \"sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}, {\"path\": \"review-5.json\", \"sha256\": \"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\"}]}"
+                }
+              ],
+              "not_attempted": [],
+              "state_version": "5:f63e8e300dd331e70d908304b77a97278387a3f2fb57d8f0223853242ef44c0c",
+              "mapping_version": "pes2021-canonical-v1"
+            }
+          },
+          {
+            "pid": 44792,
+            "mode": "bind",
+            "label": "second_binding",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "bind",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_collector_keeps_lock_through_receipt_and_nested_imports",
+              "second_binding",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 44792,
+            "result": {
+              "status": "DUPLICATE",
+              "binding_id": "7588716551a5fbdfb4acd697715bd23b5f33bbba0a44a88a9e2dff8ab3070f9b"
+            }
+          }
+        ],
+        "test_different_task_dirs_and_contexts_still_share_actual_lock": [
+          {
+            "pid": 7768,
+            "mode": "import",
+            "label": "seed",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_different_task_dirs_and_contexts_still_share_actual_lock",
+              "seed",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 7768,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "observation_id": "seed",
+              "reason": ""
+            }
+          },
+          {
+            "pid": 21112,
+            "mode": "hold-import",
+            "label": "owner",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "hold-import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_different_task_dirs_and_contexts_still_share_actual_lock",
+              "owner",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "--tasks",
+              "web-tasks"
+            ]
+          },
+          {
+            "pid": 32616,
+            "mode": "import",
+            "label": "other_branch",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_different_task_dirs_and_contexts_still_share_actual_lock",
+              "other_branch",
+              "--expected",
+              "EMPTY",
+              "--branch",
+              "other",
+              "--tasks",
+              "cli-tasks"
+            ]
+          },
+          {
+            "pid": 32616,
+            "result": {
+              "status": "CONFLICT",
+              "state_version": "",
+              "observation_id": "other_branch",
+              "reason": "writer_busy"
+            }
+          },
+          {
+            "pid": 21112,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "2:3d9c70764b29305ec1d4c4f2dfbe2e34713bcf3ef5e411b560693a50898d5493",
+              "observation_id": "owner",
+              "reason": ""
+            }
+          },
+          {
+            "pid": 13468,
+            "mode": "import",
+            "label": "other_branch",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_different_task_dirs_and_contexts_still_share_actual_lock",
+              "other_branch",
+              "--expected",
+              "EMPTY",
+              "--branch",
+              "other",
+              "--tasks",
+              "cli-tasks"
+            ]
+          },
+          {
+            "pid": 13468,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "1:72edf83a67ef3e1aee1f29e4a38197b10d80119fe406402405639f771b7e606e",
+              "observation_id": "other_branch",
+              "reason": ""
+            }
+          }
+        ],
+        "test_killed_writer_releases_root_and_task_locks": [
+          {
+            "pid": 49860,
+            "mode": "import",
+            "label": "seed",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_killed_writer_releases_root_and_task_locks",
+              "seed",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 49860,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "observation_id": "seed",
+              "reason": ""
+            }
+          },
+          {
+            "pid": 13408,
+            "mode": "hold-import",
+            "label": "interrupted",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "hold-import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_killed_writer_releases_root_and_task_locks",
+              "interrupted",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "--tasks",
+              "tasks"
+            ]
+          },
+          {
+            "pid": 41064,
+            "mode": "import",
+            "label": "after_kill",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_killed_writer_releases_root_and_task_locks",
+              "after_kill",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "--tasks",
+              "tasks"
+            ]
+          },
+          {
+            "pid": 41064,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "2:634ad8108b4371d00a7b2559f5eee5bb9f52fa2a0dc4c9f858665ad4d38cd67b",
+              "observation_id": "after_kill",
+              "reason": ""
+            }
+          },
+          {
+            "interrupted_not_committed": true,
+            "root_and_task_locks_reacquired": true
+          }
+        ],
+        "test_two_processes_cannot_lose_confirmed_observations": [
+          {
+            "pid": 46984,
+            "mode": "import",
+            "label": "seed",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "seed",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 46984,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+              "observation_id": "seed",
+              "reason": ""
+            }
+          },
+          {
+            "pid": 11476,
+            "mode": "hold-import",
+            "label": "writer_a",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "hold-import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "writer_a",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289"
+            ]
+          },
+          {
+            "pid": 34588,
+            "mode": "import",
+            "label": "writer_b",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "writer_b",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289"
+            ]
+          },
+          {
+            "pid": 34588,
+            "result": {
+              "status": "CONFLICT",
+              "state_version": "",
+              "observation_id": "writer_b",
+              "reason": "writer_busy"
+            }
+          },
+          {
+            "pid": 21376,
+            "mode": "read",
+            "label": "reader",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "read",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "reader",
+              "--expected",
+              "EMPTY"
+            ]
+          },
+          {
+            "pid": 21376,
+            "result": {
+              "snapshot": {
+                "context": {
+                  "career_id": "m41-career",
+                  "branch_id": "main",
+                  "player_id": "player"
+                },
+                "profile": {
+                  "name": "seed"
+                },
+                "training": [],
+                "matches": [],
+                "career": {},
+                "metadata": {
+                  "schema_version": "1",
+                  "state_version": "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+                  "snapshot_id": "52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289",
+                  "origins": {
+                    "profile/name": "m41:seed"
+                  },
+                  "sources": {
+                    "m41:seed": {
+                      "observation_id": "seed",
+                      "source_type": "game_observation",
+                      "provider": "m41",
+                      "source_record_id": "seed",
+                      "collected_at": "2026-10-26T10:00:00+08:00",
+                      "effective_at": "2026-10-01",
+                      "time_domain": "game",
+                      "time_precision": "day",
+                      "source_reference": "audit-only:seed",
+                      "game_version": "synthetic-v1",
+                      "adapter_version": "synthetic-v1"
+                    }
+                  },
+                  "quality_flags": []
+                }
+              }
+            }
+          },
+          {
+            "pid": 11476,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "2:c8899194591868c2ee524ccb3db63489bcf8cecc77fca1816af510553b64e08c",
+              "observation_id": "writer_a",
+              "reason": ""
+            }
+          },
+          {
+            "pid": 47848,
+            "mode": "import",
+            "label": "writer_b",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "writer_b",
+              "--expected",
+              "1:52a9d95294ae2103f8d780859478321a0098fc7fb332bdeea7c90162927b5289"
+            ]
+          },
+          {
+            "pid": 47848,
+            "result": {
+              "status": "CONFLICT",
+              "state_version": "2:c8899194591868c2ee524ccb3db63489bcf8cecc77fca1816af510553b64e08c",
+              "observation_id": "writer_b",
+              "reason": "stale_state_version"
+            }
+          },
+          {
+            "pid": 48844,
+            "mode": "import",
+            "label": "writer_b",
+            "command": [
+              "C:\\Users\\99662\\miniconda3\\python.exe",
+              "-m",
+              "evaluation.m41_lock_probe",
+              "import",
+              "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\game_imports\\m4-implementation\\20261026-m41-02\\tests\\test_two_processes_cannot_lose_confirmed_observations",
+              "writer_b",
+              "--expected",
+              "2:c8899194591868c2ee524ccb3db63489bcf8cecc77fca1816af510553b64e08c"
+            ]
+          },
+          {
+            "pid": 48844,
+            "result": {
+              "status": "APPLIED",
+              "state_version": "3:d93c881a22676fe8cd38f2d5bdb6436087c1722e98850e8ea78e93174b291d22",
+              "observation_id": "writer_b",
+              "reason": ""
+            }
+          },
+          {
+            "observations": [
+              "seed",
+              "writer_a",
+              "writer_b"
+            ],
+            "lost_update": false,
+            "reader_during_write": true
+          }
+        ]
+      }
+    }
+  },
+  "first_attempts": {
+    "20261026-m40-01": "8 passed; subsequently removed StrEnum dependency and reran all 8",
+    "20261026-m41-01": "3 new fixture assertions wrong: equal game dates correctly RECORDED_ONLY; fixture dates corrected, imported TestCase duplication removed; final 41 unique tests passed"
+  }
+}

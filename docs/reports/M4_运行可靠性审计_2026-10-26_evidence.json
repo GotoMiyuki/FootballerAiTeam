@@ -1,0 +1,1495 @@
+{
+  "audit_date": "2026-10-26",
+  "verdict": "补齐明确缺口后可收尾",
+  "m4_pass": false,
+  "baseline": {
+    "git_commit": "dcf6e7bf740d41ab13bfc2e718e3251e0f6afb24",
+    "git_status": " M docs/README.md\n M memory/player.json\n M memory/sessions.json\n?? \"docs/guides/M4_\\350\\277\\220\\350\\241\\214\\345\\217\\257\\351\\235\\240\\346\\200\\247\\345\\256\\241\\350\\256\\241_Codex\\344\\273\\273\\345\\212\\241\\344\\271\\246.md\"\n?? evaluation/m4_audit.py\n",
+    "python": "3.14.6 | packaged by Anaconda, Inc. | (main, Jun 18 2026, 21:18:42) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\99662\\Desktop\\footballerAITeam\\venv\\Scripts\\python.exe",
+    "versions": {
+      "openai": "2.45.0",
+      "langchain-openai": "1.3.5",
+      "langgraph": "1.2.9",
+      "langgraph-checkpoint-sqlite": "3.1.1",
+      "fastapi": "0.141.1",
+      "httpx": "0.28.1",
+      "tavily-python": "0.7.26"
+    },
+    "env_file_exists": true,
+    "config_provenance": "config.py load_dotenv(override=False): pre-existing process env wins, then .env, then defaults. Model factory overridden for tests; no secret values recorded.",
+    "inherited_config_keys_present": []
+  },
+  "effective_non_secret_config": {
+    "PLAYER_DATA_MODE": "demo",
+    "PLAYER_DATA_ROOT": "",
+    "CAREER_ID": "demo-career",
+    "BRANCH_ID": "main",
+    "PLAYER_ID": "demo-player",
+    "CLI_DATA_DIR": "C:\\Users\\99662\\Desktop\\footballerAITeam\\local_data\\cli\\fixture",
+    "MODEL_NAME": "deepseek-chat",
+    "OPENAI_API_KEY_present": true,
+    "TAVILY_API_KEY_present": true
+  },
+  "frontend_installed_versions": {
+    "@playwright/test": "1.63.0",
+    "vite": "7.3.6",
+    "vitest": "4.1.11",
+    "react": "19.3.0",
+    "@tanstack/react-query": "5.104.0",
+    "typescript": "5.9.3"
+  },
+  "source_sha256": {
+    "agents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agents/analyst.py": "9222afa219bf9f2f6e6657ecbc4d90644764ffad9c905cf38c9ff8096845f563",
+    "agents/base.py": "6d427f546901ad4f72b5a5bfd4c6aa748e83d4a8410a6476ff06ee1aebea2acb",
+    "agents/career.py": "8932b93c87241188b6db1fc69b1112e7820eee807774d1b1c33b2398e8243b6a",
+    "agents/coach.py": "e11cc00e03027a0feb00ca789b9c93d2e12719a30370860d23845f848d428f07",
+    "agents/document.py": "2877c5d1a43a4259d5f1042ff9c831755f51242e8732aa746bede7819057840a",
+    "agents/manager.py": "9f2406b32566c18acd8fec604a86e623aa116788735e85ff8778fbe171458b6f",
+    "agents/nutrition.py": "c6489a2ffe5783968af09ff67753545b66c3e7f1b8bc4ba4a49d5b07c442a69f",
+    "agents/reviewer.py": "d090e0ca1687ffef1a4ea8ba95841f66066343a317ef27432e6c200c05e01777",
+    "app.py": "4d437b27c8492aa7370717b605503f0bca58f3d2b458096272c6274094d31dad",
+    "backend/__init__.py": "ad2af653a2b2fabef0a1cbd6132c85f10121b4aef639316df480a204045b5feb",
+    "backend/cli.py": "ed4997aae53351e71e2dbc1c549c63345aa4cfab18809d7dbdebb46a8bc566ef",
+    "backend/continuations.py": "e76199a70c99717192ee2f3c7d6ab3bb0bec703b1511229a3f3e189cd31e4573",
+    "backend/demo.py": "b4a92c59eb13150919c5de461beba7db09c2cf1eb8ec314a22dfdc542e5530ab",
+    "backend/events.py": "4c68c79ab66d2dbc4a08e873a5fab00274c4fdf459e68acaad5649947eee4769",
+    "backend/main.py": "427a770dae5e34b1f3ba0b0ab223c4b8be76ff9b8b65ca610ae79f581f4b57ca",
+    "backend/models.py": "994f233299f33b475a57cc945e5ff2408c88ab832f6c6df96f63cedd0cfd0653",
+    "backend/runtime.py": "e793bf2a05d178f3e6086ee594430cc8a51fa0b2317a74b36f417794be872522",
+    "backend/service.py": "f70a74e238d82db9b4e16b2cceb3857741fc16d560d2526b4a1de5ef4abfe493",
+    "backend/store.py": "f3d8a309f3fecbe7410844bce3869ffd79cd8d7c60f326fa6b7577d8e45d1100",
+    "backend/task_context.py": "43b0b78db78aca77569cde9a77cafc998af0bab8e775250789fa47dc4018bc62",
+    "backend/writer_lock.py": "6e2c9d407247392d599302f65994a6ce2853dea08f90b08a99ef44557498ea82",
+    "career_actions/__init__.py": "98e2fd45ef7800a63b3713833ed61b6a64de5a65f4d89a9849747fc84a2370c6",
+    "career_actions/application.py": "f344a1267099946945a6beabb10a43f4656a06149bd43a8cc0de006beef6878c",
+    "career_actions/assessment_models.py": "077795b77b7dc0b258a4a42e40ac893e88ac71d998c1201cd408230ab79c89df",
+    "career_actions/assessments.py": "30c9cc90d409471005860bf610be4471d9931bb7f7cbf4f7034eed94d256affa",
+    "career_actions/comparison.py": "8ba1410ef335ebcf4810d51f3d0df8a854cd79fea2bbc2a1b2ab7db9229379af",
+    "career_actions/followups.py": "84119cd852b529f558db055bccfacabce74910ce8c94d6e1f9a59b695e6580ad",
+    "career_actions/models.py": "204ac2594623e4c738a40a4049b73da0a1b67afd71a217d81d8c16eab64ce5e3",
+    "career_actions/repository.py": "2b3192fb1ed4376c453c1b64e9585b620b1d0eea1fbbd81d3727d01c508bae06",
+    "career_actions/sources.py": "97e3d744d515803854da7dc059dab6ab01e364d95191ac6231cc22933174b32b",
+    "career_memory/__init__.py": "86e0560bb635008d73341559ceb21a2c36ad3f9a6a55950cdc23b55c2ee6383b",
+    "career_memory/application.py": "9dbd10ecad99868b8b700206d3f51fb726f097b1c82d6326f74355aac021c7b8",
+    "career_memory/context.py": "e16b89515485f805bf1debc4b3ecbee43cf8eaaa249f6bed44cfecea62d693e4",
+    "career_memory/models.py": "1ba33af3ca9102c2c8020d66c380d1f5083814b989c17dee1ecd4184934e46f8",
+    "career_memory/repository.py": "c6f3bef8c1ee5da2093acb059d4e3914cc3dc2570a7e96c07d46a3af41263c54",
+    "career_memory/retrieval.py": "b6b64621b53a7fbac9cff1b068b1adc0b91d0dccb1a7f4986e780e1889588395",
+    "career_memory/sources.py": "6940370023c26555d88053fe064eadfbae6c9184afc1014e59837ba09d557f09",
+    "config.py": "2c71a2818122ec41e5b340babaa2bae417ca7fac0b8150e8fa40b010d02c8696",
+    "evaluation/__init__.py": "1a4882a76e418e72c5d0230a2f0d10a190fdcb4774e120da9abb4b56948db3f0",
+    "evaluation/audit_stage3_native.py": "78645617d3efd69e57c0e8effe7add69db7c9c37d2a63dd9b905c1117999f09d",
+    "evaluation/cli_process_fixture.py": "53262830172ded40680279435fdfa87f5ddf9647fa5c04d51c580ae6b21a6cf8",
+    "evaluation/dataset.py": "c02f06af0ea550573e3bbcaa2fcac4358c4a20c2ede9f174167dba9423fc9564",
+    "evaluation/metrics.py": "338ae7a5ce78ee55d068ec7980404d803c7ffc16bbcd2512783f463fbf775319",
+    "evaluation/player_fixtures.py": "6beb51708e369b86280c16b9709be85ff93b2b88ab7e2b74bedcc72043c531e1",
+    "evaluation/run_eval.py": "561cad905be82fe4a0fb01f7c11bed00b8733bc36461c1b4f5f7c6799f5a4484",
+    "evaluation/smoke_stage2_native.py": "0bd1e4738dc8127fb37772c4f66e7e577df6e447603416a6abb48af62384e346",
+    "evaluation/smoke_web_live.py": "cf7672d8be08de8e9071d6c32f82a40dbc7a7f30e551fad9767b6f7253f6d6f8",
+    "evaluation/test_agent_output_validation.py": "f5936c0752009568eeb9d43bd71cda3da88e541b25d2f88e64120c5c11e4d9c6",
+    "evaluation/test_assessments.py": "db68348ee874bed1bf90bde1eb6d32511996c6f90586fd425db4cc31e44e89a3",
+    "evaluation/test_career_memory.py": "c374b96ac79bcc956ef70f08ad44dea1fad7d2b8242ec1c1979b3547066c217e",
+    "evaluation/test_cli_persistence.py": "bb6cf07c55b92f3d9c9a0f3b972cd63ac847b7e5f315888c4e173506ad1904b9",
+    "evaluation/test_dependency_context.py": "9bdb9cba22732b88023cd6279f6cde178bdd4fed4e61f983359c371d28fd068f",
+    "evaluation/test_execution_outcomes.py": "72c5d699f29bd6c03368e769e922ef0ea769c64067399b6054969402ef35653d",
+    "evaluation/test_feedback_followups.py": "b07ff2579b714e639b0c783fe890f99cee325012a1f73e07e813771656d15d9d",
+    "evaluation/test_finishing_assessment.py": "1816837e8b444f06d977ef975a660f23e0177dc484cb2dedd0969548cfb54ad4",
+    "evaluation/test_looping_plan.py": "e71d00bebae823d1591fd667843df5c56476e4d18f02bda7cb7e966804af5a1b",
+    "evaluation/test_memory_retrieval.py": "72e2e6d1b23ab0164bcd7a5571abc602f08c56c8085b417f98408239f289a4d1",
+    "evaluation/test_player_data_boundary.py": "3cb2362108eec103661bb5c2bc9cc780313ba238f653da0b222dff5db119be61",
+    "evaluation/test_player_imports.py": "1c7a81fd05062d7969c22bd2a06f6ba7c23277f3b22e5645789f47856592e28c",
+    "evaluation/test_player_repository.py": "bffb742923c85ae2214453e4489ec71cecc8ae80c3c731052f85b7a68d4aae29",
+    "evaluation/test_recommendation_actions.py": "b9166c7bea897b7d05d00d489aaf13fb70bbe147558ad892046c1cfe8a390c32",
+    "evaluation/test_recommendations.py": "60043400c842cdc02f271b6209ad06c61bdfdc5fd60b3dc5d9599b09a6599dfe",
+    "evaluation/test_reevaluation.py": "623243c694ce0163db511c74a0611c53743ed50e4368123963c977b2814db66e",
+    "evaluation/test_result_invalidation.py": "efb7aba644d36dd117108e0261dbbac041e81e32141e9ea72ae21f5676818cd3",
+    "evaluation/test_session_semantics.py": "27637cb52e9c5fde978207dba98358f8ccf8783034f50f4eca420b750a6ffd27",
+    "evaluation/test_stage3_audit.py": "b9b64436ac902a3765c91d4e2dc1403602ac161d84014c42cfb467e1a2b5f2cb",
+    "evaluation/test_web.py": "d9e4e59522fef6cfd10c6c4986270b34b9843fefafdd9a2ad2dea4b28a34c03f",
+    "execution_context.py": "0dd84c47aa60ebda43cec2d9e66ea37119481c5560057ad94236fcbeba55f029",
+    "execution_contracts.py": "96298955aeba6e2d1fdf9c7c3e9ba232ce7ec80e587f7569247ee3fb493a14a7",
+    "frontend/e2e/assessments.spec.ts": "55ea40467135bb7912e78e4aa71f1af2952b44c0a771ef233d87108eb94ab6b0",
+    "frontend/e2e/career-memory.spec.ts": "bc57599f89488e355409f467ebef761ee6cb8c734bfbb6e5597b7f4937775c0a",
+    "frontend/e2e/contracts.spec.ts": "8f4e2a0dcf1c67bc7973cdece51c865349edab30ab9731a2d4c2a4669eddb8a9",
+    "frontend/e2e/memory-input.spec.ts": "5524e644134874ce988a96188eccb41121f6a523fd66d2acdc7020a43764a3b6",
+    "frontend/e2e/recommendations.spec.ts": "f0a6579b812c348ba53a46cdd1fe875f967e70a3a4048d9527f834603c79889a",
+    "frontend/e2e/reevaluation.spec.ts": "b5b1020d8fe77e72477f7c8674f2b92ddf6c5408ea5c637e53bffa038b061b26",
+    "frontend/e2e/session-semantics.spec.ts": "1cbf1f19591961409170b27565d59fd940b92eb99084824a8fcf33ea90862be8",
+    "frontend/e2e/workspace.spec.ts": "678b76b9bd2f8d3e0e17c7623382ed7bcbec18dbdf68b1b1644232c4dd72dbd6",
+    "frontend/package-lock.json": "5008f32602e76132a06ee9902692feb5ef971d98ecc682f79bd7cdf858e567e7",
+    "frontend/package.json": "6a3543563f5dba29a7f49997a52b84774190b2e0ca34d7c14a980a71901c1208",
+    "frontend/playwright.config.ts": "a695b0d0e353e50bdc631a8a9bcca8725f16956db2bfad468aef55177d41c7f3",
+    "frontend/src/api/assessments.ts": "cec15ede0f273dd9779b86ae200ce86bb2bb37432589979335a4c68b538162a1",
+    "frontend/src/api/career-memory.ts": "b7aca4778fc5e0af7f2ec54db53b22df31b172e1dd13750af91b2a3e07b6e955",
+    "frontend/src/api/client.ts": "839aba5badbe9faea11f89030a761b986ed12ccb15a285c0706589fd294970c0",
+    "frontend/src/api/events.test.ts": "8687a858763b1d7d2815a38f2233e7bdf3f8ed727fe37584418a20a41a828de6",
+    "frontend/src/api/events.ts": "d661f678bf115cb079b9236aad3e5c440b3e132550a60771d3513f9f96542dda",
+    "frontend/src/api/missions.ts": "7d495ac9d62d55e804ef08d26b14b443309683283b088906c88bfef2e3647082",
+    "frontend/src/api/player.ts": "770e04e602fd079c2982d9ae927e573db59044cb31afc066709dac36404a91c2",
+    "frontend/src/app/App.tsx": "6c0b067d72ae9d25cdfc7f1f34ffc97c9ea2de81d2fe6efd1020f0695e51c823",
+    "frontend/src/components/Dialog.tsx": "02104c2c41d1bc7ec09b9d1aaecd1cdbbcbe032229d084f1b2ab066a0c6bc62b",
+    "frontend/src/components/ui.tsx": "c446e6243f66c378d66db4425a8b2eb3463694c99f2d28dc6c17eb151f0c1f1d",
+    "frontend/src/features/conversation/ConversationPanel.tsx": "9b1d7624576b9826c4a3f762318fcd193f6f0ec27c3bb79c993bf1dfa94956ff",
+    "frontend/src/features/history/MissionHistory.tsx": "72d418df50c32aa1ba9044a1194920748d9f379d1ecad411b19be62abb2b203b",
+    "frontend/src/features/mission/AgentActivityPanel.tsx": "38df496ad2f4c28e08abebdd31ef79b9430884f8b71b9b207167ae42eadd0620",
+    "frontend/src/features/mission/AssessmentPanel.tsx": "8d1dbe6271f17f157bf542dd79ccab020d1c7c517fbe33938362188a6fe728b3",
+    "frontend/src/features/mission/BlockedInputPanel.tsx": "66d8ed73dec5a4be5211a09ddd842960d41acc5136df9c32841067184df659d5",
+    "frontend/src/features/mission/CareerMemoryPanel.tsx": "b5bd792776037ae4dc8bdb23f26e514499148affa3672658895d66a9d80ab9fc",
+    "frontend/src/features/mission/FeedbackAdjustment.tsx": "9bf067d3c80bb3fd9d550be5abc434f228449923df8ccf7f28877139b044e632",
+    "frontend/src/features/mission/FeedbackInputPanel.tsx": "8f5b911bcef6a73c8afb7b2d67c475bd4e0a7f18e88a228890239a89771e7a12",
+    "frontend/src/features/mission/MissionMemoryPanel.tsx": "26b133816af2922061432f06725357611cde9993ad4749fcfd79778b77b5473a",
+    "frontend/src/features/mission/MissionResult.tsx": "61ffb06dbe7321fc7ff5c92c7619f7c0c35584975e7962bfe7de17d3dc844bcf",
+    "frontend/src/features/mission/MissionWorkspace.tsx": "10cde36051a60064a25cdf7ba402f37cb1dc6dd4188dd03017ec1e6766b34aa2",
+    "frontend/src/features/mission/PlanProgress.tsx": "5551289d72bb63b18891b8e06602021907cfb839b7b362bef9c2121103e98da4",
+    "frontend/src/features/mission/RecommendationActivity.tsx": "3d034f2a85bd4c24705742bd7b3a2ad010c42bdf9e6823d2b8b364ac1eb0f022",
+    "frontend/src/features/mission/RecommendationFollowups.tsx": "ba689b1d15b4a24c87d15db0016d27af87664976db98a4a2c524d3ceba87c31c",
+    "frontend/src/features/mission/RecommendationsPanel.tsx": "b32216e1312e6bb9846e21bb538328576231bb10e9d22b34a1a25f96678a24e5",
+    "frontend/src/features/mission/ReevaluationPanel.tsx": "b92795d998d03a1520075768f4e62c6e70eff4d61b17e818dee1769e964b2ec1",
+    "frontend/src/features/mission/ReviewStatus.tsx": "738b34715fe60d0e60bdf15a549d676b341bee02ca9183b9ed5c62abe1ad2153",
+    "frontend/src/features/player/PlayerPanel.tsx": "5ec4d6fc6ffbd59c2229df3192b1fbfb9c98999f6d2f7761946264d3fdf3053e",
+    "frontend/src/features/report/ReportViewer.tsx": "12fc1201292d0ce67885d55e127dcca7b2ca749c3adb57eccffe1ec1704b9c40",
+    "frontend/src/hooks/useConversation.ts": "3944eec4209f61119536f9c5fbb032dc9a60cbca5545351f8fcc4bc13efae323",
+    "frontend/src/hooks/useMission.ts": "abad8d377e46c0082e1839458feb1a736232275a5b2d021e8952bd666fb0a900",
+    "frontend/src/hooks/useMissionEvents.ts": "9998da9887d13f67d4f0ed577e912b982cad9ae3e2fbdfd9f5fb8fd8f2174c4e",
+    "frontend/src/main.tsx": "bc7a10ef557d72da586af0a842bd29c32a0ff547284dea76de433f646d159bed",
+    "frontend/src/types/assessment.ts": "694e3a762be426f69ed7496d0da85667972a456ea893734a47a8863a0ce99fd6",
+    "frontend/src/types/career-memory.ts": "e9f9b041f39496607a78678afd169757ab5075e77d9022f3d89b1f25b63135f1",
+    "frontend/src/types/conversation.ts": "cbec0b74ec1fed64b347b82732cb9b5774c6dea7d0e4af49f2fe1a47d4352245",
+    "frontend/src/types/events.ts": "4ad267105c928f335746a31cded56d7f1a139de1ef9718398bebe268c86efed5",
+    "frontend/src/types/feedback.ts": "943f7f1f98945ac58a66b71877bfd2ce3b64567f72641f4b63f0d0090c83f976",
+    "frontend/src/types/mission.ts": "6048e8876dcbd2aa6f974b0b61114a140d557bd56e8934a6208b10e86de5be05",
+    "frontend/src/types/player.ts": "1704b66961a68ef9f09b230601b248ccf9259fe221a83934ba7869d6c345314d",
+    "frontend/src/types/recommendation.ts": "ff5052c79d1ab4b646d4a3fe1339c61e96413d6594f23e0d1c8ccf7169076ce4",
+    "frontend/vite.config.ts": "35c331f455926fc493e484fc931b1fbadca332adad2fa2150e770c0ff2dd1fc6",
+    "game_adapters/keyboard_probe.py": "1abbb29cadb6023cffd7c66b79decdbde40b73402c7b94ab5eb7964918b8874a",
+    "game_adapters/pes2021_bal_research.py": "a582f7078c7956e684739043206d1c29a7ed30a5b5c19c26fab49f7fb1e683bd",
+    "game_adapters/pes2021_import.py": "c274bf0c4a0a78c0f06d44cfb585f6df98eb3f5593e0ae6373e8d16cfa708cfa",
+    "game_adapters/pes2021_interface.py": "fa69dcba57c13d77e6cce8271cf7c9348eeb7340241ea7afe71be196d4f78de1",
+    "game_adapters/pes2021_memory_probe.py": "42c24883edf62a81f17dceb05de94ba7ba949b95415aca3de72cc9f98318eecc",
+    "game_adapters/pes2021_native_package.py": "fe1ca70641dc09ab9017094f18c4c457097336ab7ed839e72bf21efa7ceb67fa",
+    "game_adapters/pes2021_pages.py": "174453d6c2eef5703441c9ba6e0bd7a992643da8b2ebb8c5d0bfcc65a8154dca",
+    "game_adapters/pes2021_runtime_career.py": "05accc4b1c2ad798dbd86025c5bb1b2029f6e90bebfdc553ad3236ec22552e4e",
+    "game_adapters/pes2021_runtime_stats.py": "284a707135ae8661ff4c015bcba389509d33ce2c7f4371aa1eff7f93908c5bb6",
+    "game_adapters/pes2021_runtime_watch.py": "1403624f6a6ff248ed6180a0419d634e674e6a2a77d7d32526af38911e34100d",
+    "game_adapters/pes2021_save.py": "9ab29e125d71c68f8305967d6f9035d5870c9a703bea3779d431ad0b45990355",
+    "game_adapters/pes2021_save_diff.py": "6ace89af657f8a3a5cccbff79f93364e4a1928bf6bce422176071c4789cea49c",
+    "game_adapters/test_keyboard_probe.py": "dbd7b87017efef61103772b1555eddff8f021566c738b1b16cfb33af8d7bda7b",
+    "game_adapters/test_pes2021_bal_research.py": "b9bb50cc5ac0c73bca47c56c749d7db02f2571bfa42182c7cbffdc0b36c6ce09",
+    "game_adapters/test_pes2021_import.py": "4ed6ccaae261f40cc9a5f66f316328e7d644e7a74ffd6893e296a4490aa8f8cb",
+    "game_adapters/test_pes2021_interface.py": "40d501ff3a433dac301320755ab4b8554aaf53f06e1c6ab6a43303fa52530f98",
+    "game_adapters/test_pes2021_native_package.py": "0b9c95f23c33178de8fdcce56bcb3d1869c467e9112b6256cc67e7826d65783b",
+    "game_adapters/test_pes2021_pages.py": "a1c7088dbdd555fb935ef32789486940bb8810ab56729ebf9213184a9eebb82a",
+    "game_adapters/test_pes2021_runtime_career.py": "739d2f5aede2fdcd3c24d1e1b02b7dd7c90ed57fd87c19cf65b3a2fc0bf72ea1",
+    "game_adapters/test_pes2021_runtime_stats.py": "f27960d6c6e6fc4369505728ba54b9d6aff1adc19065f1e1b829b00d2d46cf1b",
+    "game_adapters/test_pes2021_runtime_watch.py": "1dc411131dc4ee102e3336945baa872c0f2330a367fb38a24edce36eebb2b17c",
+    "game_adapters/test_pes2021_save.py": "3b3ce800c71ef93a52737dcee05e21d0454e0d19a79c7adfe115706433de4530",
+    "game_adapters/test_pes2021_save_diff.py": "10622fa0ca1e00e8848dde606bcfcd7b143f9c818a95eefb3f00585b5329325f",
+    "graph.py": "a9ae39038267167306f35e25bf50b52b6b8228b38d5842763ef5597b074da45f",
+    "loop_contracts.py": "a3a3c3f54a365d3122c94294eedcb4646f73baebbcfa7983c3229980a6472390",
+    "output_validation.py": "38fe7faad5f7df3bd75104d132e73273f76753bf6140f7284586860afd4baaa8",
+    "player_data/__init__.py": "dce87e4edc8ea132a49c06c18aa6e8f7ff212c6b39a09cb67931b8718dd3e06f",
+    "player_data/imports.py": "dc2f0606f9473cb53b124f6a6e23aae6394397a8e2003c0eb80595b73e3a9239",
+    "player_data/json_repository.py": "d7f0b97fa4cd3e997c630af30de0e0ac110312be5698796146d0dbc2f55e7bd1",
+    "player_data/models.py": "7a4a38b57c84693de5710db9aeb8a8d2ad9617ed83524435621d71c0554f8273",
+    "player_data/observations.py": "f240de1ee4e6fdd51d6a7e600ede9f0523b7e93e45db7f83efdf8c2ded4dbbc2",
+    "player_data/repository.py": "3a3b178f9062cf5ef89df4b6e1827d46c12c12de54d40fb1c9bea7621c798443",
+    "player_data/schema.py": "aaebb39d2e54ef625e9fe4c22df95508bcc358577240039644d942b99307a51f",
+    "prompts/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prompts/agent_prompts.py": "bd430eb29f39e5d457d3a281650e6f6cef6cd79520b81aaacc1abdb26045e91c",
+    "registry.py": "f4d09a5c220fad7c9e25796816e1ae7821fb1a4a1b5360c6195e456277efbf45",
+    "report_validation.py": "060cbbd05dee0f7b2975b75bf28a3ac8e9a109c055a5295edde86b0b6cc62d24",
+    "requirements-web.txt": "c81915b699353ae37b13f72e66922db6f687e2d1574b72c7ac78341b509d94e7",
+    "requirements.txt": "fc5c579e31646ceb56a180ad5dd53c34391361af9fa78eaaff4ae8c3ad4bcdba",
+    "result_validity.py": "c0f232649a0bd4e5dcf7c181f3611656a86c3aa8420aeb5e66d0d7af24230fb6",
+    "tools/__init__.py": "457a5870d21e0bd6cd6ce72e1a876fe446976351894e7166ce68d974cbd7ddbe",
+    "tools/calculator.py": "846c7683d82b1a3842cb9cf1963938d843249c74cc4364495beb610f2db46e1f",
+    "tools/check_docs.py": "ab62854f079e93f983f0cb6fd8765efca1b0e5456acc7f35fe80e04ed5409d0a",
+    "tools/database.py": "ca8aeb168236d9082cedbbb9d9cfd71372a3fe7d61a13a972e098247efa955e7",
+    "tools/errors.py": "672f2036ad4c5147218282e1c79b241794129bdf1b195653f00751f8943a55e7",
+    "tools/rag.py": "1b70af8cd767c60fcc786bc1331a5d5994dbefa69ed70e32e1569d8ddcbd2cc6",
+    "tools/reranker.py": "733470a801bc3cc0b04788a62eee5735a5adc231d0377f13a6e2ddafda20fdaf",
+    "tools/search.py": "a2c8fdd6753b4191093526e5ab2dd6461fb21df603271fe870018049a389ab55",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/helpers.py": "dc83a3c5887c199e39cc29c4eca67614c503f621a3ef1096002e4921da04960f",
+    "utils/sessions.py": "f74fafcb28f46a8f002b8064fd4d7ff204ab31c1a9bc91f52cf27cee20a25018",
+    "utils/telemetry.py": "d9aab2c051a520d646c2f09686accaef246a05e488f6548f8aa0c2404d1ae7a3"
+  },
+  "audit_script_sha256": {
+    "m4_audit.py": "b07333bc3a8dfeb05cc1fa24b01b0fefbda53c2056890e1deca3145e896ca9cc",
+    "m4_evidence.py": "0dada2dd9aeee43d57301edf3e4e2b8f516d9eb3899a3502ca3848c5ea74dcce",
+    "m4_frontend_audit.mjs": "6527677b1f7898c22e07cc9079ff9389523c25cfa129e7b16e5d067636ed702b",
+    "m4_restore_audit.py": "854a0a34742a63478096634fdeea2788f149d09316d9c6ee53d736e20361a9fd",
+    "m4_transport_audit.py": "1022ec8c26d030e593d79fb181030d5b82f33b07760ebb9d9568b033d77a3473"
+  },
+  "protected": {
+    "files_checked": 1150,
+    "changed": [],
+    "original_manifest": "local_data/game_imports/m4-audit/20261026-01/baseline.json",
+    "player_sha256": "de7f479db04c1f5af961b29cb065efccd972597e13c0ab2831398dcd9450162a",
+    "sessions_sha256": "e71079c537924e131aa25a569993c6661569f42c4749d26a4896abd89b5ea0f3"
+  },
+  "sdk": {
+    "factory_defaults": {
+      "langchain_timeout": null,
+      "langchain_max_retries": null,
+      "sdk_timeout": "None",
+      "sdk_transport_timeout": "Timeout(timeout=None)",
+      "sdk_max_retries": 2
+    },
+    "500": {
+      "transport_attempts": 2,
+      "error_type": null,
+      "telemetry_events": [
+        {
+          "kind": "llm",
+          "agent": "manager",
+          "operation": "llm",
+          "latency_ms": 495.422,
+          "input_tokens": 3,
+          "output_tokens": 2
+        }
+      ]
+    },
+    "400": {
+      "transport_attempts": 1,
+      "error_type": "BadRequestError",
+      "telemetry_events": [
+        {
+          "kind": "llm",
+          "agent": "manager",
+          "operation": "llm",
+          "latency_ms": 1.245,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "failed": true
+        }
+      ]
+    },
+    "500-exhausted": {
+      "transport_attempts": 3,
+      "error_type": "InternalServerError",
+      "telemetry_events": [
+        {
+          "kind": "llm",
+          "agent": "manager",
+          "operation": "llm",
+          "latency_ms": 1392.265,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "failed": true
+        }
+      ]
+    },
+    "read-timeout": {
+      "transport_attempts": 3,
+      "error_type": "APITimeoutError",
+      "telemetry_events": [
+        {
+          "kind": "llm",
+          "agent": "manager",
+          "operation": "llm",
+          "latency_ms": 1234.023,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "failed": true
+        }
+      ]
+    },
+    "missing_usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  },
+  "slow_and_cancel": {
+    "model": {
+      "ids": [
+        "mission_3daa7863d51d4d4f829a0221c92a8d56",
+        "mission_85ec5968165c4df78fd2fbc3b145f9f6"
+      ],
+      "pre_release_status": [
+        "PLANNING",
+        "CREATED"
+      ],
+      "cancel_http": [
+        404,
+        404
+      ],
+      "queue_depth": 1,
+      "released_status": [
+        "BLOCKED",
+        "BLOCKED"
+      ],
+      "final_status": "COMPLETED",
+      "report_present": true,
+      "recommendation_count": 1,
+      "restart_status": "COMPLETED",
+      "controlled_calls": 2,
+      "graph_calls": [
+        [
+          "manager",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "coach",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "intent_checkpoint",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "reviewer",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "manager",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "coach",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "intent_checkpoint",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "reviewer",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "document",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ]
+      ]
+    },
+    "tool": {
+      "ids": [
+        "mission_ecad6c3eec3a4e0c84857acd9f738065",
+        "mission_b8b9ad6d0a5747679cb0b71b1ebf0f15"
+      ],
+      "pre_release_status": [
+        "PLANNING",
+        "CREATED"
+      ],
+      "cancel_http": [
+        404,
+        404
+      ],
+      "queue_depth": 1,
+      "released_status": [
+        "BLOCKED",
+        "BLOCKED"
+      ],
+      "final_status": "COMPLETED",
+      "report_present": true,
+      "recommendation_count": 1,
+      "restart_status": "COMPLETED",
+      "controlled_calls": 2,
+      "graph_calls": [
+        [
+          "manager",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "coach",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "intent_checkpoint",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "reviewer",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "manager",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "coach",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "intent_checkpoint",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "reviewer",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ],
+        [
+          "document",
+          "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+        ]
+      ]
+    }
+  },
+  "duplicate_and_explanation": {
+    "new_mission_ids": [
+      "mission_37a5abacbe2e49f79ca80b6bfca4a450",
+      "mission_0af619ac2d9a4455a9b5e982fa677dbe",
+      "mission_d2735810dffa4203b2afbc7a869671ad",
+      "mission_065becac967b46a49026e91a479dd3c1"
+    ],
+    "enqueue_count": 4,
+    "server_request_fields": [
+      "conversation_id",
+      "content",
+      "mission_id",
+      "intent",
+      "use_career_memory",
+      "demo_scenario"
+    ],
+    "duplicate_approval_http": 422,
+    "document_count_before": 1,
+    "document_count_after": 1,
+    "explanation_model_calls": 2,
+    "telemetry_before": {
+      "llm_call_count": 0,
+      "manager_call_count": 2,
+      "reviewer_call_count": 1,
+      "agent_call_count": 2,
+      "review_count": 1,
+      "revision_count": 0,
+      "replan_count": 0,
+      "latency_ms": 14.261,
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    "telemetry_after": {
+      "llm_call_count": 0,
+      "manager_call_count": 2,
+      "reviewer_call_count": 1,
+      "agent_call_count": 2,
+      "review_count": 1,
+      "revision_count": 0,
+      "replan_count": 0,
+      "latency_ms": 14.261,
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    "message_counts": 11,
+    "task_count": 5,
+    "post_restart_lost_response_retry": {
+      "message_id": "msg_b31b51eb52484b9e82c8af8358390eb2",
+      "mission_id": "mission_15a084b28cd44b758eb701d17731a9c7"
+    },
+    "post_restart_task_count": 6
+  },
+  "process_faults": {
+    "created": {
+      "pid": 28256,
+      "exit_code": 1,
+      "boundary": {
+        "pid": 28256,
+        "mission_id": "mission_f43d2f6c9caa4416b098e74eebee8708",
+        "stage": "committed-before-enqueue"
+      },
+      "before": [
+        {
+          "id": "mission_f43d2f6c9caa4416b098e74eebee8708",
+          "status": "CREATED",
+          "report_present": false
+        }
+      ],
+      "after_status": [
+        "FAILED"
+      ],
+      "report_http": [
+        404
+      ],
+      "restart_graph_calls": [],
+      "shutdown": null
+    },
+    "running": {
+      "pid": 48952,
+      "exit_code": 1,
+      "boundary": {
+        "pid": 48952,
+        "stage": "manager"
+      },
+      "before": [
+        {
+          "id": "mission_ee92a62a3f094a319af26c5f9410ce8e",
+          "status": "PLANNING",
+          "report_present": false
+        }
+      ],
+      "after_status": [
+        "FAILED"
+      ],
+      "report_http": [
+        404
+      ],
+      "restart_graph_calls": [],
+      "shutdown": null
+    },
+    "report": {
+      "pid": 7032,
+      "exit_code": 1,
+      "boundary": {
+        "pid": 7032,
+        "mission_id": "mission_0e9567184b734dc280a19654aebe626e",
+        "stage": "report-committed-before-completed"
+      },
+      "before": [
+        {
+          "id": "mission_0e9567184b734dc280a19654aebe626e",
+          "status": "RUNNING",
+          "report_present": true
+        }
+      ],
+      "after_status": [
+        "FAILED"
+      ],
+      "report_http": [
+        404
+      ],
+      "restart_graph_calls": [],
+      "shutdown": null
+    },
+    "shutdown": {
+      "pid": 8456,
+      "exit_code": 1,
+      "boundary": {
+        "pid": 8456,
+        "stage": "manager"
+      },
+      "before": [
+        {
+          "id": "mission_8f0f8185b1c04a2c9b2cd9df8c0dc37f",
+          "status": "PLANNING",
+          "report_present": false
+        }
+      ],
+      "after_status": [
+        "FAILED"
+      ],
+      "report_http": [
+        404
+      ],
+      "restart_graph_calls": [],
+      "shutdown": {
+        "pid": 8456,
+        "close_still_blocked": true
+      }
+    }
+  },
+  "writer_lock": {
+    "owner": {
+      "pid": 16152,
+      "acquired": true
+    },
+    "contender": {
+      "pid": 5340,
+      "error": "任务目录已有写入进程，请关闭占用该目录的 CLI/Web 后重试",
+      "type": "ValueError"
+    },
+    "readonly_history": [],
+    "readonly_added_files": [],
+    "after_owner_kill": {
+      "pid": 41232,
+      "acquired": true
+    }
+  },
+  "actual_process_race": {
+    "results": [
+      {
+        "status": "APPLIED",
+        "state_version": "1:256052007e175f839c108964bb7cb38f38c3e50d6cdc431a22d64b5061b3fa13",
+        "observation_id": "writer-a",
+        "reason": ""
+      },
+      {
+        "status": "APPLIED",
+        "state_version": "1:08f7f3c0df080c1f257c70fdb6b9d4bc67018ce07d713295135606f78dd9899c",
+        "observation_id": "writer-b",
+        "reason": ""
+      }
+    ],
+    "pids": [
+      40844,
+      13880
+    ],
+    "final_revision": 1,
+    "final_observation_ids": [
+      "writer-b"
+    ],
+    "final_integrity_readable": true,
+    "fault_hook": "barrier immediately before real ObservationImporter._commit; both original CAS checks completed"
+  },
+  "restore": {
+    "completed": "mission_5a05baf0cf444e448ef532a59188d009",
+    "missing": "mission_ba3090e7f9404a8081789c7ed304a7c9",
+    "approval": "mission_aa5248f075b84867ac80c34f6dfe7624",
+    "manifest_file_count": 14,
+    "table_counts_before": {
+      "missions": 3,
+      "events": 70,
+      "messages": 5,
+      "mission_inputs": 3,
+      "creation_requests": 0,
+      "recommendations": 1,
+      "recommendation_batches": 1,
+      "recommendation_events": 4,
+      "sqlite_sequence": 1,
+      "recommendation_actions": 2,
+      "recommendation_action_heads": 2,
+      "recommendation_action_requests": 2,
+      "comparison_plans": 1,
+      "assessments": 1,
+      "assessment_requests": 2,
+      "career_memories": 5,
+      "career_memory_events": 4,
+      "career_memory_requests": 1
+    },
+    "table_counts_restored_before_open": {
+      "missions": 3,
+      "events": 70,
+      "messages": 5,
+      "mission_inputs": 3,
+      "creation_requests": 0,
+      "recommendations": 1,
+      "recommendation_batches": 1,
+      "recommendation_events": 4,
+      "sqlite_sequence": 1,
+      "recommendation_actions": 2,
+      "recommendation_action_heads": 2,
+      "recommendation_action_requests": 2,
+      "comparison_plans": 1,
+      "assessments": 1,
+      "assessment_requests": 2,
+      "career_memories": 5,
+      "career_memory_events": 4,
+      "career_memory_requests": 1
+    },
+    "state_version": "1:c9aaa8e6b4f26c77f78030862e6ef589ef249ccef9440d8614cc1a87ba183a9b",
+    "initial_public_equal": {
+      "/api/missions/mission_5a05baf0cf444e448ef532a59188d009/report": true,
+      "/api/missions/mission_5a05baf0cf444e448ef532a59188d009/recommendations": true,
+      "/api/missions/mission_5a05baf0cf444e448ef532a59188d009/recommendations/rec_1a9bfca75cc81059cf40cfec11e636325aa4397eb29876dd65ec0f0ee07750e0/activity?career_id=restore-audit&branch_id=main&player_id=audit-player": true,
+      "/api/missions/mission_5a05baf0cf444e448ef532a59188d009/recommendations/rec_1a9bfca75cc81059cf40cfec11e636325aa4397eb29876dd65ec0f0ee07750e0/comparison": true,
+      "/api/missions/mission_5a05baf0cf444e448ef532a59188d009/career-memory": true
+    },
+    "fixed_inputs_equal": {
+      "mission_5a05baf0cf444e448ef532a59188d009": true,
+      "mission_ba3090e7f9404a8081789c7ed304a7c9": true,
+      "mission_aa5248f075b84867ac80c34f6dfe7624": true
+    },
+    "pause_resumes": {
+      "mission_ba3090e7f9404a8081789c7ed304a7c9": {
+        "status": "COMPLETED",
+        "fixed_version": "1:c9aaa8e6b4f26c77f78030862e6ef589ef249ccef9440d8614cc1a87ba183a9b",
+        "latest_version": "2:55ec74a1aa1862ae43d5f8edbb557cd1d50cb67a8ab712609c99658b14b1f645",
+        "retained_speed_44": true
+      },
+      "mission_aa5248f075b84867ac80c34f6dfe7624": {
+        "status": "COMPLETED",
+        "fixed_version": "1:c9aaa8e6b4f26c77f78030862e6ef589ef249ccef9440d8614cc1a87ba183a9b",
+        "latest_version": "2:55ec74a1aa1862ae43d5f8edbb557cd1d50cb67a8ab712609c99658b14b1f645",
+        "retained_speed_44": true
+      }
+    },
+    "scope": "Synthetic actual + real HTTP/store/checkpoints; manual audit-only copying, no native bindings or real sources certified."
+  },
+  "broken_restore": {
+    "missing-checkpoint": {
+      "health": {
+        "status": "ok",
+        "mode": "live",
+        "version": "0.1.0"
+      },
+      "player_http": 200,
+      "resume_http": 422,
+      "resume_error": "原 checkpoint 不存在，无法恢复。请新建任务。",
+      "available_operations": [
+        "view"
+      ],
+      "exception_type": null
+    },
+    "corrupt-checkpoint": {
+      "health": {
+        "status": "ok",
+        "mode": "live",
+        "version": "0.1.0"
+      },
+      "player_http": 200,
+      "resume_http": 422,
+      "resume_error": "原 checkpoint 无法读取或不兼容，无法恢复。请新建任务。",
+      "available_operations": [
+        "view"
+      ],
+      "exception_type": null
+    },
+    "corrupt-actual": {
+      "health": {
+        "status": "ok",
+        "mode": "live",
+        "version": "0.1.0"
+      },
+      "player_http": 503,
+      "resume_http": null,
+      "resume_error": null,
+      "available_operations": [
+        "view",
+        "supply_input"
+      ],
+      "exception_type": null
+    },
+    "wrong-context": {
+      "health": {
+        "status": "ok",
+        "mode": "live",
+        "version": "0.1.0"
+      },
+      "player_http": 503,
+      "resume_http": null,
+      "resume_error": null,
+      "available_operations": [
+        "view",
+        "supply_input"
+      ],
+      "exception_type": null
+    },
+    "future-schema": {
+      "health": {
+        "status": "ok",
+        "mode": "live",
+        "version": "0.1.0"
+      },
+      "player_http": 503,
+      "resume_http": null,
+      "resume_error": null,
+      "available_operations": [
+        "view",
+        "supply_input"
+      ],
+      "exception_type": null
+    }
+  },
+  "http_sse": {
+    "host": "127.0.0.1",
+    "port": 55968,
+    "transport": "real uvicorn + loopback httpx; deterministic graph nodes",
+    "active_after_disconnect": true,
+    "cancel_running_http": 404,
+    "cancel_blocked_http": 404,
+    "input_first_http": 202,
+    "input_replay_http": 422,
+    "approval_first_http": 202,
+    "approval_concurrent_http": 422,
+    "approval_terminal_replay_http": 422,
+    "cancel_completed_http": 404,
+    "last_sequence": 49,
+    "calls": [
+      [
+        "manager",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "coach",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "intent_checkpoint",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "reviewer",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "manager_revision",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "coach",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "intent_checkpoint",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "reviewer",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ],
+      [
+        "document",
+        "515b27faca2a65c6c08cd3a6aceca226622336a2bd2098dac3a420f51cb0a980"
+      ]
+    ],
+    "document_count": 1,
+    "resume_message_count": 2
+  },
+  "frontend": {
+    "node": "v24.19.0",
+    "errors": [],
+    "api_scope": "all browser API requests intercepted; no game or real backend",
+    "existing_e2e": {
+      "pid": 44908,
+      "code": 0
+    },
+    "requests": [
+      "http://127.0.0.1:19573/api/player",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/health",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/missions/audit-mission/career-memory",
+      "http://127.0.0.1:19573/api/missions/audit-mission/memory-input",
+      "http://127.0.0.1:19573/api/conversations/audit-conversation/messages",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/conversations/audit-conversation/messages",
+      "http://127.0.0.1:19573/api/player",
+      "http://127.0.0.1:19573/api/missions/audit-mission/recommendations",
+      "http://127.0.0.1:19573/api/conversations/audit-conversation/messages",
+      "http://127.0.0.1:19573/api/player",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/health",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/missions/audit-mission",
+      "http://127.0.0.1:19573/api/missions/audit-mission/recommendations",
+      "http://127.0.0.1:19573/api/missions/audit-mission/career-memory",
+      "http://127.0.0.1:19573/api/missions/audit-mission/memory-input",
+      "http://127.0.0.1:19573/api/conversations/audit-conversation/messages"
+    ],
+    "stale_http_preserved_completed": true,
+    "old_event_preserved_completed": true,
+    "refresh_preserved_completed": true,
+    "recovery_request_delayed": true,
+    "browser_version": "156.0.8078.47"
+  },
+  "frontend_e2e_stats": {
+    "startTime": "2026-10-26T04:22:48.551Z",
+    "duration": 6789.427000000001,
+    "expected": 8,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "frontend_unit_stats": {
+    "numTotalTestSuites": 2,
+    "numPassedTestSuites": 2,
+    "numFailedTestSuites": 0,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 7,
+    "numPassedTests": 7,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTodoTests": 0,
+    "success": true
+  },
+  "regressions": [
+    {
+      "tests_run": 105,
+      "successful": true,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "cases": [
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_metadata_only_history_is_read_only_and_needs_no_model_config",
+          "seconds": 0.138
+        },
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_cli_same_process_approval_delivers_only_publishable_report",
+          "seconds": 0.087
+        },
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_failed_or_empty_explanation_does_not_damage_report_and_followup_is_compatible",
+          "seconds": 0.407
+        },
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_history_and_explanation_keep_original_version_and_never_run_graph",
+          "seconds": 0.356
+        },
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_missing_or_incompatible_checkpoint_rejected_before_mutation",
+          "seconds": 1.683
+        },
+        {
+          "id": "evaluation.test_session_semantics.SessionSemanticsTests.test_restart_missing_input_and_report_approval_resume_same_snapshot",
+          "seconds": 0.514
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_application_retry_is_a_new_task_and_binds_parent_context",
+          "seconds": 0.407
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_concurrent_duplicate_submissions_create_and_enqueue_once",
+          "seconds": 0.371
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_create_transaction_rolls_back_every_record_on_failure",
+          "seconds": 0.396
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_creation_request_survives_restart_and_conflicting_content_is_rejected",
+          "seconds": 0.944
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_invalid_context_history_and_external_references_create_nothing",
+          "seconds": 0.516
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_latest_read_failure_and_failed_child_preserve_parent_report",
+          "seconds": 0.46
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_new_identity_freezes_v2_even_if_v3_arrives_before_execution",
+          "seconds": 0.718
+        },
+        {
+          "id": "evaluation.test_reevaluation.ReevaluationTests.test_selected_history_and_new_requirements_enter_real_manager_and_coach_prompts",
+          "seconds": 0.636
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_commit_faults_preserve_old_state_and_response_loss_is_idempotent",
+          "seconds": 0.055
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_concurrent_compare_and_swap",
+          "seconds": 0.029
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_corruption_does_not_reset_data",
+          "seconds": 0.022
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_dedup_before_cas_conflict_and_restart",
+          "seconds": 0.025
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_empty_actual_initialization_patch_null_and_source_map",
+          "seconds": 0.023
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_histories_corrections_sparse_and_manual_confirmation",
+          "seconds": 0.076
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_invalid_values_sources_and_legacy_writers_rejected",
+          "seconds": 0.003
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_old_unknown_equal_cross_domain_times_never_override",
+          "seconds": 0.07
+        },
+        {
+          "id": "evaluation.test_player_imports.PlayerImportTests.test_same_observation_id_isolated_by_career_branch_and_player",
+          "seconds": 0.033
+        },
+        {
+          "id": "evaluation.test_player_data_boundary.FactBoundaryTests.test_all_model_tool_sets_are_read_only",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_player_data_boundary.FactBoundaryTests.test_real_coach_predictions_and_revisions_leave_files_unchanged",
+          "seconds": 0.006
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_budget_exhaustion_is_failed_not_old_completed_or_published",
+          "seconds": 0.006
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_changed_used_hypothesis_invalidates_only_its_consumer",
+          "seconds": 0.006
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_dependency_set_version_context_constraints_and_missing_fingerprint",
+          "seconds": 0.037
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_display_fields_and_constraint_order_do_not_invalidate",
+          "seconds": 0.008
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_removed_new_and_reused_agent_task_id_do_not_inherit_current_results",
+          "seconds": 0.012
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_cascades_and_recomputes_only_A_B_C",
+          "seconds": 0.054
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_revision_immediately_revokes_report_review_and_reducer_validity",
+          "seconds": 0.005
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_scoped_confirmed_feedback_is_semantic_input",
+          "seconds": 0.005
+        },
+        {
+          "id": "evaluation.test_result_invalidation.ResultInvalidationTests.test_upstream_failure_revokes_downstream_and_current_review",
+          "seconds": 0.005
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_empty_and_model_failure_exit_reasons",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_hypotheses_are_not_clamped_coerced_or_silently_dropped",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_numeric_and_missing_schema",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_invalid_plan_dependencies_capabilities_and_ids",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_tool_budget_never_returns_tool_json",
+          "seconds": 0.041
+        },
+        {
+          "id": "evaluation.test_agent_output_validation.OutputValidationTests.test_unknown_arguments_execution_and_mixed_tools",
+          "seconds": 0.042
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_a_normal_task_passes_directly_to_document_with_telemetry",
+          "seconds": 0.044
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_b_local_error_revises_only_the_affected_subtask",
+          "seconds": 0.043
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_c_conflict_revises_the_minimal_two_subtask_scope",
+          "seconds": 0.046
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_d_blocked_waits_for_user_and_does_not_retry_automatically",
+          "seconds": 0.051
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_dependency_priority_and_observation_merge",
+          "seconds": 0.004
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_e_refuted_hypothesis_enters_replan_and_records_llm_usage",
+          "seconds": 0.043
+        },
+        {
+          "id": "evaluation.test_looping_plan.LoopingPlanContractTests.test_f_low_finding_is_kept_and_cannot_start_an_infinite_revision_loop",
+          "seconds": 0.036
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_actual_fact_bytes_and_hash_unchanged_after_all_feedback_operations",
+          "seconds": 0.58
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_choice_execution_difference_withdrawal_correction_and_restart",
+          "seconds": 0.799
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_context_mission_revision_and_spoofed_source_rejected",
+          "seconds": 1.401
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_correction_must_reference_same_recommendation_current_execution",
+          "seconds": 0.979
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_execution_without_adoption_and_distinct_windows_remain_independent",
+          "seconds": 0.623
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_expired_or_withdrawn_adoption_rejected_but_history_and_replay_survive",
+          "seconds": 0.707
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_invalid_windows_blank_feedback_and_incomplete_corrections_rejected",
+          "seconds": 0.475
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_request_replay_conflict_concurrent_cas_and_no_duplicate_events",
+          "seconds": 0.928
+        },
+        {
+          "id": "evaluation.test_recommendation_actions.RecommendationActionTests.test_transaction_failure_rolls_back_object_head_request_and_event",
+          "seconds": 0.518
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_all_specialist_capabilities_fail_without_default_answers",
+          "seconds": 0.101
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_body_rejects_wrong_values_citations_and_stale_report",
+          "seconds": 0.009
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_document_modes_fail_and_normal_delivery_is_version_checked",
+          "seconds": 0.056
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_graph_rejects_self_reported_success_without_schema",
+          "seconds": 0.038
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_planning_failure_never_becomes_document_only_success",
+          "seconds": 0.005
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_report_keeps_literal_objective_gate_for_feedback_reports",
+          "seconds": 0.005
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_review_failures_and_old_records_never_pass",
+          "seconds": 0.016
+        },
+        {
+          "id": "evaluation.test_execution_outcomes.ExecutionOutcomeTests.test_valid_specialist_schema_paths",
+          "seconds": 0.021
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_checkpoint_and_public_feedback_corruption_are_rejected",
+          "seconds": 1.206
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_creation_failure_rolls_back_references_and_failed_child_preserves_parent",
+          "seconds": 0.853
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_fixed_feedback_latest_snapshot_old_execution_and_new_choice_independence",
+          "seconds": 1.22
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_real_manager_coach_and_fingerprint_consume_fixed_feedback",
+          "seconds": 0.829
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_retry_is_original_task_after_correction_and_restart",
+          "seconds": 0.774
+        },
+        {
+          "id": "evaluation.test_feedback_followups.FeedbackFollowupTests.test_stale_or_cross_context_sources_create_nothing",
+          "seconds": 1.456
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_actual_a_bytes_and_frozen_mission_inputs_are_unchanged",
+          "seconds": 0.461
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_context_filtering_and_e_reference_write_protection",
+          "seconds": 0.776
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_decisions_executions_corrections_and_read_time_missing_sync",
+          "seconds": 0.751
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_empty_chat_and_a_goals_do_not_create_preferences_or_actions",
+          "seconds": 0.455
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_event_pagination_does_not_drop_or_duplicate_decisions",
+          "seconds": 8.891
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_event_projection_and_user_transaction_failures_roll_back",
+          "seconds": 0.446
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_explicit_user_revisions_cas_retraction_and_concurrent_requests",
+          "seconds": 0.391
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_invalid_times_and_sources_do_not_create_confirmed_memory",
+          "seconds": 0.369
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_missing_or_tampered_source_never_remains_current_and_get_is_read_only",
+          "seconds": 0.494
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_model_candidate_requires_explicit_confirmation_and_never_auto_extracts",
+          "seconds": 0.337
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_restart_and_replay_restore_records_without_model_or_latest_a_writes",
+          "seconds": 0.533
+        },
+        {
+          "id": "evaluation.test_career_memory.CareerMemoryTests.test_source_failure_applicability_and_retraction_are_checked_on_read",
+          "seconds": 0.976
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.AssessmentMemoryTests.test_e_assessment_versions_currentness_and_read_only_projection",
+          "seconds": 1.259
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_context_mode_retractions_budgets_and_disabled_no_source_read",
+          "seconds": 0.489
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_continuation_default_hash_retry_and_explicit_opt_out",
+          "seconds": 0.443
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_missing_or_corrupt_packet_and_checkpoint_rejected_without_latest_fallback",
+          "seconds": 0.512
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_old_task_executes_and_explains_saved_revision_new_task_uses_correction",
+          "seconds": 0.718
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_real_manager_and_coach_prompts_share_saved_source_and_replan_keeps_it",
+          "seconds": 0.466
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_relevance_before_recency_candidates_and_time_filters_read_only",
+          "seconds": 0.894
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_task_scope_changes_only_consumed_fingerprints_and_reconciliation",
+          "seconds": 0.412
+        },
+        {
+          "id": "evaluation.test_memory_retrieval.MemoryRetrievalTests.test_unsynced_e_records_are_checked_and_freeze_historical_not_execution_authority",
+          "seconds": 0.534
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_concurrent_replay_cas_and_transaction_rollback",
+          "seconds": 0.579
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_execution_is_independent_user_reported_and_correction_invalidates_old_version",
+          "seconds": 0.672
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_followup_and_baseline_corrections_supersede_without_rewriting",
+          "seconds": 0.814
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_frozen_baseline_zero_missing_pending_and_hand_checked_mean",
+          "seconds": 0.706
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_restart_fact_bytes_mission_inputs_and_read_only_evidence",
+          "seconds": 0.593
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_scope_revision_payload_and_post_result_target_rejected",
+          "seconds": 0.971
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_speed_game_date_window_waits_for_observed_end_and_no_invented_target",
+          "seconds": 0.953
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_unrelated_or_recorded_only_observations_do_not_duplicate_assessment",
+          "seconds": 0.489
+        },
+        {
+          "id": "evaluation.test_assessments.AssessmentTests.test_version_mismatch_and_unknown_chronology_are_incomparable",
+          "seconds": 1.414
+        },
+        {
+          "id": "evaluation.test_cli_persistence.CLIPersistenceTests.test_missing_input_then_approval_survive_three_distinct_processes",
+          "seconds": 26.744
+        },
+        {
+          "id": "evaluation.test_cli_persistence.CLIPersistenceTests.test_completed_history_is_read_only_without_configuration_or_latest_access",
+          "seconds": 44.842
+        },
+        {
+          "id": "evaluation.test_cli_persistence.CLIPersistenceTests.test_invalid_missing_checkpoint_or_snapshot_refuses_before_any_mutation",
+          "seconds": 66.949
+        },
+        {
+          "id": "evaluation.test_cli_persistence.CLIPersistenceTests.test_one_writer_guard_blocks_other_process_but_allows_read_only_history",
+          "seconds": 34.319
+        },
+        {
+          "id": "evaluation.test_cli_persistence.CLIPersistenceTests.test_failed_cli_task_retry_creates_child_and_never_resumes_original",
+          "seconds": 16.143
+        }
+      ]
+    },
+    {
+      "tests_run": 32,
+      "successful": true,
+      "failures": [],
+      "errors": [],
+      "skips": [],
+      "cases": [
+        {
+          "id": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_explicit_applied_correction_preserves_old_numbers",
+          "seconds": 0.785
+        },
+        {
+          "id": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_requires_attribute_window_and_preserves_explicit_zero",
+          "seconds": 0.657
+        },
+        {
+          "id": "evaluation.test_finishing_assessment.FinishingAssessmentTests.test_finishing_uses_its_own_source_and_ignores_unrelated_profile_corrections",
+          "seconds": 0.766
+        },
+        {
+          "id": "evaluation.test_player_repository.PlayerRepositoryTests.test_actual_mode_requires_configuration_and_no_demo_fallback",
+          "seconds": 0.009
+        },
+        {
+          "id": "evaluation.test_player_repository.PlayerRepositoryTests.test_all_entrypoints_use_one_source_and_keep_unknown_values",
+          "seconds": 0.128
+        },
+        {
+          "id": "evaluation.test_player_repository.PlayerRepositoryTests.test_predictions_excluded_estimates_preserved_and_corruption_not_hidden",
+          "seconds": 0.118
+        },
+        {
+          "id": "evaluation.test_player_repository.PlayerRepositoryTests.test_snapshot_fixed_across_file_change_and_another_context",
+          "seconds": 0.027
+        },
+        {
+          "id": "evaluation.test_dependency_context.DependencyContextTests.test_all_capabilities_receive_unique_dependency_in_initial_and_revision_prompts",
+          "seconds": 0.049
+        },
+        {
+          "id": "evaluation.test_dependency_context.DependencyContextTests.test_completed_label_without_valid_result_is_not_ready",
+          "seconds": 0.012
+        },
+        {
+          "id": "evaluation.test_dependency_context.DependencyContextTests.test_context_is_copied_and_identity_and_versions_come_from_A",
+          "seconds": 0.004
+        },
+        {
+          "id": "evaluation.test_dependency_context.DependencyContextTests.test_corrupt_dependency_cycle_fails_closed",
+          "seconds": 0.004
+        },
+        {
+          "id": "evaluation.test_dependency_context.DependencyContextTests.test_stale_ancestor_rejects_direct_context_even_before_reconciliation",
+          "seconds": 0.004
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_actual_repository_projection_preserves_fact_hash_and_does_not_certify_game_support",
+          "seconds": 0.544
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_concurrent_reprojection_restart_and_get_are_idempotent_and_read_only",
+          "seconds": 1.059
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_context_isolation_source_failure_retains_history_and_withdraws_once",
+          "seconds": 0.586
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_corrupt_stored_content_baseline_or_review_never_passes_current_source_verification",
+          "seconds": 0.585
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_current_applicability_changes_without_rewriting_historical_record_or_report",
+          "seconds": 0.534
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_delivery_projects_fixed_source_and_unknown_execution_without_touching_facts",
+          "seconds": 0.504
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_demo_does_not_project_specialist_or_report_text_as_verified_suggestions",
+          "seconds": 0.21
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_failed_unreviewed_invalidated_and_tampered_sources_never_return_current",
+          "seconds": 0.548
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_projection_transaction_rollback_does_not_withdraw_valid_parent_report",
+          "seconds": 0.447
+        },
+        {
+          "id": "evaluation.test_recommendations.RecommendationTests.test_same_agent_multiple_tasks_are_distinct_and_new_versions_supersede_without_overwrite",
+          "seconds": 0.529
+        },
+        {
+          "id": "evaluation.test_stage3_audit.Stage3AuditTests.test_fixture_context_or_mixed_versions_cannot_pass",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_stage3_audit.Stage3AuditTests.test_non_personal_events_and_missing_values_are_not_invented_as_matches",
+          "seconds": 0.0
+        },
+        {
+          "id": "evaluation.test_stage3_audit.Stage3AuditTests.test_read_only_missing_database_does_not_initialize_a_task_root",
+          "seconds": 0.001
+        },
+        {
+          "id": "evaluation.test_stage3_audit.Stage3AuditTests.test_ten_is_a_contiguous_exact_current_run_not_just_a_record_count",
+          "seconds": 0.001
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_blocked_validation_and_resume_across_restart",
+          "seconds": 0.271
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_live_application_adapter_with_real_graph_and_durable_hitl",
+          "seconds": 1.285
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_pass_report_history_restart_and_followup",
+          "seconds": 0.248
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_real_agents_fail_consistently_in_api_events_and_saved_state",
+          "seconds": 0.725
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_revision_and_replan_are_distinct",
+          "seconds": 0.363
+        },
+        {
+          "id": "evaluation.test_web.WebTests.test_unknown_mission_and_cross_conversation_rejected",
+          "seconds": 0.204
+        }
+      ]
+    }
+  ],
+  "invalid_attempts": [
+    {
+      "run": "20261026-01/processes",
+      "category": "harness",
+      "reason": "Windows venv launcher PID differs from actual child; corrected base executable + venv PYTHONPATH; original child self-exited on audit caps, PID confirmed absent."
+    },
+    {
+      "run": "20261026-02/processes",
+      "category": "harness",
+      "reason": "GBK read of UTF-8 JSON; corrected explicit encoding. Use completed 20261026-03."
+    },
+    {
+      "run": "20261026-frontend-01/vitest.json",
+      "category": "environment",
+      "reason": "sandbox default TEMP rename EPERM; rerun with new isolated TEMP passed 7."
+    },
+    {
+      "run": "20261026-frontend-01",
+      "category": "harness",
+      "reason": "Selected demo test needed absent API; 8 mocked tests passed, demo deliberately excluded on rerun. Custom API glob intercepted src/api/client.ts."
+    },
+    {
+      "run": "20261026-frontend-02",
+      "category": "harness",
+      "reason": "8 mocked browser tests passed; custom API glob intercepted source module, corrected pathname predicate; use frontend-03."
+    }
+  ],
+  "not_run": [
+    "real provider/model quality",
+    "real game/M3 ten matches",
+    "provider billing",
+    "accepted cancel/timeout lifecycle (mechanism absent)",
+    "kill at every graph stage",
+    "older external checkpoint release corpus",
+    "non-empty hot WAL backup",
+    "real native binding restore/path relocation",
+    "crash at every E/C SQLite write",
+    "arbitrary later pause same-field stale input replay",
+    "browser full demo API end-to-end this round"
+  ]
+}
