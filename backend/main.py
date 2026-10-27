@@ -7,10 +7,13 @@ from pathlib import Path
 from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Request, Query
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import Response, StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from backend.models import MissionView, MessageRequest, MessageAccepted, InputRequest, MessageView, ContinuationRequest, ContinuationAccepted, MemoryPreviewRequest
 from backend.service import MissionService
+from backend.store import RequestConflict
+from backend.task_queue import AdmissionError
+from backend.models import CancelRequest, CancelAccepted
 from career_actions.models import (RecommendationList, RecommendationEvent, DecisionRequest, ExecutionRequest,
                                   DecisionAccepted, ExecutionAccepted, RecommendationActivity)
 from career_memory.models import MemoryList, MemoryWriteRequest, MemoryAccepted, MemorySyncResult
@@ -19,7 +22,8 @@ from career_actions.assessment_models import (ComparisonRequest, AssessmentReque
 
 ROOT = Path(__file__).resolve().parent.parent
 
-def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=None, player_context=None):
+def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=None, player_context=None,
+               runtime_policy=None, runner=None):
     @asynccontextmanager
     async def lifespan(app):
         demo_mode = demo if demo is not None else os.getenv('FAIT_DEMO', '0') == '1'
@@ -28,10 +32,15 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
         app.state.player_context = player_context
         default_dir = ROOT / 'memory' / 'web' / ('demo' if demo_mode else 'live')
         app.state.service = MissionService(Path(data_dir or os.getenv('FAIT_DATA_DIR', str(default_dir))),
-            demo=demo_mode, demo_delay=demo_delay, player_repository=app.state.player_repository, player_context=player_context)
+            demo=demo_mode, demo_delay=demo_delay, player_repository=app.state.player_repository, player_context=player_context,
+            runtime_policy=runtime_policy, runner=runner)
         yield
         app.state.service.close()
     app = FastAPI(title='FootballerAiTeam API', version='0.1.0', lifespan=lifespan)
+    @app.exception_handler(AdmissionError)
+    async def admission_error(_request, error):
+        return JSONResponse(status_code=error.status_code, headers={'Retry-After': '1'},
+            content={'detail': str(error), 'code': error.code, 'accepted': False})
     app.add_middleware(CORSMiddleware, allow_origins=['http://localhost:5173', 'http://127.0.0.1:5173'], allow_methods=['GET', 'POST'], allow_headers=['Content-Type', 'Last-Event-ID'])
     def service():
         return app.state.service
@@ -72,8 +81,9 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
         if not body.content.strip():
             raise HTTPException(422, '消息不能为空')
         try:
-            message_id, mission_id = service().submit(body)
-            return MessageAccepted(message_id=message_id, mission_id=mission_id)
+            return service().submit(body)
+        except AdmissionError:
+            raise
         except KeyError:
             raise HTTPException(404, '任务不存在')
         except ValueError as error:
@@ -87,7 +97,10 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
     def continuation(body: ContinuationRequest):
         try:
             message_id, mission_id, created = service().create_continuation(body)
-            return ContinuationAccepted(message_id=message_id, mission_id=mission_id, created=created)
+            return ContinuationAccepted(message_id=message_id, mission_id=mission_id, created=created,
+                operation_id=service().store.get(mission_id).workflow_operation_id, replayed=not created)
+        except AdmissionError:
+            raise
         except KeyError:
             raise HTTPException(404, '来源任务不存在')
         except ValueError as error:
@@ -100,6 +113,28 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
     @app.get('/api/missions/{mission_id}', response_model=MissionView)
     def get_mission(mission_id: str):
         return service().view(mission(mission_id))
+
+    @app.get('/api/missions/{mission_id}/operations')
+    def operations(mission_id: str):
+        mission(mission_id)
+        return service().store.operations(mission_id)
+
+    @app.get('/api/missions/{mission_id}/runtime')
+    def runtime_info(mission_id: str):
+        mission(mission_id)
+        from backend.operation_metrics import runtime_view
+        return runtime_view(service().store, mission_id)
+
+    @app.post('/api/missions/{mission_id}/operations/{operation_id}/cancel', response_model=CancelAccepted)
+    def cancel_operation(mission_id: str, operation_id: str, body: CancelRequest):
+        try:
+            return service().cancel(mission_id, operation_id, body)
+        except AdmissionError:
+            raise
+        except KeyError:
+            raise HTTPException(404, '任务或操作不存在')
+        except ValueError as error:
+            raise HTTPException(409, str(error))
 
     @app.get('/api/missions/{mission_id}/memory-input')
     def memory_input(mission_id: str):
@@ -210,9 +245,14 @@ def create_app(*, data_dir=None, demo=None, demo_delay=0.5, player_repository=No
 
     @app.post('/api/missions/{mission_id}/input', status_code=202)
     def submit_input(mission_id: str, body: InputRequest):
-        mission(mission_id)
         try:
-            return {'mission_id': service().input(mission_id, body.values)}
+            return service().input(mission_id, body)
+        except AdmissionError:
+            raise
+        except KeyError:
+            raise HTTPException(404, '任务不存在')
+        except RequestConflict as error:
+            raise HTTPException(409, str(error))
         except ValueError as error:
             raise HTTPException(422, str(error))
 

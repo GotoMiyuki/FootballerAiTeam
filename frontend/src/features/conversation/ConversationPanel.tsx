@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import type { MessageDraft } from '../../api/missions'
+import { messageRequestKey, readPending } from '../../api/pendingRequests'
 import { Send, ArrowUpRight, MessageSquare, Sparkles } from 'lucide-react'
 import { useConversation } from '../../hooks/useConversation'
 import { ErrorNotice, Loading } from '../../components/ui'
@@ -22,13 +24,15 @@ export function ConversationPanel({
   onMission: (id: string) => void
   onNew: () => void
 }) {
-  const [content, setContent] = useState('')
-  const [scenario, setScenario] = useState<DemoScenario>('pass')
-  const [useMemory, setUseMemory] = useState(true)
+  const pending = readPending<MessageDraft>(messageRequestKey(conversationId, mission?.id))
+  const [content, setContent] = useState(() => pending?.content || '')
+  const [scenario, setScenario] = useState<DemoScenario>(() => pending?.demo_scenario || 'pass')
+  const [useMemory, setUseMemory] = useState(() => pending?.use_career_memory ?? true)
   const { messages, send } = useConversation(conversationId, onMission)
   const messageList = useRef<HTMLDivElement>(null)
   const textarea = useRef<HTMLTextAreaElement>(null)
   const followup = !!mission
+  const cancelled = mission?.status === 'CANCELLED'
   const explain = mission?.available_operations?.includes('explain') ?? false
   const supplyText =
     !!mission?.available_operations?.includes('supply_input') &&
@@ -51,6 +55,7 @@ export function ConversationPanel({
         intent: explain ? 'explain' : followup ? 'followup' : 'new_mission',
         demo_scenario: scenario,
         use_career_memory: useMemory,
+        pause_id: supplyText ? mission?.blocked?.pause_id || undefined : undefined,
       },
       { onSuccess: () => setContent('') },
     )
@@ -66,7 +71,7 @@ export function ConversationPanel({
           {explain
             ? '使用原任务材料与原数据版本'
             : followup
-              ? '补充信息请使用任务表单'
+              ? cancelled ? '任务已取消，历史内容保留' : '补充信息请使用任务表单'
               : '一个目标，一次团队协作'}
         </span>
       </div>
@@ -92,7 +97,7 @@ export function ConversationPanel({
                         ? '系统提示'
                         : 'FootballerAiTeam'}
                     {message.kind === 'explanation' && (
-                      <span>{message.operation_status === 'FAILED' ? '解释失败' : '报告解释'}</span>
+                      <span>{message.operation_status === 'CANCELLED' ? '解释已取消' : message.operation_status === 'FAILED' ? '解释失败' : '报告解释'}</span>
                     )}
                     <time>
                       {new Date(message.created_at).toLocaleTimeString('zh-CN', {
@@ -127,9 +132,9 @@ export function ConversationPanel({
           ))}
         </div>
       )}
-      {mission && ['COMPLETED', 'FAILED'].includes(mission.status) && (
+      {mission && ['COMPLETED', 'FAILED', 'CANCELLED'].includes(mission.status) && (
         <div className="suggestions">
-          <span>新比赛或新约束需要新任务；原报告与审查结果保留。</span>
+          <span>{cancelled ? '任务已取消，重新执行需创建新任务；原输入和计划保留。' : '新比赛或新约束需要新任务；原报告与审查结果保留。'}</span>
           <button type="button" onClick={onNew}>
             根据新情况新建任务
             <ArrowUpRight size={14} />
@@ -147,7 +152,9 @@ export function ConversationPanel({
           ref={textarea}
           aria-label={explain ? '报告解释问题' : followup ? '补充任务信息' : '任务需求'}
           placeholder={
-            explain
+            cancelled
+              ? '任务已取消，请新建任务或创建关联重试。'
+              : explain
               ? '例如：请解释原报告中这样安排的依据…'
               : followup
                 ? '请使用上方表单补充信息或确认生成报告…'
@@ -178,7 +185,9 @@ export function ConversationPanel({
             </label>
           )}
           <span>
-            {isActive(mission?.status)
+            {cancelled
+              ? '已取消的执行不会恢复'
+              : isActive(mission?.status)
               ? '团队正在工作，任务暂停或完成后可继续对话'
               : 'Ctrl + Enter 发送'}
           </span>
@@ -195,7 +204,9 @@ export function ConversationPanel({
             </select>
           )}
           <button type="submit" className="primary-button" disabled={disabled || !content.trim()}>
-            {send.isPending
+            {cancelled
+              ? '已取消'
+              : send.isPending
               ? '正在发送…'
               : explain
                 ? '解释报告'

@@ -8,6 +8,7 @@ export type MissionStatus =
   | 'BLOCKED'
   | 'COMPLETED'
   | 'FAILED'
+  | 'CANCELLED'
 export type SubtaskStatus =
   | 'PENDING'
   | 'RUNNING'
@@ -17,6 +18,7 @@ export type SubtaskStatus =
   | 'SKIPPED'
   | 'FAILED'
   | 'INVALIDATED'
+  | 'CANCELLED'
 export interface Subtask {
   id: string
   title: string
@@ -35,7 +37,7 @@ export interface Plan {
 }
 export interface AgentActivity {
   name: string
-  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'
+  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED'
   activity: string
 }
 export interface Review {
@@ -57,6 +59,7 @@ export interface RequiredInput {
   options: string[]
 }
 export interface Blocked {
+  pause_id?: string | null
   reason: string
   message: string
   required_inputs: RequiredInput[]
@@ -69,6 +72,7 @@ export interface Mission {
   status: MissionStatus
   created_at: string
   sequence: number
+  workflow_operation_id?: string | null
   plan: Plan | null
   agents: AgentActivity[]
   review: Review | null
@@ -77,7 +81,7 @@ export interface Mission {
   result: string | null
   report: { title: string; plan_version: number } | null
   error: string | null
-  telemetry: Record<string, number>
+  telemetry: Record<string, number | null>
   delivery_status?: string
   body_validation?: Record<string, unknown>
   input_reference?: {
@@ -129,6 +133,18 @@ export const statusLabels: Record<MissionStatus, string> = {
   BLOCKED: '等待你的输入',
   COMPLETED: '已完成',
   FAILED: '任务失败',
+  CANCELLED: '已取消',
 }
 export const isActive = (status?: MissionStatus) =>
-  !!status && !['BLOCKED', 'COMPLETED', 'FAILED'].includes(status)
+  !!status && !['BLOCKED', 'COMPLETED', 'FAILED', 'CANCELLED'].includes(status)
+
+export interface Operation {
+  revision?: number
+  id: string
+  mission_id: string
+  kind: 'workflow' | 'explanation'
+  status: 'QUEUED' | 'RUNNING' | 'PAUSED' | 'COMPLETED' | 'FAILED' | 'CANCELLED'
+  run_id: number
+  pause_id: string | null
+  cleanup_status: 'NOT_NEEDED' | 'PENDING' | 'COMPLETE'
+}

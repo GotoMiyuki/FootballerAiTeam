@@ -17,6 +17,7 @@ from player_data.imports import Observation, ObservationImporter
 from player_data.json_repository import JsonPlayerRepository
 from player_data.models import PlayerContext, PlayerDataError, content_hash
 from player_data.schema import validate_record
+from player_data.writer_lock import actual_writer
 
 PROVIDER = 'pes2021_native'
 MAPPING = 'pes2021-canonical-v1'
@@ -122,12 +123,21 @@ def map_package(report, dataset):
 
 class Collector:
     """Use in the application's sole writer process; actual and fixture roots separate."""
-    def __init__(self, repository):
+    def __init__(self, repository, *, source_map=None):
         if not isinstance(repository, JsonPlayerRepository):
             fail('source_boundary', 'Actual repository required')
         self.repository = repository
         self.registry_path = repository.root / 'collectors' / PROVIDER / 'bindings.json'
         self.importer = ObservationImporter(repository, source_type='game_observation', provider=PROVIDER)
+        from game_adapters.source_paths import SourceMap
+        mapping = os.getenv('FAIT_NATIVE_SOURCE_MAP') if source_map is None else source_map
+        self.source_map = SourceMap(mapping) if mapping else None
+
+    def _read_source(self, dataset):
+        if self.source_map:
+            logical, physical, raw_root = self.source_map.dataset(dataset)
+            return read_package(physical, raw_root=raw_root), logical
+        return read_package(Path(dataset)), dataset
 
     def registry(self):
         if not self.registry_path.exists():
@@ -141,8 +151,12 @@ class Collector:
     def bind(self, dataset, context, *, basis, parent_binding=None):
         if not isinstance(basis, str) or not basis.strip():
             fail('binding_review_required', 'Explicit confirmation basis required')
-        report = read_package(Path(dataset))
+        report, dataset = self._read_source(dataset)
         map_package(report, dataset)  # validate field mapping before persisting trust
+        with actual_writer(self.repository.root):
+            return self._bind_locked(report, context, basis=basis, parent_binding=parent_binding)
+
+    def _bind_locked(self, report, context, *, basis, parent_binding):
         registry = self.registry()
         key = content_hash(report['identity'])
         entry = {'source_identity': report['identity'], 'context': context.to_dict(),
@@ -170,7 +184,7 @@ class Collector:
         return {'status': 'BOUND', 'binding_id': key, 'context': context.to_dict(), 'history_copied': False}
 
     def _plan(self, dataset, corrections=None):
-        report = read_package(Path(dataset))
+        report, dataset = self._read_source(dataset)
         rows = map_package(report, dataset)
         key = content_hash(report['identity'])
         binding = self.registry()['bindings'].get(key)
@@ -248,6 +262,15 @@ class Collector:
         return self._plan(dataset, corrections)[0]
 
     def commit(self, dataset, preview_token, *, corrections=None):
+        # Preserve no-write preflight for invalid/unbound input. Revalidate under
+        # the root lock: only that second plan authorizes the entire batch/receipt.
+        plan, _ = self._plan(dataset, corrections)
+        if plan['preview_token'] != preview_token:
+            return {'status': 'CONFLICT', 'reason': 'preview_or_state_changed', 'results': [], 'writes': 0}
+        with actual_writer(self.repository.root):
+            return self._commit_locked(dataset, preview_token, corrections=corrections)
+
+    def _commit_locked(self, dataset, preview_token, *, corrections=None):
         plan, observations = self._plan(dataset, corrections)
         if plan['preview_token'] != preview_token:
             return {'status': 'CONFLICT', 'reason': 'preview_or_state_changed', 'results': [], 'writes': 0}
@@ -283,6 +306,7 @@ def main():
     parser.add_argument('command', choices=['bind', 'preview', 'commit'])
     parser.add_argument('dataset', type=Path)
     parser.add_argument('--actual-root', required=True, type=Path)
+    parser.add_argument('--source-map', type=Path, help='Explicit restored-source mapping; historical observation hashes stay unchanged')
     parser.add_argument('--sole-writer', action='store_true', help='Confirm no other process writes this actual root')
     parser.add_argument('--career')
     parser.add_argument('--branch')
@@ -294,7 +318,7 @@ def main():
     args = parser.parse_args()
     try:
         repository = JsonPlayerRepository(args.actual_root, fixture_root=Path(__file__).resolve().parents[1] / 'memory')
-        collector = Collector(repository)
+        collector = Collector(repository, source_map=args.source_map)
         if args.command != 'preview' and not args.sole_writer:
             fail('single_writer_required', 'Run writes in the sole writer process; stop other writers for this root')
         corrections = json.loads(args.corrections.read_text(encoding='utf-8')) if args.corrections else None

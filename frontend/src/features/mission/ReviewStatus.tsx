@@ -26,21 +26,22 @@ export function ReviewStatus({
     <section className="review-card"><strong>审查未完成</strong><p>{review.summary || '旧记录未验证'}</p></section>
   )
   const Icon = icons[review.decision]
-  const resumed = review.decision === 'BLOCKED' && status !== 'BLOCKED'
+  const cancelled = status === 'CANCELLED'
+  const resumed = review.decision === 'BLOCKED' && status !== 'BLOCKED' && !cancelled
   return (
     <section className={`review-card review-${review.decision.toLowerCase()}`}>
       <Icon size={21} />
       <div>
-        <strong>{resumed ? '已收到补充信息，团队继续处理中' : titles[review.decision]}</strong>
+        <strong>{cancelled ? '原任务审查记录（任务已取消）' : resumed ? '已收到补充信息，团队继续处理中' : titles[review.decision]}</strong>
         <small>审查范围：专业输入；正文另经确定性检查，未做全文语义审查。</small>
         <p>{resumed ? `上一轮审查：${review.summary}` : review.summary}</p>
         {review.affected_subtasks.length > 0 && (
           <small>受影响步骤：{review.affected_subtasks.join('、')}</small>
         )}
-        {review.decision === 'REVISE' && (
+        {!cancelled && review.decision === 'REVISE' && (
           <small>团队会保留其他步骤的结果，继续修订受影响部分。</small>
         )}
-        {review.decision === 'REPLAN' && (
+        {!cancelled && review.decision === 'REPLAN' && (
           <small>原计划假设需要调整，新的计划版本将在上方显示。</small>
         )}
         {history.length > 1 && (

@@ -8,11 +8,20 @@ import { PlayerPanel } from '../features/player/PlayerPanel'
 import { MissionWorkspace } from '../features/mission/MissionWorkspace'
 import { MissionHistory } from '../features/history/MissionHistory'
 
+function draftConversation() {
+  let id = localStorage.getItem('fait.draftConversation')
+  if (!id) {
+    id = `conv_${crypto.randomUUID()}`
+    localStorage.setItem('fait.draftConversation', id)
+  }
+  return id
+}
+
 export default function App() {
   const [missionId, setMissionId] = useState<string | undefined>(
     () => localStorage.getItem('fait.mission') || undefined,
   )
-  const [draftId, setDraftId] = useState(() => `conv_${crypto.randomUUID()}`)
+  const [draftId, setDraftId] = useState(draftConversation)
   const [history, setHistory] = useState(false)
   const [settings, setSettings] = useState(false)
   const health = useQuery({
@@ -27,7 +36,8 @@ export default function App() {
   function newMission() {
     setMissionId(undefined)
     localStorage.removeItem('fait.mission')
-    setDraftId(`conv_${crypto.randomUUID()}`)
+    localStorage.removeItem('fait.draftConversation')
+    setDraftId(draftConversation())
   }
   return (
     <>

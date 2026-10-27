@@ -15,6 +15,7 @@ Mission-driven v2: 以 Mission 为中心的 Intent Flow。
 
 import sys
 import json
+from uuid import uuid4, uuid5, NAMESPACE_URL
 
 # 修复 Windows GBK 控制台编码：避免打印含特殊字符（如 ™）的文件名时崩溃
 for _stream in (sys.stdout, sys.stderr):
@@ -228,8 +229,8 @@ def print_result(final_report, final_state, config_dict, graph):
                 f"Agent={telemetry.get('agent_call_count', 0)} | "
                 f"Revision={telemetry.get('revision_count', 0)} | "
                 f"Replan={telemetry.get('replan_count', 0)} | "
-                f"Latency={telemetry.get('latency_ms', 0):.0f}ms | "
-                f"Tokens in/out={telemetry.get('input_tokens', 0)}/{telemetry.get('output_tokens', 0)}"
+                f"Node latency sum={telemetry.get('latency_ms', 0):.0f}ms | "
+                f"Response tokens in/out={telemetry.get('input_tokens') if telemetry.get('usage_tracking_version') == 1 and telemetry.get('input_tokens') is not None else '未知'}/{telemetry.get('output_tokens') if telemetry.get('usage_tracking_version') == 1 and telemetry.get('output_tokens') is not None else '未知'}"
             )
 
     print("\n" + "=" * 60)
@@ -269,6 +270,15 @@ def _show_mission(repository, mission):
     print(f"  原输入引用: {mission.input_reference.model_dump_json()}")
     if mission.lineage:
         print(f"  来源: {mission.lineage.parent_mission_id} | {mission.lineage.operation} | {mission.lineage.reason}")
+    for operation in repository.operations(mission.id):
+        print(f"  操作: {operation.id} | {operation.kind.value} | {operation.status.value} | run={operation.run_id} | cleanup={operation.cleanup_status}")
+        from backend.operation_metrics import meter_summary, time_summary
+        usage, timing = meter_summary(operation), time_summary(operation)
+        print(f"  已观测LLM={usage['logical_calls'] if usage['logical_calls'] is not None else '未知'} | HTTP尝试={usage['network_attempts'] if usage['network_attempts'] is not None else '未知'} | 已知响应token={usage['known_input_tokens']}/{usage['known_output_tokens']} | 完整用量={'已知' if usage['complete'] else '未知'}")
+        print('  时间秒: ' + ' | '.join(f"{key}={timing[key]:.3f}" if timing[key] is not None else f"{key}=未知"
+            for key in ('queue_seconds', 'execution_seconds', 'user_wait_seconds', 'wall_seconds')))
+        if operation.pause_id:
+            print(f"  pause_id: {operation.pause_id}")
     report = repository.report(mission)
     if report:
         print("\n最终报告（原任务、原数据版本）\n" + report)
@@ -328,7 +338,7 @@ def _collect_input(blocked):
     return values
 
 
-def _drive_cli(service, mission_id):
+def _drive_cli(service, mission_id, input_request_id=None):
     """等待同一服务任务，暂停退出不更改原任务或 checkpoint。"""
     from backend.runtime import inspect_checkpoint
     while True:
@@ -352,7 +362,11 @@ def _drive_cli(service, mission_id):
             print(f'[暂停已保存] {mission.id}；稍后使用 --continue {mission.id} 恢复。')
             break
         try:
-            service.input(mission.id, supplied)
+            from backend.models import InputRequest
+            request_id = input_request_id or f'input_{uuid4().hex}'
+            print(f'[输入请求] {request_id}', flush=True)
+            service.input(mission.id, InputRequest(request_id=request_id, pause_id=mission.blocked.pause_id, values=supplied))
+            input_request_id = None
         except ValueError as error:
             print('[输入无效] ' + str(error))
     # Read the same configured workspace; no latest player access during display.
@@ -365,7 +379,7 @@ def _drive_cli(service, mission_id):
     return mission
 
 
-def cmd_continue(thread_id):
+def cmd_continue(thread_id, request_id=None):
     """仅恢复支持的持久化暂停；完成历史只读，不重建初始状态。"""
     from backend.runtime import inspect_checkpoint
     from backend.task_context import validate_pause
@@ -375,6 +389,15 @@ def cmd_continue(thread_id):
     if not mission:
         _legacy_history(thread_id)
         return
+    receipt = repository.receipt(request_id) if request_id else None
+    if receipt:
+        if receipt.get('kind') == 'cancellation':
+            raise ValueError('该request_id已用于取消，不能作为暂停输入')
+        if receipt['mission_id'] != thread_id:
+            raise ValueError('该请求属于另一个任务')
+        print(f'[已有请求回执] {request_id} | {receipt["message_id"]}')
+        _show_mission(repository, mission)
+        return mission
     if mission.status != 'BLOCKED':
         _show_mission(repository, mission)
         if mission.status != 'COMPLETED':
@@ -392,24 +415,66 @@ def cmd_continue(thread_id):
         raise ValueError('请配置模型 API Key；原暂停仍保留')
     service = CLIMissionService(repository.root)
     try:
-        return _drive_cli(service, mission.id)
+        return _drive_cli(service, mission.id, input_request_id=request_id)
     finally:
         service.close()
 
 
-def cmd_new(user_input=None):
+def cmd_new(user_input=None, request_id=None):
     from backend.cli import CLIMissionService
     from backend.models import MessageRequest
-    from uuid import uuid4
+    from backend.service import message_fingerprint
     if not user_input:
         user_input = input('\n请输入任务需求: ').strip()
     if not user_input:
         raise ValueError('任务需求不能为空')
     service = CLIMissionService(SessionRepository().root)
     try:
-        _, identity = service.submit(MessageRequest(conversation_id=f'cli_{uuid4().hex}', content=user_input))
+        request_id = request_id or f'request_{uuid4().hex}'
+        request = MessageRequest(request_id=request_id, conversation_id=f'cli_{uuid5(NAMESPACE_URL, request_id).hex}', content=user_input)
+        print(f'[创建请求] {request_id}', flush=True)
+        if not service.store.request_result(request_id, message_fingerprint(request)) and not check_config():
+            raise ValueError('请配置模型 API Key；请求尚未接收')
+        accepted = service.submit(request)
+        identity = accepted.mission_id
         print(f'[新任务] {identity}')
+        if accepted.replayed:
+            print('[已有请求回执] 不自动继续原任务')
+            mission = service.store.get(identity)
+            _show_mission(SessionRepository(), mission)
+            return mission
         return _drive_cli(service, identity)
+    finally:
+        service.close()
+
+
+def cmd_explain(thread_id, question, request_id=None):
+    from backend.cli import CLIMissionService
+    from backend.models import MessageRequest
+    from backend.service import message_fingerprint
+    repository = SessionRepository()
+    parent = repository.mission(thread_id)
+    if not parent or not question.strip():
+        raise ValueError('解释需要已保存的任务和问题')
+    request_id = request_id or f'explain_{uuid4().hex}'
+    request = MessageRequest(request_id=request_id, conversation_id=parent.conversation_id,
+        mission_id=thread_id, intent='explain', content=question)
+    service = CLIMissionService(repository.root)
+    try:
+        print(f'[解释请求] {request_id}', flush=True)
+        if not service.store.request_result(request_id, message_fingerprint(request)) and not check_config():
+            raise ValueError('请配置模型 API Key；请求尚未接收')
+        accepted = service.submit(request)
+        if not accepted.replayed:
+            service.wait()
+        operation = service.store.operation(accepted.operation_id)
+        print(f'[操作] {accepted.operation_id} | {operation.status.value}')
+        for message in service.store.messages(parent.conversation_id):
+            if message.in_reply_to == accepted.message_id:
+                print(message.content)
+        if operation.status != 'COMPLETED':
+            raise ValueError('解释操作未完成，原报告保留；重新提问请使用新的request_id')
+        return service.store.get(thread_id)
     finally:
         service.close()
 
@@ -427,7 +492,7 @@ def cmd_related(thread_id, user_input, reason, request_id, *, operation):
     service = CLIMissionService(repository.root)
     try:
         request_id = request_id or f'request_{uuid4().hex}'
-        print(f'[创建请求] {request_id}')
+        print(f'[创建请求] {request_id}', flush=True)
         _, identity, created = service.create_continuation(Continuation(
             parent_mission_id=parent.id, conversation_id=parent.conversation_id,
             request_id=request_id, reason=reason, content=user_input, operation=operation,
@@ -443,6 +508,30 @@ def cmd_related(thread_id, user_input, reason, request_id, *, operation):
         service.close()
 
 
+def cmd_cancel(mission_id, operation_id, run_id, pause_id=None, request_id=None, api_url=None):
+    from backend.models import CancelRequest
+    request = CancelRequest(request_id=request_id or f'cancel_{uuid4().hex}',
+        expected_run_id=run_id, expected_pause_id=pause_id)
+    print(f'[取消请求] {request.request_id} | {operation_id} | run={run_id}', flush=True)
+    if api_url:
+        import httpx
+        response = httpx.post(api_url.rstrip('/') + f'/api/missions/{mission_id}/operations/{operation_id}/cancel',
+            json=request.model_dump(), timeout=10)
+        if response.status_code >= 400:
+            raise ValueError(f'取消未接受（HTTP {response.status_code}）：{response.json().get("detail", "请求失败")}')
+        result = response.json()
+    else:
+        from backend.cli import CLIMissionService
+        service = CLIMissionService(SessionRepository().root)
+        try:
+            result = service.cancel(mission_id, operation_id, request).model_dump(mode='json')
+        finally:
+            service.close()
+    print(f'[取消回执] {result["outcome"]} | {result["status"]} | cleanup={result["cleanup_status"]}'
+        + (' | 原回执重放' if result['replayed'] else ''))
+    return 0
+
+
 def main():
     import argparse
     print_header()
@@ -453,15 +542,31 @@ def main():
     operations.add_argument('--continue', dest='continue_id', metavar='MISSION_ID')
     operations.add_argument('--reevaluate', metavar='MISSION_ID')
     operations.add_argument('--retry', metavar='MISSION_ID')
+    operations.add_argument('--explain', metavar='MISSION_ID')
+    operations.add_argument('--cancel', metavar='MISSION_ID')
+    parser.add_argument('--operation-id')
+    parser.add_argument('--expected-run-id', type=int)
+    parser.add_argument('--expected-pause-id')
+    parser.add_argument('--api-url')
     parser.add_argument('--reason')
     parser.add_argument('--request-id')
     parser.add_argument('content', nargs='*')
     args = parser.parse_args()
-    if (args.list or args.show or args.continue_id) and (args.content or args.reason or args.request_id):
+    if (args.list or args.show) and (args.content or args.reason or args.request_id):
         parser.error('历史/恢复命令不接受新要求；请使用 --reevaluate 创建关联评估')
-    if (args.reason or args.request_id) and not (args.reevaluate or args.retry):
-        parser.error('--reason/--request-id 只用于 --reevaluate/--retry')
+    if args.continue_id and (args.content or args.reason):
+        parser.error('恢复命令不接受新要求；请使用 --reevaluate')
+    if args.reason and not (args.reevaluate or args.retry):
+        parser.error('--reason 只用于 --reevaluate/--retry')
+    if args.cancel:
+        if not args.operation_id or args.expected_run_id is None or args.content or args.reason:
+            parser.error('--cancel需要--operation-id和--expected-run-id，不接受新要求或reason')
+    elif args.operation_id or args.expected_run_id is not None or args.expected_pause_id or args.api_url:
+        parser.error('取消身份和--api-url只用于--cancel')
     try:
+        if args.cancel:
+            return cmd_cancel(args.cancel, args.operation_id, args.expected_run_id, args.expected_pause_id,
+                args.request_id, args.api_url)
         if args.list:
             cmd_list()
             return 0
@@ -469,18 +574,19 @@ def main():
             cmd_show(args.show)
             return 0
         if args.continue_id:
-            mission = cmd_continue(args.continue_id)
+            mission = cmd_continue(args.continue_id, args.request_id)
+        elif args.explain:
+            mission = cmd_explain(args.explain, ' '.join(args.content), args.request_id)
         else:
-            if not check_config():
-                print('请先在 .env 文件中配置 API Key 后重试。')
-                return 1
             user_input = ' '.join(args.content)
             if args.reevaluate or args.retry:
+                if not check_config():
+                    return 1
                 mission = cmd_related(args.reevaluate or args.retry, user_input, args.reason,
                     args.request_id, operation='reevaluate' if args.reevaluate else 'retry')
             else:
-                mission = cmd_new(user_input)
-        return 1 if mission and mission.status == 'FAILED' else 0
+                mission = cmd_new(user_input, args.request_id)
+        return 1 if mission and mission.status in {'FAILED', 'CANCELLED'} else 0
     except (EOFError, KeyboardInterrupt):
         print('\n[中断] 可恢复暂停保留；运行中的中断不承诺自动恢复。')
         return 1

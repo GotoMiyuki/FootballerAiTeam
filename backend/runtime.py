@@ -11,19 +11,27 @@ def inspect_checkpoint(checkpoint_path, mission_id):
         return None
     connection = sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True)
     try:
+        from backend.storage_contracts import validate_database
+        validate_database(connection, 'checkpoint')
         saver = SqliteSaver(connection)
         # A read must not initialize or migrate an absent/incompatible database.
         saver.is_setup = True
+        config = {'configurable': {'thread_id': mission_id}}
+        saved = saver.get_tuple(config)
+        if saved and saved.checkpoint.get('v') != 4:
+            raise ValueError('checkpoint 内容版本不兼容，不能自动迁移执行')
         def never_run(_state):
             raise RuntimeError('Checkpoint inspection must not execute nodes')
         nodes = {name: never_run for name in ('manager', 'intent_checkpoint', 'manager_assess',
             'manager_revision', 'manager_replan', 'reviewer', 'coach', 'analyst', 'nutrition', 'career', 'document')}
         graph = build_graph(nodes, checkpointer=saver, interrupt_before=['document'])
-        return graph.get_state({'configurable': {'thread_id': mission_id}})
+        return graph.get_state(config)
     finally:
         connection.close()
 
 def create_runtime(checkpoint_path, on_start):
+    from backend.storage_contracts import check_checkpoint_file
+    check_checkpoint_file(checkpoint_path)
     from graph import build_graph
     from utils.helpers import create_llm
     from agents.manager import create_manager_node, create_assess_node, create_manager_loop_nodes

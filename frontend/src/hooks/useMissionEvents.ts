@@ -57,10 +57,13 @@ export function useMissionEvents(id?: string) {
         cache.setQueryData<Mission>(['mission', id], (current) =>
           reduceMissionEvent(current, event),
         )
+        void cache.invalidateQueries({ queryKey: ['operations', id] })
+        void cache.invalidateQueries({ queryKey: ['runtime', id] })
         if (
           [
             'mission.completed',
             'mission.failed',
+            'mission.cancelled',
             'result.created',
             'mission.blocked',
             'message.created',

@@ -1,12 +1,19 @@
 """Explicit deterministic mock scenarios. Never used by the live runtime."""
 import time
+from uuid import uuid4
+from backend.call_limits import current_identity
 from backend.models import PlanView, SubtaskView, ReviewView, BlockedView, RequiredInput
 
 def run_demo(service, mission, scenario, resume):
     emit = service.emitter.emit
     status = service.emitter.status
     def pause():
-        time.sleep(service.demo_delay)
+        from backend.call_limits import check_execution
+        end = time.monotonic() + service.demo_delay
+        while time.monotonic() < end:
+            check_execution()
+            service.executor.stop.wait(min(.02, end - time.monotonic()))
+        check_execution()
     def agent_event(name, active, activity):
         agent = next(agent for agent in mission.agents if agent.name == name)
         agent.status, agent.activity = ('RUNNING' if active else 'COMPLETED'), activity
@@ -26,20 +33,22 @@ def run_demo(service, mission, scenario, resume):
         emit(mission, 'plan.created', **mission.plan.model_dump())
         emit(mission, 'agent.completed', agent='Manager')
     if scenario == 'blocked':
-        mission.blocked = BlockedView(reason='missing_user_input', message='演示：需要当前恢复反馈，任务会等待你的补充。', required_inputs=[
-            RequiredInput(key='doms', label='肌肉酸痛程度', input_type='scale', min=0, max=10),
-            RequiredInput(key='sleep_hours', label='昨晚睡眠（小时）', input_type='number', min=0, max=24),
-            RequiredInput(key='fatigue', label='疲劳程度', input_type='scale', min=0, max=10),
-            RequiredInput(key='pain', label='是否疼痛', input_type='boolean'),
-            RequiredInput(key='availability', label='今天可用时间', input_type='single_select', options=['30 分钟', '60 分钟', '暂不训练']),
-            RequiredInput(key='notes', label='其他补充', input_type='text', required=False),
-        ])
-        review = ReviewView(availability='COMPLETED', decision='BLOCKED', summary='当前恢复反馈缺失', affected_subtasks=['subtask_03'])
-        mission.review = review
-        mission.review_history.append(review)
-        emit(mission, 'review.completed', **review.model_dump())
-        status(mission, 'BLOCKED')
-        emit(mission, 'mission.blocked', **mission.blocked.model_dump())
+        with service.store.execution(mission.id, current_identity()):
+            mission.blocked = BlockedView(reason='missing_user_input', message='演示：需要当前恢复反馈，任务会等待你的补充。', pause_id=f'pause_{uuid4().hex}', required_inputs=[
+                RequiredInput(key='doms', label='肌肉酸痛程度', input_type='scale', min=0, max=10),
+                RequiredInput(key='sleep_hours', label='昨晚睡眠（小时）', input_type='number', min=0, max=24),
+                RequiredInput(key='fatigue', label='疲劳程度', input_type='scale', min=0, max=10),
+                RequiredInput(key='pain', label='是否疼痛', input_type='boolean'),
+                RequiredInput(key='availability', label='今天可用时间', input_type='single_select', options=['30 分钟', '60 分钟', '暂不训练']),
+                RequiredInput(key='notes', label='其他补充', input_type='text', required=False),
+            ])
+            review = ReviewView(availability='COMPLETED', decision='BLOCKED', summary='当前恢复反馈缺失', affected_subtasks=['subtask_03'])
+            mission.review = review
+            mission.review_history.append(review)
+            emit(mission, 'review.completed', **review.model_dump())
+            status(mission, 'BLOCKED')
+            emit(mission, 'mission.blocked', **mission.blocked.model_dump())
+            service._pause_operation(mission)
         return
     status(mission, 'RUNNING')
     for task in mission.plan.subtasks:

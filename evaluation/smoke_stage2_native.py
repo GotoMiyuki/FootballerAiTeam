@@ -87,7 +87,7 @@ def run(dataset, output):
 
     def submit(client):
         with patch.object(client.app.state.service, '_enqueue') as enqueue:
-            response = client.post('/api/messages', json={'conversation_id': 'm2-acceptance',
+            response = client.post('/api/messages', json={'request_id': 'm2-native-create', 'conversation_id': 'm2-acceptance',
                 'content': '阶段二输入一致性验收；不执行模型分析', 'intent': 'new_mission'})
             assert response.status_code == 202, response.text
             enqueue.assert_called_once()

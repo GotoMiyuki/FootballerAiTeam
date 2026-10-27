@@ -27,6 +27,7 @@ for (const scenario of ['explanation-failure', 'approval', 'missing-checkpoint']
       blocked: completed
         ? null
         : {
+            pause_id: 'original-pause',
             reason: 'report_approval',
             message: '请确认生成报告',
             required_inputs: [
@@ -145,7 +146,11 @@ for (const scenario of ['explanation-failure', 'approval', 'missing-checkpoint']
         await expect.poll(() => posts.length).toBe(1)
         expect(posts[0]).toEqual({
           path: '/api/missions/original-task/input',
-          body: { values: { approved: true } },
+          body: {
+            values: { approved: true },
+            pause_id: 'original-pause',
+            request_id: expect.any(String),
+          },
         })
       }
     }

@@ -7,6 +7,7 @@ import contextlib
 import shutil
 import time
 from pathlib import Path
+from uuid import uuid4
 from fastapi.testclient import TestClient
 
 def main():
@@ -22,7 +23,7 @@ def main():
     objective = '请根据现有球员档案给出三条简短的技术特点总结；只分析，不制定训练计划，不修改球员档案，不联网。'
     with (data / 'runtime.log').open('w', encoding='utf-8') as log:
         with contextlib.redirect_stdout(log), contextlib.redirect_stderr(log), TestClient(create_app(data_dir=data, demo=False, player_repository=repository)) as client:
-            response = client.post('/api/messages', json={'conversation_id': 'conv_live_smoke', 'content': objective})
+            response = client.post('/api/messages', json={'request_id': f'smoke_{uuid4().hex}', 'conversation_id': 'conv_live_smoke', 'content': objective})
             response.raise_for_status()
             mission_id = response.json()['mission_id']
             deadline = time.monotonic() + 420
@@ -33,10 +34,11 @@ def main():
                 if not states or states[-1] != mission['status']:
                     states.append(mission['status'])
                 if mission['status'] == 'BLOCKED' and mission_id not in client.app.state.service.active:
+                    pause = mission['blocked']['pause_id']
                     if mission['blocked']['reason'] == 'report_approval':
-                        client.post(f'/api/missions/{mission_id}/input', json={'values': {'approved': True}}).raise_for_status()
+                        client.post(f'/api/missions/{mission_id}/input', json={'request_id': f'smoke_{pause}', 'pause_id': pause, 'values': {'approved': True}}).raise_for_status()
                     elif supplied == 0:
-                        client.post(f'/api/missions/{mission_id}/input', json={'values': {'information': '这是基于档案的静态技术特点总结，缺失的当前恢复信息无需推断。请只总结档案已知属性并标记不确定项。'}}).raise_for_status()
+                        client.post(f'/api/missions/{mission_id}/input', json={'request_id': f'smoke_{pause}', 'pause_id': pause, 'values': {'information': '这是基于档案的静态技术特点总结，缺失的当前恢复信息无需推断。请只总结档案已知属性并标记不确定项。'}}).raise_for_status()
                         supplied += 1
                     else:
                         break

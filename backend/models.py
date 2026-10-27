@@ -1,10 +1,12 @@
 """Public V0.1 DTOs: no LangGraph state or model reasoning crosses this boundary."""
 from typing import Any, Literal
 from pydantic import BaseModel, Field, computed_field, ConfigDict
+from backend.runtime_contracts import OperationKind, OperationStatus
+from backend.operation_metrics import OperationMeter
 
-MissionStatus = Literal['CREATED', 'PLANNING', 'RUNNING', 'REVIEWING', 'REVISING', 'REPLANNING', 'BLOCKED', 'COMPLETED', 'FAILED']
-SubtaskStatus = Literal['PENDING', 'RUNNING', 'COMPLETED', 'REVISION_REQUIRED', 'BLOCKED', 'SKIPPED', 'FAILED', 'INVALIDATED']
-EventType = Literal['mission.created', 'mission.started', 'mission.status_changed', 'mission.blocked', 'mission.completed', 'mission.failed', 'plan.created', 'plan.updated', 'subtask.failed', 'subtask.invalidated', 'agent.failed', 'review.unavailable', 'review.invalidated', 'subtask.started', 'subtask.completed', 'subtask.revision_required', 'agent.started', 'agent.completed', 'review.started', 'review.completed', 'revision.started', 'revision.completed', 'replan.started', 'replan.completed', 'result.created', 'report.created', 'message.created']
+MissionStatus = Literal['CREATED', 'PLANNING', 'RUNNING', 'REVIEWING', 'REVISING', 'REPLANNING', 'BLOCKED', 'COMPLETED', 'FAILED', 'CANCELLED']
+SubtaskStatus = Literal['PENDING', 'RUNNING', 'COMPLETED', 'REVISION_REQUIRED', 'BLOCKED', 'SKIPPED', 'FAILED', 'INVALIDATED', 'CANCELLED']
+EventType = Literal['mission.created', 'mission.started', 'mission.status_changed', 'mission.blocked', 'mission.completed', 'mission.failed', 'mission.cancelled', 'operation.updated', 'plan.created', 'plan.updated', 'subtask.failed', 'subtask.invalidated', 'agent.failed', 'review.unavailable', 'review.invalidated', 'subtask.started', 'subtask.completed', 'subtask.revision_required', 'agent.started', 'agent.completed', 'review.started', 'review.completed', 'revision.started', 'revision.completed', 'replan.started', 'replan.completed', 'result.created', 'report.created', 'message.created']
 
 class SubtaskView(BaseModel):
     id: str
@@ -24,7 +26,7 @@ class PlanView(BaseModel):
 
 class AgentActivity(BaseModel):
     name: str
-    status: Literal['PENDING', 'RUNNING', 'COMPLETED', 'FAILED'] = 'PENDING'
+    status: Literal['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED'] = 'PENDING'
     activity: str = '等待任务'
 
 class ReviewView(BaseModel):
@@ -49,6 +51,54 @@ class BlockedView(BaseModel):
     reason: str
     message: str
     required_inputs: list[RequiredInput]
+    pause_id: str | None = None
+
+
+class OperationView(BaseModel):
+    id: str
+    mission_id: str
+    kind: OperationKind
+    status: OperationStatus = OperationStatus.QUEUED
+    run_id: int = 1
+    created_at: str
+    ended_at: str | None = None
+    pause_id: str | None = None
+    error: str | None = None
+    legacy_history: bool = False
+    execution_seconds: float = 0.0
+    queue_seconds: float = 0.0
+    budget_history_complete: bool = False
+    worker_pid: int | None = None
+    cleanup_status: Literal['NOT_NEEDED', 'PENDING', 'COMPLETE'] = 'NOT_NEEDED'
+    revision: int = 0
+    metering: OperationMeter | None = None
+    run_requests: dict[str, str] = Field(default_factory=dict)
+    timing_history_complete: bool = False
+    queued_at: str | None = None
+    run_started_at: str | None = None
+    pause_started_at: str | None = None
+    closed_at: str | None = None
+    user_wait_seconds: float = 0.0
+
+
+class CancelRequest(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    request_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
+    expected_run_id: int = Field(ge=1, strict=True)
+    expected_pause_id: str | None = Field(default=None, min_length=1, max_length=100)
+
+
+class CancelAccepted(BaseModel):
+    kind: Literal['cancellation'] = 'cancellation'
+    request_id: str
+    mission_id: str
+    operation_id: str
+    run_id: int
+    accepted: bool
+    outcome: Literal['CANCELLED', 'ALREADY_TERMINAL']
+    status: OperationStatus
+    cleanup_status: Literal['NOT_NEEDED', 'PENDING', 'COMPLETE']
+    replayed: bool = False
 
 class ReportSummary(BaseModel):
     title: str
@@ -102,13 +152,14 @@ class MissionView(BaseModel):
     result: str | None = None
     report: ReportSummary | None = None
     error: str | None = None
-    telemetry: dict[str, int | float] = Field(default_factory=dict)
+    telemetry: dict[str, int | float | None] = Field(default_factory=dict)
     delivery_status: str = 'NOT_GENERATED'
     body_validation: dict[str, Any] = Field(default_factory=dict)
     input_reference: PlayerInputReference = Field(default_factory=PlayerInputReference)
     memory_reference: MemoryInputReference = Field(default_factory=MemoryInputReference)
     resume_error: str | None = None
     lineage: MissionLineage | None = None
+    workflow_operation_id: str | None = None
 
     @computed_field
     @property
@@ -118,7 +169,7 @@ class MissionView(BaseModel):
             operations.append('explain')
             if self.input_reference.context and self.input_reference.verification != 'UNVERIFIED':
                 operations.append('reevaluate')
-        if self.status == 'FAILED' and self.input_reference.context and self.input_reference.verification != 'UNVERIFIED':
+        if self.status in {'FAILED', 'CANCELLED'} and self.input_reference.context and self.input_reference.verification != 'UNVERIFIED':
             operations.append('retry')
         if self.status == 'BLOCKED' and self.blocked and not self.resume_error:
             if self.input_reference.verification == 'UNVERIFIED':
@@ -138,12 +189,14 @@ class MissionEvent(BaseModel):
     data: dict[str, Any]
 
 class MessageRequest(BaseModel):
+    request_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
     conversation_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
     content: str = Field(min_length=1, max_length=8000)
     mission_id: str | None = None
     intent: Literal['new_mission', 'followup', 'explain'] = 'new_mission'
     use_career_memory: bool = True
     demo_scenario: Literal['pass', 'revision', 'blocked', 'replan'] = 'pass'
+    pause_id: str | None = Field(default=None, min_length=1, max_length=100)
 
 class MessageView(BaseModel):
     id: str
@@ -151,15 +204,20 @@ class MessageView(BaseModel):
     content: str
     created_at: str
     mission_id: str
-    kind: Literal['task', 'explanation', 'resume'] = 'task'
-    operation_status: Literal['COMPLETED', 'FAILED'] = 'COMPLETED'
+    kind: Literal['task', 'explanation', 'resume', 'cancellation'] = 'task'
+    operation_status: Literal['COMPLETED', 'FAILED', 'CANCELLED'] = 'COMPLETED'
     in_reply_to: str | None = None
 
 class MessageAccepted(BaseModel):
     message_id: str
     mission_id: str
+    operation_id: str | None = None
+    accepted: bool = True
+    replayed: bool = False
 
 class InputRequest(BaseModel):
+    request_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
+    pause_id: str = Field(min_length=1, max_length=100)
     values: dict[str, str | float | bool]
 
 

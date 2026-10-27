@@ -53,6 +53,8 @@ def select_history(service, parent, request):
             version=parent.report.plan_version, content_hash=digest))
     seen = set()
     if request.selected_results:
+        if parent.status == 'CANCELLED':
+            raise ValueError('已取消任务的内部专业成果不能引用，请在新任务中重新执行')
         if service.demo:
             raise ValueError('演示专业成果不作为已验证结果导入，请仅选择演示报告')
         from backend.runtime import inspect_checkpoint

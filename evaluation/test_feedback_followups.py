@@ -1,3 +1,4 @@
+from evaluation.runtime_fixture import run_pending
 """E2.2 actual application/SQLite/A/E/C/B boundaries with synthetic observations and offline models."""
 from copy import deepcopy
 import json
@@ -65,7 +66,7 @@ class FeedbackFollowupTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 200, response.text)
                 with patch.object(service.assessments, 'view', side_effect=AssertionError('No latest E after submit')), patch.object(
                         self.repository, 'read_snapshot', side_effect=AssertionError('No latest A after submit')):
-                    service._execute(child)
+                    run_pending(service, child)
                     self.harness.complete(client, child)
                     self.assertEqual(client.get(f'/api/missions/{child}/feedback-input').json(), fixed)
                 self.assertEqual(service.store.inputs(child), old_inputs)
@@ -147,7 +148,7 @@ class FeedbackFollowupTests(unittest.TestCase):
                 service = self.prepare(client)
                 with patch.object(service, '_enqueue'):
                     child = self.post(client)['mission_id']
-                service._execute(child)
+                run_pending(service, child)
                 self.harness.wait(client, child, 'BLOCKED')
                 state = deepcopy(inspect_checkpoint(service.checkpoint_path, child).values)
                 state['continuation_context'].pop('career_feedback')

@@ -1,9 +1,11 @@
+from evaluation.runtime_fixture import run_pending
 """C2.2 fixed relevant inputs, isolation, per-task fingerprints and real prompt consumers."""
 from copy import deepcopy
 from types import SimpleNamespace
 import json
 import unittest
 from unittest.mock import Mock, patch
+from evaluation.request_fixtures import message_body, input_body
 from fastapi.testclient import TestClient
 from evaluation import test_career_memory as memory_tests
 from career_memory.context import seal, task_items
@@ -33,7 +35,7 @@ class MemoryRetrievalTests(unittest.TestCase):
     def new(self, client, **changes):
         service = client.app.state.service
         with patch.object(service, '_enqueue'):
-            response = client.post('/api/messages', json=dict(conversation_id='conv_new', content='重新安排速度训练', **changes))
+            response = client.post('/api/messages', json=message_body(client, dict(conversation_id='conv_new', content='重新安排速度训练', **changes)))
         self.assertEqual(response.status_code, 202, response.text)
         return response.json()['mission_id']
 
@@ -75,13 +77,13 @@ class MemoryRetrievalTests(unittest.TestCase):
                     expected_revision=1, reason='可用时间变化', content='UNIQUE_NEW 速度训练每天40分钟')
                 with patch.object(service.career_memory, 'list_context', side_effect=AssertionError('Live memory forbidden')), patch.object(
                         self.harness.repository, 'read_snapshot', side_effect=AssertionError('Latest A forbidden')):
-                    service._execute(old)
+                    run_pending(service, old)
                     self.harness.complete(client, old)
                     model = Mock()
                     model.invoke.return_value = SimpleNamespace(content='引用原任务资料解释。')
                     with patch('utils.helpers.create_llm', return_value=model):
-                        result = client.post('/api/messages', json={'conversation_id': 'conv_new', 'mission_id': old,
-                            'intent': 'explain', 'content': '为什么这样安排？'})
+                        result = client.post('/api/messages', json=message_body(client, {'conversation_id': 'conv_new', 'mission_id': old,
+                            'intent': 'explain', 'content': '为什么这样安排？'}))
                         self.assertEqual(result.status_code, 202)
                         self.harness.wait(client, old, 'COMPLETED')
                     prompt = str(model.invoke.call_args.args[0])
@@ -188,7 +190,7 @@ class MemoryRetrievalTests(unittest.TestCase):
                 self.write(client)
                 identity = self.new(client)
                 service = client.app.state.service
-                service._execute(identity)
+                run_pending(service, identity)
                 self.harness.wait(client, identity, 'BLOCKED')
                 state = deepcopy(inspect_checkpoint(service.checkpoint_path, identity).values)
                 state.pop('career_memory_context')

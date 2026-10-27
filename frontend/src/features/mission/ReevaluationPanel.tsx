@@ -15,7 +15,7 @@ export function ReevaluationPanel({
   mission: Mission
   onMission: (id: string) => void
 }) {
-  const operation = mission.status === 'FAILED' ? 'retry' : 'reevaluate'
+  const operation = ['FAILED', 'CANCELLED'].includes(mission.status) ? 'retry' : 'reevaluate'
   const allowed = mission.available_operations?.includes(operation) ?? false
   const [open, setOpen] = useState(false)
   const draftKey = `fait.continuation.${mission.id}`
@@ -75,7 +75,7 @@ export function ReevaluationPanel({
     preview.reset()
   }
   const results =
-    mission.input_reference?.verification === 'VERIFIED'
+    mission.status !== 'CANCELLED' && mission.input_reference?.verification === 'VERIFIED'
       ? mission.plan?.subtasks.filter(
           (task) => task.status === 'COMPLETED' && task.result_version && task.result_summary,
         ) || []

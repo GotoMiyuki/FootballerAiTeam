@@ -15,6 +15,7 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
 from config import config
 from utils.telemetry import token_usage_from_response
+from backend.call_limits import invoke_model, invoke_tool
 
 # ReAct 循环最大迭代次数（防止死循环和 Token 爆炸）
 MAX_REACT_ITERATIONS = 5
@@ -112,14 +113,14 @@ class BaseAgent(ABC):
         """Invoke a chat model and retain metadata only for controller telemetry."""
         started = time.perf_counter()
         try:
-            response = model.invoke(messages)
+            response = invoke_model(model, messages, agent=self.name, purpose=operation)
         except Exception:
             # A provider failure is still an attempted LLM call.  Keep its
             # count/latency visible without retaining exception text or input.
             self._telemetry_events.append({
                 "kind": "llm", "agent": self.name, "operation": operation,
                 "latency_ms": round((time.perf_counter() - started) * 1000, 3),
-                "input_tokens": 0, "output_tokens": 0, "failed": True,
+                "input_tokens": None, "output_tokens": None, "failed": True,
             })
             raise
         usage = token_usage_from_response(response)
@@ -234,7 +235,7 @@ class BaseAgent(ABC):
             record['error_type'] = 'INVALID_ARGUMENTS'
         else:
             try:
-                result = selected.invoke(tool_args)
+                result = invoke_tool(selected, tool_args)
                 record.update(status='SUCCESS', result=result if isinstance(result, str) else json.dumps(result, ensure_ascii=False))
                 if tool_name == 'FootballKnowledgeRAG':
                     from tools.rag import get_last_citations
@@ -260,7 +261,7 @@ class BaseAgent(ABC):
             if tool.name == tool_name:
                 try:
                     # LangChain Tool.invoke 接受 dict 参数
-                    result = tool.invoke(tool_args)
+                    result = invoke_tool(tool, tool_args)
                     return str(result) if not isinstance(result, str) else result
                 except Exception as e:
                     return f"工具执行错误 [{tool_name}]: {type(e).__name__}: {str(e)}"
